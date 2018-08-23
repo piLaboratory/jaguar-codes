@@ -3,7 +3,8 @@
 ###########################################################################################################						
 ######################################## Preparation ######################################################
 rm(list= ls())                                                  ### For a fresh start
-setwd("C:/RWorkDir/jaguardatapaper")                           ### Set directory
+## Commented because is not generic
+##setwd("C:/RWorkDir/jaguardatapaper")                           ### Set directory
 ###########################################################################################################         																					
 ###Enter jaguar data from Morato et al. 2018/ Bernardo scripts  
   ## Load packages
