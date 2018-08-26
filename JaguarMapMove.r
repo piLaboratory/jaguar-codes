@@ -4,12 +4,12 @@
 ######################################## Preparation ######################################################
 rm(list= ls())                                                  ### For a fresh start
 ## Commented because is not generic
-##setwd("C:/RWorkDir/jaguardatapaper")                           ### Set directory
+#setwd("C:/RWorkDir/jaguardatapaper")                           ### Set directory
 ###########################################################################################################         																					
 ###Enter jaguar data from Morato et al. 2018/ Bernardo scripts  
   ## Load packages
 if(!require(install.load)) install.packages('install.load'); library(install.load)
-install.load::install_load("ggmap","maptools",'move',"circular","RCurl","dplyr","readr","caTools","adehabitatLT","ggsn","magick","rgl","tidyverse","htmltools","rglwidget")
+install.load::install_load("ggmap","maptools",'move',"circular","RCurl","dplyr","readr","caTools","adehabitatLT","ggsn","magick","rgl","tidyverse","htmltools","rglwidget")                                       
 ### The require() can be used inside functions as it gives a warning message and returns a logical value. 
 ### FALSE if the requested package is not found and TRUE if the package is loaded.###(Movement data should be checked and cleaned (for outliers, duplicated timestamps, etc)first!!! 
 ### Load and adjust the data (already cleaned) and create a dataframe object
@@ -17,32 +17,8 @@ mov.data.org <- read.delim(file="c:/RWorkDir/jaguardatapaper/mov.data.org.txt")
 mov.data.org <- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:tag.local.identifier))
 str(mov.data.org)
 
-# Add Individual info
-info <- read.delim(file="c:/RWorkDir/jaguardatapaper/info.txt")
-
-#ind.info <- read.delim(file="c:/RWorkDir/jaguardatapaper/Jaguar_additional information.txt")
-#info <- ind.info %>%
-#   dplyr::select(ID, Sex, Estimated.Age, Weight, Collar.Type, Collar.Brand, Planned.Schedule)
-#info <- info %>% rename(individual.local.identifier..ID.=ID)
-#info <- info %>% rename(sex=Sex)
-#info <- info %>% rename(age=Estimated.Age)
-#info <- info %>% rename(weight=Weight)
-#info <- info %>% rename(collar_type=Collar.Type)
-#info <- info %>% rename(brand=Collar.Brand)
-#info <- info %>% rename(schedule=Planned.Schedule)
-### Movement Parameters (ctmm)
-#movpar <- read.delim(file="c:/RWorkDir/jaguardatapaper/movementparameters.txt")
-#str(movpar)
-#movpar = movpar[-118,]   # there were an extra row of NA so I deleted that
-#movpar <- movpar %>%
-   #dplyr::select(Animal_ID, Model)
-#movpar <- movpar %>% rename(individual.local.identifier..ID.=Animal_ID)
-#movpar <- movpar %>% rename(model=Model)
-#Merge movpar with id info and save txt
-#info <- merge(info,movpar)   
-#info <- info[with(info,order(individual.local.identifier..ID.)),]
-#write.table(info,file="c:/RWorkDir/jaguardatapaper/info.txt",row.names = F,quote=F,col.names=T,sep="\t")
-info <- read.delim(file="c:/RWorkDir/jaguardatapaper/info.txt")
+# Add Individual info ## Commented because is not generic!!!
+#info <- read.delim(file="c:/RWorkDir/jaguardatapaper/info.txt") ### preparation to merge deleted
 
 #Merge movement with individual info/parameters
 merged<- merge(mov.data.org,info)
@@ -147,7 +123,6 @@ unstacked <- split(move.data)
 head(unstacked)
 jaguar_df <- as(move.data, "data.frame")
 
-
 	## Plot individual animals' trajectories (Maximum Zoom to include all points)
 #X1	
 unstacked <- split(move.data)
@@ -174,7 +149,7 @@ median(timeLag(X1, units="hours"))
 max(timeLag(X1, units="hours"))
 max(timeLag(X1, units="days"))
 plot(X1_df$individual.local.identifier..ID.~X1_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X1,file="c:/RWorkDir/jaguardatapaper/ID/X1.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X1,file="c:/RWorkDir/jaguardatapaper/ID/X1.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 1],
      main = 'Individual 1', xlab = "Time between fixes (h)")
@@ -213,7 +188,7 @@ median(timeLag(X2, units="hours"))
 max(timeLag(X2, units="hours"))
 max(timeLag(X2, units="days"))
 plot(X2_df$individual.local.identifier..ID.~X2_df$date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X2,file="c:/RWorkDir/jaguardatapaper/ID/X2.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X2,file="c:/RWorkDir/jaguardatapaper/ID/X2.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 2],
      main = 'Individual 2', xlab = "Time between fixes (h)")
@@ -253,7 +228,7 @@ median(timeLag(X3, units="hours"))
 max(timeLag(X3, units="hours"))
 max(timeLag(X3, units="days"))
 plot(X3_df$individual.local.identifier..ID.~X3_df$date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X3,file="c:/RWorkDir/jaguardatapaper/ID/X3.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X3,file="c:/RWorkDir/jaguardatapaper/ID/X3.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 3],
      main = 'Individual 3', xlab = "Time between fixes (h)")
@@ -290,7 +265,7 @@ median(timeLag(X4, units="hours"))
 max(timeLag(X4, units="hours"))
 max(timeLag(X4, units="days"))
 plot(X4_df$individual.local.identifier..ID.~X4_df$date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X4,file="c:/RWorkDir/jaguardatapaper/ID/X4.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X4,file="c:/RWorkDir/jaguardatapaper/ID/X4.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 4],
      main = 'Individual 4', xlab = "Time between fixes (h)")
@@ -330,7 +305,7 @@ median(timeLag(X5, units="hours"))
 max(timeLag(X5, units="hours"))
 max(timeLag(X5, units="days"))
 plot(X5_df$individual.local.identifier..ID.~X5_df$date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X5,file="c:/RWorkDir/jaguardatapaper/ID/X5.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X5,file="c:/RWorkDir/jaguardatapaper/ID/X5.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 5],
      main = 'Individual 5', xlab = "Time between fixes (h)")
@@ -369,7 +344,7 @@ median(timeLag(X6, units="hours"))
 max(timeLag(X6, units="hours"))
 max(timeLag(X6, units="days"))
 plot(X6_df$individual.local.identifier..ID.~X6_df$date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X6,file="c:/RWorkDir/jaguardatapaper/ID/X6.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X6,file="c:/RWorkDir/jaguardatapaper/ID/X6.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 6],
      main = 'Individual 6', xlab = "Time between fixes (h)")
@@ -408,7 +383,7 @@ median(timeLag(X7, units="hours"))
 max(timeLag(X7, units="hours"))
 max(timeLag(X7, units="days"))
 plot(X7_df$individual.local.identifier..ID.~X7_df$date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X7,file="c:/RWorkDir/jaguardatapaper/ID/X7.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X7,file="c:/RWorkDir/jaguardatapaper/ID/X7.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 7],
      main = 'Individual 7', xlab = "Time between fixes (h)")
@@ -448,7 +423,7 @@ median(timeLag(X8, units="hours"))
 max(timeLag(X8, units="hours"))
 max(timeLag(X8, units="days"))
 plot(X8_df$individual.local.identifier..ID.~X8_df$date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X8,file="c:/RWorkDir/jaguardatapaper/ID/X8.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X8,file="c:/RWorkDir/jaguardatapaper/ID/X8.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 8],
      main = 'Individual 8', xlab = "Time between fixes (h)")
@@ -487,7 +462,7 @@ median(timeLag(X9, units="hours"))
 max(timeLag(X9, units="hours"))
 max(timeLag(X9, units="days"))
 plot(X9_df$individual.local.identifier..ID.~X9_df$date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X9,file="c:/RWorkDir/jaguardatapaper/ID/X9.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X9,file="c:/RWorkDir/jaguardatapaper/ID/X9.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 9],
      main = 'Individual 9', xlab = "Time between fixes (h)")
@@ -526,7 +501,7 @@ median(timeLag(X10, units="hours"))
 max(timeLag(X10, units="hours"))
 max(timeLag(X10, units="days"))
 plot(X10_df$individual.local.identifier..ID.~X10_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X10,file="c:/RWorkDir/jaguardatapaper/ID/X10.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X10,file="c:/RWorkDir/jaguardatapaper/ID/X10.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 10],
      main = 'Individual 10', xlab = "Time between fixes (h)")
@@ -565,7 +540,7 @@ median(timeLag(X11, units="hours"))
 max(timeLag(X11, units="hours"))
 max(timeLag(X11, units="days"))
 plot(X11_df$individual.local.identifier..ID.~X11_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X11,file="c:/RWorkDir/jaguardatapaper/ID/X11.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X11,file="c:/RWorkDir/jaguardatapaper/ID/X11.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 11],
      main = 'Individual 11', xlab = "Time between fixes (h)")
@@ -606,7 +581,7 @@ median(timeLag(X12, units="hours"))
 max(timeLag(X12, units="hours"))
 max(timeLag(X12, units="days"))
 plot(X12_df$individual.local.identifier..ID.~X12_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X12,file="c:/RWorkDir/jaguardatapaper/ID/X12.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X12,file="c:/RWorkDir/jaguardatapaper/ID/X12.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 12],
      main = 'Individual 12', xlab = "Time between fixes (h)")
@@ -647,7 +622,7 @@ median(timeLag(X13, units="hours"))
 max(timeLag(X13, units="hours"))
 max(timeLag(X13, units="days"))
 plot(X13_df$individual.local.identifier..ID.~X13_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X13,file="c:/RWorkDir/jaguardatapaper/ID/X13.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X13,file="c:/RWorkDir/jaguardatapaper/ID/X13.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 13],
      main = 'Individual 13', xlab = "Time between fixes (h)")
@@ -685,7 +660,7 @@ median(timeLag(X14, units="hours"))
 max(timeLag(X14, units="hours"))
 max(timeLag(X14, units="days"))
 plot(X14_df$individual.local.identifier..ID.~X14_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X14,file="c:/RWorkDir/jaguardatapaper/ID/X14.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X14,file="c:/RWorkDir/jaguardatapaper/ID/X14.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 14],
      main = 'Individual 14', xlab = "Time between fixes (h)")
@@ -725,7 +700,7 @@ median(timeLag(X15, units="hours"))
 max(timeLag(X15, units="hours"))
 max(timeLag(X15, units="days"))
 plot(X15_df$individual.local.identifier..ID.~X15_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X15,file="c:/RWorkDir/jaguardatapaper/ID/X15.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X15,file="c:/RWorkDir/jaguardatapaper/ID/X15.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 15],
      main = 'Individual 15', xlab = "Time between fixes (h)")
@@ -765,7 +740,7 @@ median(timeLag(X16, units="hours"))
 max(timeLag(X16, units="hours"))
 max(timeLag(X16, units="days"))
 plot(X16_df$individual.local.identifier..ID.~X16_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X16,file="c:/RWorkDir/jaguardatapaper/ID/X16.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X16,file="c:/RWorkDir/jaguardatapaper/ID/X16.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 16],
      main = 'Individual 16', xlab = "Time between fixes (h)")
@@ -803,7 +778,7 @@ median(timeLag(X17, units="hours"))
 max(timeLag(X17, units="hours"))
 max(timeLag(X17, units="days"))
 plot(X17_df$individual.local.identifier..ID.~X17_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X17,file="c:/RWorkDir/jaguardatapaper/ID/X17.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X17,file="c:/RWorkDir/jaguardatapaper/ID/X17.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 17],
      main = 'Individual 17', xlab = "Time between fixes (h)")
@@ -841,7 +816,7 @@ median(timeLag(X18, units="hours"))
 max(timeLag(X18, units="hours"))
 max(timeLag(X18, units="days"))
 plot(X18_df$individual.local.identifier..ID.~X18_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X18,file="c:/RWorkDir/jaguardatapaper/ID/X18.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X18,file="c:/RWorkDir/jaguardatapaper/ID/X18.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 18],
      main = 'Individual 18', xlab = "Time between fixes (h)")
@@ -879,7 +854,7 @@ median(timeLag(X19, units="hours"))
 max(timeLag(X19, units="hours"))
 max(timeLag(X19, units="days"))
 plot(X19_df$individual.local.identifier..ID.~X19_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X19,file="c:/RWorkDir/jaguardatapaper/ID/X19.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X19,file="c:/RWorkDir/jaguardatapaper/ID/X19.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 19],
      main = 'Individual 19', xlab = "Time between fixes (h)")
@@ -919,7 +894,7 @@ median(timeLag(X20, units="hours"))
 max(timeLag(X20, units="hours"))
 max(timeLag(X20, units="days"))
 plot(X20_df$individual.local.identifier..ID.~X20_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X20,file="c:/RWorkDir/jaguardatapaper/ID/X20.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X20,file="c:/RWorkDir/jaguardatapaper/ID/X20.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 20],
      main = 'Individual 20', xlab = "Time between fixes (h)")
@@ -959,7 +934,7 @@ median(timeLag(X21, units="hours"))
 max(timeLag(X21, units="hours"))
 max(timeLag(X21, units="days"))
 plot(X21_df$individual.local.identifier..ID.~X21_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X21,file="c:/RWorkDir/jaguardatapaper/ID/X21.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X21,file="c:/RWorkDir/jaguardatapaper/ID/X21.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 21],
      main = 'Individual 21', xlab = "Time between fixes (h)")
@@ -1000,7 +975,7 @@ median(timeLag(X22, units="hours"))
 max(timeLag(X22, units="hours"))
 max(timeLag(X22, units="days"))
 plot(X22_df$individual.local.identifier..ID.~X22_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X22,file="c:/RWorkDir/jaguardatapaper/ID/X22.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X22,file="c:/RWorkDir/jaguardatapaper/ID/X22.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 22],
      main = 'Individual 22', xlab = "Time between fixes (h)")
@@ -1038,7 +1013,7 @@ median(timeLag(X23, units="hours"))
 max(timeLag(X23, units="hours"))
 max(timeLag(X23, units="days"))
 plot(X23_df$individual.local.identifier..ID.~X23_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X23,file="c:/RWorkDir/jaguardatapaper/ID/X23.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X23,file="c:/RWorkDir/jaguardatapaper/ID/X23.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 23],
      main = 'Individual 23', xlab = "Time between fixes (h)")
@@ -1076,7 +1051,7 @@ median(timeLag(X24, units="hours"))
 max(timeLag(X24, units="hours"))
 max(timeLag(X24, units="days"))
 plot(X24_df$individual.local.identifier..ID.~X24_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X24,file="c:/RWorkDir/jaguardatapaper/ID/X24.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X24,file="c:/RWorkDir/jaguardatapaper/ID/X24.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 24],
      main = 'Individual 24', xlab = "Time between fixes (h)")
@@ -1116,7 +1091,7 @@ median(timeLag(X25, units="hours"))
 max(timeLag(X25, units="hours"))
 max(timeLag(X25, units="days"))
 plot(X25_df$individual.local.identifier..ID.~X25_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X25,file="c:/RWorkDir/jaguardatapaper/ID/X25.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X25,file="c:/RWorkDir/jaguardatapaper/ID/X25.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 25],
      main = 'Individual 25', xlab = "Time between fixes (h)")
@@ -1156,7 +1131,7 @@ median(timeLag(X26, units="hours"))
 max(timeLag(X26, units="hours"))
 max(timeLag(X26, units="days"))
 plot(X26_df$individual.local.identifier..ID.~X26_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X26,file="c:/RWorkDir/jaguardatapaper/ID/X26.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X26,file="c:/RWorkDir/jaguardatapaper/ID/X26.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 26],
      main = 'Individual 26', xlab = "Time between fixes (h)")
@@ -1194,7 +1169,7 @@ median(timeLag(X27, units="hours"))
 max(timeLag(X27, units="hours"))
 max(timeLag(X27, units="days"))
 plot(X27_df$individual.local.identifier..ID.~X27_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X27,file="c:/RWorkDir/jaguardatapaper/ID/X27.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X27,file="c:/RWorkDir/jaguardatapaper/ID/X27.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 27],
      main = 'Individual 27', xlab = "Time between fixes (h)")
@@ -1232,7 +1207,7 @@ median(timeLag(X28, units="hours"))
 max(timeLag(X28, units="hours"))
 max(timeLag(X28, units="days"))
 plot(X28_df$individual.local.identifier..ID.~X28_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X28,file="c:/RWorkDir/jaguardatapaper/ID/X28.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X28,file="c:/RWorkDir/jaguardatapaper/ID/X28.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 28],
      main = 'Individual 28', xlab = "Time between fixes (h)")
@@ -1272,7 +1247,7 @@ median(timeLag(X29, units="hours"))
 max(timeLag(X29, units="hours"))
 max(timeLag(X29, units="days"))
 plot(X29_df$individual.local.identifier..ID.~X29_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X29,file="c:/RWorkDir/jaguardatapaper/ID/X29.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X29,file="c:/RWorkDir/jaguardatapaper/ID/X29.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 29],
      main = 'Individual 29', xlab = "Time between fixes (h)")
@@ -1312,7 +1287,7 @@ median(timeLag(X30, units="hours"))
 max(timeLag(X30, units="hours"))
 max(timeLag(X30, units="days"))
 plot(X30_df$individual.local.identifier..ID.~X30_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X30,file="c:/RWorkDir/jaguardatapaper/ID/X30.txt",row.names = F,quote=F,col.names=T,sep="\t")
+##write.table(X30,file="c:/RWorkDir/jaguardatapaper/ID/X30.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 30],
      main = 'Individual 30', xlab = "Time between fixes (h)")
@@ -1350,7 +1325,7 @@ median(timeLag(X31, units="hours"))
 max(timeLag(X31, units="hours"))
 max(timeLag(X31, units="days"))
 plot(X31_df$individual.local.identifier..ID.~X31_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X31,file="c:/RWorkDir/jaguardatapaper/ID/X31.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X31,file="c:/RWorkDir/jaguardatapaper/ID/X31.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 31],
      main = 'Individual 31', xlab = "Time between fixes (h)")
@@ -1388,7 +1363,7 @@ median(timeLag(X32, units="hours"))
 max(timeLag(X32, units="hours"))
 max(timeLag(X32, units="days"))
 plot(X32_df$individual.local.identifier..ID.~X32_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X32,file="c:/RWorkDir/jaguardatapaper/ID/X32.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X32,file="c:/RWorkDir/jaguardatapaper/ID/X32.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 32],
      main = 'Individual 32', xlab = "Time between fixes (h)")
@@ -1428,7 +1403,7 @@ median(timeLag(X33, units="hours"))
 max(timeLag(X33, units="hours"))
 max(timeLag(X33, units="days"))
 plot(X33_df$individual.local.identifier..ID.~X33_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X33,file="c:/RWorkDir/jaguardatapaper/ID/X33.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X33,file="c:/RWorkDir/jaguardatapaper/ID/X33.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 33],
      main = 'Individual 33', xlab = "Time between fixes (h)")
@@ -1466,7 +1441,7 @@ median(timeLag(X34, units="hours"))
 max(timeLag(X34, units="hours"))
 max(timeLag(X34, units="days"))
 plot(X34_df$individual.local.identifier..ID.~X34_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X34,file="c:/RWorkDir/jaguardatapaper/ID/X34.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X34,file="c:/RWorkDir/jaguardatapaper/ID/X34.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 34],
      main = 'Individual 34', xlab = "Time between fixes (h)")
@@ -1505,7 +1480,7 @@ median(timeLag(X35, units="hours"))
 max(timeLag(X35, units="hours"))
 max(timeLag(X35, units="days"))
 plot(X35_df$individual.local.identifier..ID.~X35_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X35,file="c:/RWorkDir/jaguardatapaper/ID/X35.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X35,file="c:/RWorkDir/jaguardatapaper/ID/X35.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 35],
      main = 'Individual 35', xlab = "Time between fixes (h)")
@@ -1545,7 +1520,7 @@ median(timeLag(X36, units="hours"))
 max(timeLag(X36, units="hours"))
 max(timeLag(X36, units="days"))
 plot(X36_df$individual.local.identifier..ID.~X36_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X36,file="c:/RWorkDir/jaguardatapaper/ID/X36.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X36,file="c:/RWorkDir/jaguardatapaper/ID/X36.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 36],
      main = 'Individual 36', xlab = "Time between fixes (h)")
@@ -1583,7 +1558,7 @@ median(timeLag(X37, units="hours"))
 max(timeLag(X37, units="hours"))
 max(timeLag(X37, units="days"))
 plot(X37_df$individual.local.identifier..ID.~X37_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X37,file="c:/RWorkDir/jaguardatapaper/ID/X37.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X37,file="c:/RWorkDir/jaguardatapaper/ID/X37.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 37],
      main = 'Individual 37', xlab = "Time between fixes (h)")
@@ -1621,7 +1596,7 @@ median(timeLag(X38, units="hours"))
 max(timeLag(X38, units="hours"))
 max(timeLag(X38, units="days"))
 plot(X38_df$individual.local.identifier..ID.~X38_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X38,file="c:/RWorkDir/jaguardatapaper/ID/X38.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X38,file="c:/RWorkDir/jaguardatapaper/ID/X38.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 38],
      main = 'Individual 38', xlab = "Time between fixes (h)")
@@ -1661,7 +1636,7 @@ median(timeLag(X39, units="hours"))
 max(timeLag(X39, units="hours"))
 max(timeLag(X39, units="days"))
 plot(X39_df$individual.local.identifier..ID.~X39_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X39,file="c:/RWorkDir/jaguardatapaper/ID/X39.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X39,file="c:/RWorkDir/jaguardatapaper/ID/X39.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 39],
      main = 'Individual 39', xlab = "Time between fixes (h)")
@@ -1699,7 +1674,7 @@ median(timeLag(X40, units="hours"))
 max(timeLag(X40, units="hours"))
 max(timeLag(X40, units="days"))
 plot(X40_df$individual.local.identifier..ID.~X40_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X40,file="c:/RWorkDir/jaguardatapaper/ID/X40.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X40,file="c:/RWorkDir/jaguardatapaper/ID/X40.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 40],
      main = 'Individual 40', xlab = "Time between fixes (h)")
@@ -1738,7 +1713,7 @@ median(timeLag(X41, units="hours"))
 max(timeLag(X41, units="hours"))
 max(timeLag(X41, units="days"))
 plot(X41_df$individual.local.identifier..ID.~X41_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X41,file="c:/RWorkDir/jaguardatapaper/ID/X41.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X41,file="c:/RWorkDir/jaguardatapaper/ID/X41.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 41],
      main = 'Individual 41', xlab = "Time between fixes (h)")
@@ -1777,7 +1752,7 @@ median(timeLag(X42, units="hours"))
 max(timeLag(X42, units="hours"))
 max(timeLag(X42, units="days"))
 plot(X42_df$individual.local.identifier..ID.~X42_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X42,file="c:/RWorkDir/jaguardatapaper/ID/X42.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X42,file="c:/RWorkDir/jaguardatapaper/ID/X42.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 42],
      main = 'Individual 42', xlab = "Time between fixes (h)")
@@ -1814,7 +1789,7 @@ median(timeLag(X43, units="hours"))
 max(timeLag(X43, units="hours"))
 max(timeLag(X43, units="days"))
 plot(X43_df$individual.local.identifier..ID.~X43_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X43,file="c:/RWorkDir/jaguardatapaper/ID/X43.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X43,file="c:/RWorkDir/jaguardatapaper/ID/X43.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 43],
      main = 'Individual 43', xlab = "Time between fixes (h)")
@@ -1852,7 +1827,7 @@ median(timeLag(X44, units="hours"))
 max(timeLag(X44, units="hours"))
 max(timeLag(X44, units="days"))
 plot(X44_df$individual.local.identifier..ID.~X44_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X44,file="c:/RWorkDir/jaguardatapaper/ID/X44.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X44,file="c:/RWorkDir/jaguardatapaper/ID/X44.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 44],
      main = 'Individual 44', xlab = "Time between fixes (h)")
@@ -1889,7 +1864,7 @@ median(timeLag(X45, units="hours"))
 max(timeLag(X45, units="hours"))
 max(timeLag(X45, units="days"))
 plot(X45_df$individual.local.identifier..ID.~X45_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X45,file="c:/RWorkDir/jaguardatapaper/ID/X45.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X45,file="c:/RWorkDir/jaguardatapaper/ID/X45.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 45],
      main = 'Individual 45', xlab = "Time between fixes (h)")
@@ -1928,7 +1903,7 @@ median(timeLag(X46, units="hours"))
 max(timeLag(X46, units="hours"))
 max(timeLag(X46, units="days"))
 plot(X46_df$individual.local.identifier..ID.~X46_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X46,file="c:/RWorkDir/jaguardatapaper/ID/X46.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X46,file="c:/RWorkDir/jaguardatapaper/ID/X46.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 46],
      main = 'Individual 46', xlab = "Time between fixes (h)")
@@ -1967,7 +1942,7 @@ median(timeLag(X47, units="hours"))
 max(timeLag(X47, units="hours"))
 max(timeLag(X47, units="days"))
 plot(X47_df$individual.local.identifier..ID.~X47_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X47,file="c:/RWorkDir/jaguardatapaper/ID/X47.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X47,file="c:/RWorkDir/jaguardatapaper/ID/X47.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 47],
      main = 'Individual 47', xlab = "Time between fixes (h)")
@@ -2005,7 +1980,7 @@ median(timeLag(X48, units="hours"))
 max(timeLag(X48, units="hours"))
 max(timeLag(X48, units="days"))
 plot(X48_df$individual.local.identifier..ID.~X48_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X48,file="c:/RWorkDir/jaguardatapaper/ID/X48.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X48,file="c:/RWorkDir/jaguardatapaper/ID/X48.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 48],
      main = 'Individual 48', xlab = "Time between fixes (h)")
@@ -2043,7 +2018,7 @@ median(timeLag(X49, units="hours"))
 max(timeLag(X49, units="hours"))
 max(timeLag(X49, units="days"))
 plot(X49_df$individual.local.identifier..ID.~X49_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X49,file="c:/RWorkDir/jaguardatapaper/ID/X49.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X49,file="c:/RWorkDir/jaguardatapaper/ID/X49.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 49],
      main = 'Individual 49', xlab = "Time between fixes (h)")
@@ -2081,7 +2056,7 @@ median(timeLag(X50, units="hours"))
 max(timeLag(X50, units="hours"))
 max(timeLag(X50, units="days"))
 plot(X50_df$individual.local.identifier..ID.~X50_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X50,file="c:/RWorkDir/jaguardatapaper/ID/X50.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X50,file="c:/RWorkDir/jaguardatapaper/ID/X50.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 50],
      main = 'Individual 50', xlab = "Time between fixes (h)")
@@ -2120,7 +2095,7 @@ median(timeLag(X51, units="hours"))
 max(timeLag(X51, units="hours"))
 max(timeLag(X51, units="days"))
 plot(X51_df$individual.local.identifier..ID.~X51_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X51,file="c:/RWorkDir/jaguardatapaper/ID/X51.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X51,file="c:/RWorkDir/jaguardatapaper/ID/X51.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 51],
      main = 'Individual 51', xlab = "Time between fixes (h)")
@@ -2157,7 +2132,7 @@ median(timeLag(X52, units="hours"))
 max(timeLag(X52, units="hours"))
 max(timeLag(X52, units="days"))
 plot(X52_df$individual.local.identifier..ID.~X52_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X52,file="c:/RWorkDir/jaguardatapaper/ID/X52.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X52,file="c:/RWorkDir/jaguardatapaper/ID/X52.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 52],
      main = 'Individual 52', xlab = "Time between fixes (h)")
@@ -2194,7 +2169,7 @@ median(timeLag(X53, units="hours"))
 max(timeLag(X53, units="hours"))
 max(timeLag(X53, units="days"))
 plot(X53_df$individual.local.identifier..ID.~X53_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X53,file="c:/RWorkDir/jaguardatapaper/ID/X53.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X53,file="c:/RWorkDir/jaguardatapaper/ID/X53.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 53],
      main = 'Individual 53', xlab = "Time between fixes (h)")
@@ -2233,7 +2208,7 @@ median(timeLag(X54, units="hours"))
 max(timeLag(X54, units="hours"))
 max(timeLag(X54, units="days"))
 plot(X54_df$individual.local.identifier..ID.~X54_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X54,file="c:/RWorkDir/jaguardatapaper/ID/X54.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X54,file="c:/RWorkDir/jaguardatapaper/ID/X54.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 54],
      main = 'Individual 54', xlab = "Time between fixes (h)")
@@ -2270,7 +2245,7 @@ median(timeLag(X55, units="hours"))
 max(timeLag(X55, units="hours"))
 max(timeLag(X55, units="days"))
 plot(X55_df$individual.local.identifier..ID.~X55_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X55,file="c:/RWorkDir/jaguardatapaper/ID/X55.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X55,file="c:/RWorkDir/jaguardatapaper/ID/X55.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 55],
      main = 'Individual 55', xlab = "Time between fixes (h)")
@@ -2309,7 +2284,7 @@ median(timeLag(X56, units="hours"))
 max(timeLag(X56, units="hours"))
 max(timeLag(X56, units="days"))
 plot(X56_df$individual.local.identifier..ID.~X56_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X56,file="c:/RWorkDir/jaguardatapaper/ID/X56.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X56,file="c:/RWorkDir/jaguardatapaper/ID/X56.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 56],
      main = 'Individual 56', xlab = "Time between fixes (h)")
@@ -2346,7 +2321,7 @@ median(timeLag(X57, units="hours"))
 max(timeLag(X57, units="hours"))
 max(timeLag(X57, units="days"))
 plot(X57_df$individual.local.identifier..ID.~X57_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X57,file="c:/RWorkDir/jaguardatapaper/ID/X57.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X57,file="c:/RWorkDir/jaguardatapaper/ID/X57.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 57],
      main = 'Individual 57', xlab = "Time between fixes (h)")
@@ -2385,7 +2360,7 @@ median(timeLag(X58, units="hours"))
 max(timeLag(X58, units="hours"))
 max(timeLag(X58, units="days"))
 plot(X58_df$individual.local.identifier..ID.~X58_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X58,file="c:/RWorkDir/jaguardatapaper/ID/X58.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X58,file="c:/RWorkDir/jaguardatapaper/ID/X58.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 58],
      main = 'Individual 58', xlab = "Time between fixes (h)")
@@ -2422,7 +2397,7 @@ median(timeLag(X59, units="hours"))
 max(timeLag(X59, units="hours"))
 max(timeLag(X59, units="days"))
 plot(X59_df$individual.local.identifier..ID.~X59_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X59,file="c:/RWorkDir/jaguardatapaper/ID/X59.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X59,file="c:/RWorkDir/jaguardatapaper/ID/X59.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 59],
      main = 'Individual 59', xlab = "Time between fixes (h)")
@@ -2459,7 +2434,7 @@ median(timeLag(X60, units="hours"))
 max(timeLag(X60, units="hours"))
 max(timeLag(X60, units="days"))
 plot(X60_df$individual.local.identifier..ID.~X60_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X60,file="c:/RWorkDir/jaguardatapaper/ID/X60.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X60,file="c:/RWorkDir/jaguardatapaper/ID/X60.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 60],
      main = 'Individual 60', xlab = "Time between fixes (h)")
@@ -2496,7 +2471,7 @@ median(timeLag(X61, units="hours"))
 max(timeLag(X61, units="hours"))
 max(timeLag(X61, units="days"))
 plot(X61_df$individual.local.identifier..ID.~X61_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X61,file="c:/RWorkDir/jaguardatapaper/ID/X61.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X61,file="c:/RWorkDir/jaguardatapaper/ID/X61.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 61],
      main = 'Individual 61', xlab = "Time between fixes (h)")
@@ -2533,7 +2508,7 @@ median(timeLag(X62, units="hours"))
 max(timeLag(X62, units="hours"))
 max(timeLag(X62, units="days"))
 plot(X62_df$individual.local.identifier..ID.~X62_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X62,file="c:/RWorkDir/jaguardatapaper/ID/X62.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X62,file="c:/RWorkDir/jaguardatapaper/ID/X62.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 62],
      main = 'Individual 62', xlab = "Time between fixes (h)")
@@ -2570,7 +2545,7 @@ median(timeLag(X63, units="hours"))
 max(timeLag(X63, units="hours"))
 max(timeLag(X63, units="days"))
 plot(X63_df$individual.local.identifier..ID.~X63_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X63,file="c:/RWorkDir/jaguardatapaper/ID/X63.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X63,file="c:/RWorkDir/jaguardatapaper/ID/X63.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 63],
      main = 'Individual 63', xlab = "Time between fixes (h)")
@@ -2607,7 +2582,7 @@ median(timeLag(X64, units="hours"))
 max(timeLag(X64, units="hours"))
 max(timeLag(X64, units="days"))
 plot(X64_df$individual.local.identifier..ID.~X64_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X64,file="c:/RWorkDir/jaguardatapaper/ID/X64.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X64,file="c:/RWorkDir/jaguardatapaper/ID/X64.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 64],
      main = 'Individual 64', xlab = "Time between fixes (h)")
@@ -2646,7 +2621,7 @@ median(timeLag(X65, units="hours"))
 max(timeLag(X65, units="hours"))
 max(timeLag(X65, units="days"))
 plot(X65_df$individual.local.identifier..ID.~X65_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X65,file="c:/RWorkDir/jaguardatapaper/ID/X65.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X65,file="c:/RWorkDir/jaguardatapaper/ID/X65.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 65],
      main = 'Individual 65', xlab = "Time between fixes (h)")
@@ -2683,7 +2658,7 @@ median(timeLag(X66, units="hours"))
 max(timeLag(X66, units="hours"))
 max(timeLag(X66, units="days"))
 plot(X66_df$individual.local.identifier..ID.~X66_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X66,file="c:/RWorkDir/jaguardatapaper/ID/X66.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X66,file="c:/RWorkDir/jaguardatapaper/ID/X66.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 66],
      main = 'Individual 66', xlab = "Time between fixes (h)")
@@ -2720,7 +2695,7 @@ median(timeLag(X67, units="hours"))
 max(timeLag(X67, units="hours"))
 max(timeLag(X67, units="days"))
 plot(X67_df$individual.local.identifier..ID.~X67_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X67,file="c:/RWorkDir/jaguardatapaper/ID/X67.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X67,file="c:/RWorkDir/jaguardatapaper/ID/X67.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 67],
      main = 'Individual 67', xlab = "Time between fixes (h)")
@@ -2757,7 +2732,7 @@ median(timeLag(X68, units="hours"))
 max(timeLag(X68, units="hours"))
 max(timeLag(X68, units="days"))
 plot(X68_df$individual.local.identifier..ID.~X68_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X68,file="c:/RWorkDir/jaguardatapaper/ID/X68.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X68,file="c:/RWorkDir/jaguardatapaper/ID/X68.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 68],
      main = 'Individual 68', xlab = "Time between fixes (h)")
@@ -2794,7 +2769,7 @@ median(timeLag(X69, units="hours"))
 max(timeLag(X69, units="hours"))
 max(timeLag(X69, units="days"))
 plot(X69_df$individual.local.identifier..ID.~X69_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X69,file="c:/RWorkDir/jaguardatapaper/ID/X69.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X69,file="c:/RWorkDir/jaguardatapaper/ID/X69.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 69],
      main = 'Individual 69', xlab = "Time between fixes (h)")
@@ -2831,7 +2806,7 @@ median(timeLag(X70, units="hours"))
 max(timeLag(X70, units="hours"))
 max(timeLag(X70, units="days"))
 plot(X70_df$individual.local.identifier..ID.~X70_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X70,file="c:/RWorkDir/jaguardatapaper/ID/X70.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X70,file="c:/RWorkDir/jaguardatapaper/ID/X70.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 70],
      main = 'Individual 70', xlab = "Time between fixes (h)")
@@ -2868,7 +2843,7 @@ median(timeLag(X71, units="hours"))
 max(timeLag(X71, units="hours"))
 max(timeLag(X71, units="days"))
 plot(X71_df$individual.local.identifier..ID.~X71_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X71,file="c:/RWorkDir/jaguardatapaper/ID/X71.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X71,file="c:/RWorkDir/jaguardatapaper/ID/X71.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 71],
      main = 'Individual 71', xlab = "Time between fixes (h)")
@@ -2905,7 +2880,7 @@ median(timeLag(X72, units="hours"))
 max(timeLag(X72, units="hours"))
 max(timeLag(X72, units="days"))
 plot(X72_df$individual.local.identifier..ID.~X72_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X72,file="c:/RWorkDir/jaguardatapaper/ID/X72.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X72,file="c:/RWorkDir/jaguardatapaper/ID/X72.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 72],
      main = 'Individual 72', xlab = "Time between fixes (h)")
@@ -2942,7 +2917,7 @@ median(timeLag(X73, units="hours"))
 max(timeLag(X73, units="hours"))
 max(timeLag(X73, units="days"))
 plot(X73_df$individual.local.identifier..ID.~X73_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X73,file="c:/RWorkDir/jaguardatapaper/ID/X73.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X73,file="c:/RWorkDir/jaguardatapaper/ID/X73.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 73],
      main = 'Individual 73', xlab = "Time between fixes (h)")
@@ -2979,7 +2954,7 @@ median(timeLag(X74, units="hours"))
 max(timeLag(X74, units="hours"))
 max(timeLag(X74, units="days"))
 plot(X74_df$individual.local.identifier..ID.~X74_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X74,file="c:/RWorkDir/jaguardatapaper/ID/X74.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X74,file="c:/RWorkDir/jaguardatapaper/ID/X74.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 74],
      main = 'Individual 74', xlab = "Time between fixes (h)")
@@ -3016,7 +2991,7 @@ median(timeLag(X75, units="hours"))
 max(timeLag(X75, units="hours"))
 max(timeLag(X75, units="days"))
 plot(X75_df$individual.local.identifier..ID.~X75_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X75,file="c:/RWorkDir/jaguardatapaper/ID/X75.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X75,file="c:/RWorkDir/jaguardatapaper/ID/X75.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 75],
      main = 'Individual 75', xlab = "Time between fixes (h)")
@@ -3053,7 +3028,7 @@ median(timeLag(X76, units="hours"))
 max(timeLag(X76, units="hours"))
 max(timeLag(X76, units="days"))
 plot(X76_df$individual.local.identifier..ID.~X76_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X76,file="c:/RWorkDir/jaguardatapaper/ID/X76.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X76,file="c:/RWorkDir/jaguardatapaper/ID/X76.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 76],
      main = 'Individual 76', xlab = "Time between fixes (h)")
@@ -3092,7 +3067,7 @@ max(timeLag(X77, units="days"))
 #m <- get_map(bbox(extent(X77)*1.1), source="google", zoom=11, maptype="satellite") #define the box for map based on the trajectory coordinates
 #ggmap(m)+geom_path(data=X77_df,aes(x=x, y=y),colour = "red") #plot the map and the trajectory
 plot(X77_df$individual.local.identifier..ID.~X77_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X77,file="c:/RWorkDir/jaguardatapaper/ID/X77.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X77,file="c:/RWorkDir/jaguardatapaper/ID/X77.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 77],
      main = 'Individual 77', xlab = "Time between fixes (h)")
@@ -3131,7 +3106,7 @@ median(timeLag(X78, units="hours"))
 max(timeLag(X78, units="hours"))
 max(timeLag(X78, units="days"))
 plot(X78_df$individual.local.identifier..ID.~X78_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X78,file="c:/RWorkDir/jaguardatapaper/ID/X78.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X78,file="c:/RWorkDir/jaguardatapaper/ID/X78.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 78],
      main = 'Individual 78', xlab = "Time between fixes (h)")
@@ -3145,7 +3120,7 @@ hh <- hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID
                                      mov.data.diff$time.diff < 512],
 									 main = 'Individual 78',xlab = 'Time between fixes (h)',
            plot = T, breaks = breaks)
-
+		   
 #X79
 X79=unstacked$X79
 X79_df <- as(X79, "data.frame")
@@ -3168,7 +3143,7 @@ median(timeLag(X79, units="hours"))
 max(timeLag(X79, units="hours"))
 max(timeLag(X79, units="days"))
 plot(X79_df$individual.local.identifier..ID.~X79_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X79,file="c:/RWorkDir/jaguardatapaper/ID/X79.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X79,file="c:/RWorkDir/jaguardatapaper/ID/X79.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 79],
      main = 'Individual 79', xlab = "Time between fixes (h)")
@@ -3207,7 +3182,7 @@ max(timeLag(X80, units="days"))
 #m <- get_map(bbox(extent(X80)*1.1), source="google", zoom=13, maptype="satellite") #define the box for map based on the trajectory coordinates
 #ggmap(m)+geom_path(data=X80_df,aes(x=x, y=y),colour = "red") #plot the map and the trajectory
 plot(X80_df$individual.local.identifier..ID.~X80_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X80,file="c:/RWorkDir/jaguardatapaper/ID/X80.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X80,file="c:/RWorkDir/jaguardatapaper/ID/X80.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 80],
      main = 'Individual 80', xlab = "Time between fixes (h)")
@@ -3244,7 +3219,7 @@ median(timeLag(X81, units="hours"))
 max(timeLag(X81, units="hours"))
 max(timeLag(X81, units="days"))
 plot(X81_df$individual.local.identifier..ID.~X81_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X81,file="c:/RWorkDir/jaguardatapaper/ID/X81.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X81,file="c:/RWorkDir/jaguardatapaper/ID/X81.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 81],
      main = 'Individual 81', xlab = "Time between fixes (h)")
@@ -3282,7 +3257,7 @@ median(timeLag(X82, units="hours"))
 max(timeLag(X82, units="hours"))
 max(timeLag(X82, units="days"))
 plot(X82_df$individual.local.identifier..ID.~X82_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X82,file="c:/RWorkDir/jaguardatapaper/ID/X82.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X82,file="c:/RWorkDir/jaguardatapaper/ID/X82.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 82],
      main = 'Individual 82', xlab = "Time between fixes (h)")
@@ -3319,7 +3294,7 @@ median(timeLag(X83, units="hours"))
 max(timeLag(X83, units="hours"))
 max(timeLag(X83, units="days"))
 plot(X83_df$individual.local.identifier..ID.~X83_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X83,file="c:/RWorkDir/jaguardatapaper/ID/X83.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X83,file="c:/RWorkDir/jaguardatapaper/ID/X83.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 83],
      main = 'Individual 83', xlab = "Time between fixes (h)")
@@ -3356,7 +3331,7 @@ median(timeLag(X84, units="hours"))
 max(timeLag(X84, units="hours"))
 max(timeLag(X84, units="days"))
 plot(X84_df$individual.local.identifier..ID.~X84_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X84,file="c:/RWorkDir/jaguardatapaper/ID/X84.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X84,file="c:/RWorkDir/jaguardatapaper/ID/X84.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 84],
      main = 'Individual 84', xlab = "Time between fixes (h)")
@@ -3395,7 +3370,7 @@ max(timeLag(X85, units="days"))
 #m <- get_map(bbox(extent(X85)*1.1), source="google", zoom=11, maptype="satellite") #define the box for map based on the trajectory coordinates
 #ggmap(m)+geom_path(data=X85_df,aes(x=x, y=y),colour = "red") #plot the map and the trajectory
 plot(X85_df$individual.local.identifier..ID.~X85_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X85,file="c:/RWorkDir/jaguardatapaper/ID/X85.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X85,file="c:/RWorkDir/jaguardatapaper/ID/X85.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 85],
      main = 'Individual 85', xlab = "Time between fixes (h)")
@@ -3434,7 +3409,7 @@ max(timeLag(X86, units="days"))
 #m <- get_map(bbox(extent(X86)*1.1), source="google", zoom=13, maptype="satellite") #define the box for map based on the trajectory coordinates
 #ggmap(m)+geom_path(data=X86_df,aes(x=x, y=y),colour = "red") #plot the map and the trajectory
 plot(X86_df$individual.local.identifier..ID.~X86_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X86,file="c:/RWorkDir/jaguardatapaper/ID/X86.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X86,file="c:/RWorkDir/jaguardatapaper/ID/X86.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 86],
      main = 'Individual 86', xlab = "Time between fixes (h)")
@@ -3471,7 +3446,7 @@ median(timeLag(X87, units="hours"))
 max(timeLag(X87, units="hours"))
 max(timeLag(X87, units="days"))
 plot(X87_df$individual.local.identifier..ID.~X87_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X87,file="c:/RWorkDir/jaguardatapaper/ID/X87.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X87,file="c:/RWorkDir/jaguardatapaper/ID/X87.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 87],
      main = 'Individual 87', xlab = "Time between fixes (h)")
@@ -3508,7 +3483,7 @@ median(timeLag(X88, units="hours"))
 max(timeLag(X88, units="hours"))
 max(timeLag(X88, units="days"))
 plot(X88_df$individual.local.identifier..ID.~X88_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X88,file="c:/RWorkDir/jaguardatapaper/ID/X88.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X88,file="c:/RWorkDir/jaguardatapaper/ID/X88.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 88],
      main = 'Individual 88', xlab = "Time between fixes (h)")
@@ -3546,7 +3521,7 @@ median(timeLag(X89, units="hours"))
 max(timeLag(X89, units="hours"))
 max(timeLag(X89, units="days"))
 plot(X89_df$individual.local.identifier..ID.~X89_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X89,file="c:/RWorkDir/jaguardatapaper/ID/X89.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X89,file="c:/RWorkDir/jaguardatapaper/ID/X89.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 89],
      main = 'Individual 89', xlab = "Time between fixes (h)")
@@ -3583,7 +3558,7 @@ median(timeLag(X90, units="hours"))
 max(timeLag(X90, units="hours"))
 max(timeLag(X90, units="days"))
 plot(X90_df$individual.local.identifier..ID.~X90_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X90,file="c:/RWorkDir/jaguardatapaper/ID/X90.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X90,file="c:/RWorkDir/jaguardatapaper/ID/X90.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 90],
      main = 'Individual 90', xlab = "Time between fixes (h)")
@@ -3620,7 +3595,7 @@ median(timeLag(X91, units="hours"))
 max(timeLag(X91, units="hours"))
 max(timeLag(X91, units="days"))
 plot(X91_df$individual.local.identifier..ID.~X91_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X91,file="c:/RWorkDir/jaguardatapaper/ID/X91.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X91,file="c:/RWorkDir/jaguardatapaper/ID/X91.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 91],
      main = 'Individual 91', xlab = "Time between fixes (h)")
@@ -3657,7 +3632,7 @@ median(timeLag(X92, units="hours"))
 max(timeLag(X92, units="hours"))
 max(timeLag(X92, units="days"))
 plot(X92_df$individual.local.identifier..ID.~X92_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X92,file="c:/RWorkDir/jaguardatapaper/ID/X92.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X92,file="c:/RWorkDir/jaguardatapaper/ID/X92.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 92],
      main = 'Individual 92', xlab = "Time between fixes (h)")
@@ -3694,7 +3669,7 @@ median(timeLag(X93, units="hours"))
 max(timeLag(X93, units="hours"))
 max(timeLag(X93, units="days"))
 plot(X93_df$individual.local.identifier..ID.~X93_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X93,file="c:/RWorkDir/jaguardatapaper/ID/X93.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X93,file="c:/RWorkDir/jaguardatapaper/ID/X93.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 93],
      main = 'Individual 93', xlab = "Time between fixes (h)")
@@ -3733,7 +3708,7 @@ median(timeLag(X94, units="hours"))
 max(timeLag(X94, units="hours"))
 max(timeLag(X94, units="days"))
 plot(X94_df$individual.local.identifier..ID.~X94_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X94,file="c:/RWorkDir/jaguardatapaper/ID/X94.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X94,file="c:/RWorkDir/jaguardatapaper/ID/X94.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 94],
      main = 'Individual 94', xlab = "Time between fixes (h)")
@@ -3772,7 +3747,7 @@ median(timeLag(X95, units="hours"))
 max(timeLag(X95, units="hours"))
 max(timeLag(X95, units="days"))
 plot(X95_df$individual.local.identifier..ID.~X95_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X95,file="c:/RWorkDir/jaguardatapaper/ID/X95.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X95,file="c:/RWorkDir/jaguardatapaper/ID/X95.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 95],
      main = 'Individual 95', xlab = "Time between fixes (h)")
@@ -3811,7 +3786,7 @@ median(timeLag(X96, units="hours"))
 max(timeLag(X96, units="hours"))
 max(timeLag(X96, units="days"))
 plot(X96_df$individual.local.identifier..ID.~X96_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X96,file="c:/RWorkDir/jaguardatapaper/ID/X96.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X96,file="c:/RWorkDir/jaguardatapaper/ID/X96.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 96],
      main = 'Individual 96', xlab = "Time between fixes (h)")
@@ -3848,7 +3823,7 @@ median(timeLag(X97, units="hours"))
 max(timeLag(X97, units="hours"))
 max(timeLag(X97, units="days"))
 plot(X97_df$individual.local.identifier..ID.~X97_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X97,file="c:/RWorkDir/jaguardatapaper/ID/X97.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X97,file="c:/RWorkDir/jaguardatapaper/ID/X97.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 97],
      main = 'Individual 97', xlab = "Time between fixes (h)")
@@ -3887,7 +3862,7 @@ median(timeLag(X98, units="hours"))
 max(timeLag(X98, units="hours"))
 max(timeLag(X98, units="days"))
 plot(X98_df$individual.local.identifier..ID.~X98_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X98,file="c:/RWorkDir/jaguardatapaper/ID/X98.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X98,file="c:/RWorkDir/jaguardatapaper/ID/X98.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 98],
      main = 'Individual 98', xlab = "Time between fixes (h)")
@@ -3924,7 +3899,7 @@ median(timeLag(X99, units="hours"))
 max(timeLag(X99, units="hours"))
 max(timeLag(X99, units="days"))
 plot(X99_df$individual.local.identifier..ID.~X99_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X99,file="c:/RWorkDir/jaguardatapaper/ID/X99.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X99,file="c:/RWorkDir/jaguardatapaper/ID/X99.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 99],
      main = 'Individual 99', xlab = "Time between fixes (h)")
@@ -3961,7 +3936,7 @@ median(timeLag(X100, units="hours"))
 max(timeLag(X100, units="hours"))
 max(timeLag(X100, units="days"))
 plot(X100_df$individual.local.identifier..ID.~X100_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X100,file="c:/RWorkDir/jaguardatapaper/ID/X100.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X100,file="c:/RWorkDir/jaguardatapaper/ID/X100.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 100],
      main = 'Individual 100', xlab = "Time between fixes (h)")
@@ -4000,7 +3975,7 @@ median(timeLag(X101, units="hours"))
 max(timeLag(X101, units="hours"))
 max(timeLag(X101, units="days"))
 plot(X101_df$individual.local.identifier..ID.~X101_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X101,file="c:/RWorkDir/jaguardatapaper/ID/X101.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X101,file="c:/RWorkDir/jaguardatapaper/ID/X101.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 101],
      main = 'Individual 101', xlab = "Time between fixes (h)")
@@ -4036,7 +4011,7 @@ median(timeLag(X102, units="hours"))
 max(timeLag(X102, units="hours"))
 max(timeLag(X102, units="days"))
 plot(X102_df$individual.local.identifier..ID.~X102_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X102,file="c:/RWorkDir/jaguardatapaper/ID/X102.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X102,file="c:/RWorkDir/jaguardatapaper/ID/X102.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 102],
      main = 'Individual 102', xlab = "Time between fixes (h)")
@@ -4074,7 +4049,7 @@ median(timeLag(X103, units="hours"))
 max(timeLag(X103, units="hours"))
 max(timeLag(X103, units="days"))
 plot(X103_df$individual.local.identifier..ID.~X103_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X103,file="c:/RWorkDir/jaguardatapaper/ID/X103.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X103,file="c:/RWorkDir/jaguardatapaper/ID/X103.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 103],
      main = 'Individual 103', xlab = "Time between fixes (h)")
@@ -4111,7 +4086,7 @@ median(timeLag(X104, units="hours"))
 max(timeLag(X104, units="hours"))
 max(timeLag(X104, units="days"))
 plot(X104_df$individual.local.identifier..ID.~X104_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X104,file="c:/RWorkDir/jaguardatapaper/ID/X104.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X104,file="c:/RWorkDir/jaguardatapaper/ID/X104.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 104],
      main = 'Individual 104', xlab = "Time between fixes (h)")
@@ -4148,7 +4123,7 @@ median(timeLag(X105, units="hours"))
 max(timeLag(X105, units="hours"))
 max(timeLag(X105, units="days"))
 plot(X105_df$individual.local.identifier..ID.~X105_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X105,file="c:/RWorkDir/jaguardatapaper/ID/X105.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X105,file="c:/RWorkDir/jaguardatapaper/ID/X105.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 105],
      main = 'Individual 105', xlab = "Time between fixes (h)")
@@ -4185,7 +4160,7 @@ median(timeLag(X106, units="hours"))
 max(timeLag(X106, units="hours"))
 max(timeLag(X106, units="days"))
 plot(X106_df$individual.local.identifier..ID.~X106_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X106,file="c:/RWorkDir/jaguardatapaper/ID/X106.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X106,file="c:/RWorkDir/jaguardatapaper/ID/X106.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 106],
      main = 'Individual 106', xlab = "Time between fixes (h)")
@@ -4223,7 +4198,7 @@ median(timeLag(X107, units="hours"))
 max(timeLag(X107, units="hours"))
 max(timeLag(X107, units="days"))
 plot(X107_df$individual.local.identifier..ID.~X107_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X107,file="c:/RWorkDir/jaguardatapaper/ID/X107.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X107,file="c:/RWorkDir/jaguardatapaper/ID/X107.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 107],
      main = 'Individual 107', xlab = "Time between fixes (h)")
@@ -4260,7 +4235,7 @@ median(timeLag(X108, units="hours"))
 max(timeLag(X108, units="hours"))
 max(timeLag(X108, units="days"))
 plot(X108_df$individual.local.identifier..ID.~X108_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X108,file="c:/RWorkDir/jaguardatapaper/ID/X108.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X108,file="c:/RWorkDir/jaguardatapaper/ID/X108.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 108],
      main = 'Individual 108', xlab = "Time between fixes (h)")
@@ -4298,7 +4273,7 @@ median(timeLag(X109, units="hours"))
 max(timeLag(X109, units="hours"))
 max(timeLag(X109, units="days"))
 plot(X109_df$individual.local.identifier..ID.~X109_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X109,file="c:/RWorkDir/jaguardatapaper/ID/X109.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X109,file="c:/RWorkDir/jaguardatapaper/ID/X109.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 109],
      main = 'Individual 109', xlab = "Time between fixes (h)")
@@ -4334,7 +4309,7 @@ median(timeLag(X110, units="hours"))
 max(timeLag(X110, units="hours"))
 max(timeLag(X110, units="days"))
 plot(X110_df$individual.local.identifier..ID.~X110_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X110,file="c:/RWorkDir/jaguardatapaper/ID/X110.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X110,file="c:/RWorkDir/jaguardatapaper/ID/X110.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 110],
      main = 'Individual 110', xlab = "Time between fixes (h)")
@@ -4372,7 +4347,7 @@ median(timeLag(X111, units="hours"))
 max(timeLag(X111, units="hours"))
 max(timeLag(X111, units="days"))
 plot(X111_df$individual.local.identifier..ID.~X111_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X111,file="c:/RWorkDir/jaguardatapaper/ID/X111.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X111,file="c:/RWorkDir/jaguardatapaper/ID/X111.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 111],
      main = 'Individual 111', xlab = "Time between fixes (h)")
@@ -4411,7 +4386,7 @@ median(timeLag(X112, units="hours"))
 max(timeLag(X112, units="hours"))
 max(timeLag(X112, units="days"))
 plot(X112_df$individual.local.identifier..ID.~X112_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X112,file="c:/RWorkDir/jaguardatapaper/ID/X112.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X112,file="c:/RWorkDir/jaguardatapaper/ID/X112.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 112],
      main = 'Individual 112', xlab = "Time between fixes (h)")
@@ -4450,7 +4425,7 @@ median(timeLag(X113, units="hours"))
 max(timeLag(X113, units="hours"))
 max(timeLag(X113, units="days"))
 plot(X113_df$individual.local.identifier..ID.~X113_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X113,file="c:/RWorkDir/jaguardatapaper/ID/X113.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X113,file="c:/RWorkDir/jaguardatapaper/ID/X113.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 113],
      main = 'Individual 113', xlab = "Time between fixes (h)")
@@ -4487,7 +4462,7 @@ median(timeLag(X114, units="hours"))
 max(timeLag(X114, units="hours"))
 max(timeLag(X114, units="days"))
 plot(X114_df$individual.local.identifier..ID.~X114_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X114,file="c:/RWorkDir/jaguardatapaper/ID/X114.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X114,file="c:/RWorkDir/jaguardatapaper/ID/X114.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 114],
      main = 'Individual 114', xlab = "Time between fixes (h)")
@@ -4524,7 +4499,7 @@ median(timeLag(X115, units="hours"))
 max(timeLag(X115, units="hours"))
 max(timeLag(X115, units="days"))
 plot(X115_df$individual.local.identifier..ID.~X115_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X115,file="c:/RWorkDir/jaguardatapaper/ID/X115.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X115,file="c:/RWorkDir/jaguardatapaper/ID/X115.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 115],
      main = 'Individual 115', xlab = "Time between fixes (h)")
@@ -4561,7 +4536,7 @@ median(timeLag(X116, units="hours"))
 max(timeLag(X116, units="hours"))
 max(timeLag(X116, units="days"))
 plot(X116_df$individual.local.identifier..ID.~X116_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X116,file="c:/RWorkDir/jaguardatapaper/ID/X116.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X116,file="c:/RWorkDir/jaguardatapaper/ID/X116.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 116],
      main = 'Individual 116', xlab = "Time between fixes (h)")
@@ -4600,7 +4575,7 @@ median(timeLag(X117, units="hours"))
 max(timeLag(X117, units="hours"))
 max(timeLag(X117, units="days"))
 plot(X117_df$individual.local.identifier..ID.~X117_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
-write.table(X117,file="c:/RWorkDir/jaguardatapaper/ID/X117.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(X117,file="c:/RWorkDir/jaguardatapaper/ID/X117.txt",row.names = F,quote=F,col.names=T,sep="\t")
 #Histograms and plots
 hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 117],
      main = 'Individual 117', xlab = "Time between fixes (h)")
@@ -4620,12 +4595,11 @@ hh <- hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID
 move::plot(move.data, pch = 19, xlab = 'Longitude', ylab = 'Latitude')
 cols = rainbow(nlevels(move.data@trackId))[move.data@trackId]
 m <- get_map(bbox(extent(move.data)*1.1), source = 'google', zoom = 3)
-ggmap(m) + geom_point(data=animals, aes(x=x, y=y), col = cols)
+ggmap(m) + geom_point(data=jaguar_df, aes(x=x, y=y), col = cols)
 
 ########################  Ploting regions or projects   ######################################################
 # 1)  Cerrado and Para (Parauapebas) IOP      Cerrado(17, 65, 67, 82, 85)   ### Parauapebas (24) translocatade!!!
 unstacked <- split(move.data)
-
 X24=unstacked$X24  #Para
 X24_df <- as(X24, "data.frame")
 #Cerrado IOP
@@ -4653,7 +4627,8 @@ ggmap(m)+geom_path(data=X82_df,aes(x=x, y=y),colour = "red") #plot the map and t
 ggmap(m)+geom_path(data=X85_df,aes(x=x, y=y),colour = "red") #plot the map and the trajectory
 
 animals <- as(move.data, 'data.frame')
-iop=subset(animals,study.name=='IOP')
+jaguar_df <- as(move.data, 'data.frame')
+iop=subset(jaguar_df,study.name=='IOP')
 iopPA=subset(iop,id=='24')
 iop17=subset(iop,id=='17')
 iop65=subset(iop,id=='65')
@@ -4663,7 +4638,6 @@ iop85=subset(iop,id=='85')
 # Sampling period
 plot(iop$individual.local.identifier..ID.~iop$date,xlab = "Sampling period",ylab = "Individuals ID Number")
 
-
 #IOP Cerrado
 iopCerrado=rbind(iop17, iop65, iop67, iop82, iop85)
 head(iopCerrado)
@@ -4671,6 +4645,7 @@ str(iopCerrado)
 m <- get_map(bbox(extent(iopCerrado)*1.1), source="google", zoom=10,maptype="satellite") #define the box for map based on the trajectory coordinates
 ggmap(m)+geom_path(data=iop65,aes(x=x,y=y),colour = "red")+geom_path(data=iop17,aes(x=x,y=y),colour = "yellow")+geom_path(data=iop67,aes(x=x, y=y),colour = "green")+geom_path(data=iop82,aes(x=x, y=y),colour = "orange")+geom_path(data=iop85,aes(x=x, y=y),colour = "purple")
 #ggmap(m)+geom_point(data=iop65,aes(x=x,y=y),colour = "red")+geom_point(data=iop17,aes(x=x,y=y),colour = "yellow")+geom_point(data=iop67,aes(x=x, y=y),colour = "green")+geom_point(data=iop82,aes(x=x, y=y),colour = "orange")+geom_point(data=iop85,aes(x=x, y=y),colour = "purple")
+
 # Sampling period
 plot(iopCerrado$individual.local.identifier..ID.~iopCerrado$date,xlab = "Sampling period",ylab = "Individuals ID Number")
 
@@ -4679,7 +4654,7 @@ plot(iopCerrado$individual.local.identifier..ID.~iopCerrado$date,xlab = "Samplin
 iopCerrado=rbind(iop17, iop65, iop67, iop82, iop85)
 m <- get_map(bbox(extent(iopCerrado)*1.1), source="google", zoom=10,maptype="satellite") #define the box for map based on the trajectory coordinates
 ggmap(m)+geom_path(data=X65_df,aes(x=x,y=y),colour = "red")+geom_path(data=X17_df,aes(x=x,y=y),colour = "yellow")+geom_path(data=X67_df,aes(x=x, y=y),colour = "green")+geom_path(data=X82_df,aes(x=x, y=y),colour = "orange")+geom_path(data=X85_df,aes(x=x, y=y),colour = "purple")
-write.table(iopCerrado,file="c:/RWorkDir/jaguardatapaper/ID/iopCerrado.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(iopCerrado,file="c:/RWorkDir/jaguardatapaper/ID/iopCerrado.txt",row.names = F,quote=F,col.names=T,sep="\t")
 
 
 #IOP Para
@@ -4700,9 +4675,9 @@ ggmap(m)+geom_path(data=X89_df,aes(x=x, y=y),colour = "red") #plot the map and t
 plot(X89_df$individual.local.identifier..ID.~X89_df$date,xlab = "Sampling period",ylab = "Individuals ID Number")
 
 #Cerrado Total  #IOP Cerrado + #Cerrado Fragmented Landscape
-animals <- as(move.data, 'data.frame')
-iop=subset(animals,study.name=='IOP')
-jfl=subset(animals,tag.local.identifier=="2314")
+jaguar_df <- as(move.data, 'data.frame')
+iop=subset(jaguar_df,study.name=='IOP')
+jfl=subset(jaguar_df,tag.local.identifier=="2314")
 iop17=subset(iop,id=='17')
 iop65=subset(iop,id=='65')
 iop67=subset(iop,id=='67')
@@ -4719,8 +4694,8 @@ plot(CerradoTotal$individual.local.identifier..ID.~CerradoTotal$date,xlab = "Sam
 ######################################################
 
 #Humid Chaco Paraguay
-animals <- as(move.data, 'data.frame')
-hch=subset(animals,study.name=='Humid Chaco')
+jaguar_df <- as(move.data, 'data.frame')
+hch=subset(jaguar_df,study.name=='Humid Chaco')
 hch1=subset(hch,id=='1')
 hch3=subset(hch,id=='3')
 hch4=subset(hch,id=='4')
@@ -4806,8 +4781,8 @@ ggmap(m)+geom_path(data=X11_df,aes(x=x, y=y),colour = "red") #plot the map and t
 #############################################################################################################
 
 ## Atlantic Forest - Paraguay  ###
-animals <- as(move.data, 'data.frame')
-Af=subset(animals,study.name=='Atlantic forest') #Nao inclui Iguacu e outros Projetos na AF
+jaguar_df <- as(move.data, 'data.frame')
+Af=subset(jaguar_df,study.name=='Atlantic forest') #Nao inclui Iguacu e outros Projetos na AF
 AfParaguay=subset(Af,country=='Paraguay')
 
 Af2=subset(AfParaguay,id=='2')
@@ -4877,8 +4852,8 @@ ggmap(m)+geom_path(data=X78_df,aes(x=x, y=y),colour = "red") #plot the map and t
 
 ##############################################################################################################
 #Atlantic Forest & Humid Chaco Paraguay
-animals <- as(move.data, 'data.frame')
-Paraguay=subset(animals,country=='Paraguay')
+jaguar_df <- as(move.data, 'data.frame')
+Paraguay=subset(jaguar_df,country=='Paraguay')
 AfParaguay=subset(Af,country=='Paraguay')
 
 Af2=subset(Paraguay,id=='2')
@@ -4895,7 +4870,7 @@ hch7=subset(Paraguay,id=='7')
 hch9=subset(Paraguay,id=='9')
 hch10=subset(Paraguay,id=='10')
 hch11=subset(Paraguay,id=='11')
-hch=subset(animals,study.name=='Humid Chaco')
+hch=subset(jaguar_df,study.name=='Humid Chaco')
 AfParaguay=subset(Af,country=='Paraguay')
 
 hchAfParaguay=rbind(hch,AfParaguay)
@@ -4907,8 +4882,8 @@ plot(hchAfParaguay$individual.local.identifier..ID.~hchAfParaguay$date,xlab = "S
 
 #################################################################
 #Dry Chaco
-animals <- as(move.data, 'data.frame')
-Paraguay=subset(animals,country=='Paraguay')
+jaguar_df <- as(move.data, 'data.frame')
+Paraguay=subset(jaguar_df,country=='Paraguay')
 drych16=subset(Paraguay,id=='16')
 drych70=subset(Paraguay,id=='70')
 drych71=subset(Paraguay,id=='71')
@@ -4923,8 +4898,8 @@ plot(drych$individual.local.identifier..ID.~drych$date,xlab = "Sampling period",
 ###############################################################
 
 #Paraguayan Pantanal
-animals <- as(move.data, 'data.frame')
-Paraguay=subset(animals,country=='Paraguay')
+jaguar_df <- as(move.data, 'data.frame')
+Paraguay=subset(jaguar_df,country=='Paraguay')
 
 pant51=subset(Paraguay,id=='51')
 pant74=subset(Paraguay,id=='74')
@@ -4938,7 +4913,7 @@ plot(pantParaguay$individual.local.identifier..ID.~pantParaguay$date,xlab = "Sam
 #Paraguay (Total)
 
 drych=rbind(drych16, drych70, drych71, drych72, drych73,drych77)
-hch=subset(animals,study.name=='Humid Chaco')
+hch=subset(jaguar_df,study.name=='Humid Chaco')
 AfParaguay=subset(Af,country=='Paraguay')
 pantParaguay=rbind(pant51, pant74, pant75)
 
@@ -4949,8 +4924,8 @@ plot(Paraguay$individual.local.identifier..ID.~Paraguay$date,xlab = "Sampling pe
 
 ##########################################################################################################
    ### Argentina (AF)  
-animals <- as(move.data,'data.frame')
-Argentina=subset(animals,country=='Argentina')
+jaguar_df <- as(move.data,'data.frame')
+Argentina=subset(jaguar_df,country=='Argentina')
 arg42=subset(Argentina,id=='42')
 arg80=subset(Argentina,id=='80')
 arg90=subset(Argentina,id=='90')
@@ -4960,8 +4935,8 @@ plot(Argentina$individual.local.identifier..ID.~Argentina$date,xlab = "Sampling 
 
 ###########################################################################################################
     ### Iguazu (Brazil) AF
-animals <- as(move.data,'data.frame')
-Brazil=subset(animals,country=='Brazil')
+jaguar_df <- as(move.data,'data.frame')
+Brazil=subset(jaguar_df,country=='Brazil')
 AFI66=subset(Brazil,id=='66')
 AFI83=subset(Brazil,id=='83')
 BrazilIguazu=rbind(AFI66,AFI83)
@@ -4971,9 +4946,9 @@ plot(BrazilIguazu$individual.local.identifier..ID.~BrazilIguazu$date,xlab = "Sam
 
 ################################################################################
 ################ AF Iguacu (Argentina - Brazil) ################################
-animals <- as(move.data,'data.frame')
-Argentina=subset(animals,country=='Argentina')
-Brazil=subset(animals,country=='Brazil')
+jaguar_df <- as(move.data,'data.frame')
+Argentina=subset(jaguar_df,country=='Argentina')
+Brazil=subset(jaguar_df,country=='Brazil')
 arg42=subset(Argentina,id=='42')
 arg80=subset(Argentina,id=='80')
 arg90=subset(Argentina,id=='90')
@@ -4987,8 +4962,8 @@ plot(AFIguazuTotal$individual.local.identifier..ID.~AFIguazuTotal$date,xlab = "S
 ################################################################################
 ##########################################################################################################
 #AF Brazil
-animals <- as(move.data,'data.frame')
-Brazil=subset(animals,country=='Brazil')
+jaguar_df <- as(move.data,'data.frame')
+Brazil=subset(jaguar_df,country=='Brazil')
 AF34=subset(Brazil,id=='34')
 AF35=subset(Brazil,id=='35')
 AF36=subset(Brazil,id=='36')
@@ -5008,8 +4983,8 @@ plot(AFBrazilNW$individual.local.identifier..ID.~AFBrazilNW$date,xlab = "Samplin
 
 ###################################################################################################
    ### Caatinga (Brazil)
-animals <- as(move.data,'data.frame')
-Brazil=subset(animals,country=='Brazil')
+jaguar_df <- as(move.data,'data.frame')
+Brazil=subset(jaguar_df,country=='Brazil')
 ca20=subset(Brazil,id=='20')
 ca50=subset(Brazil,id=='50')
 Caatinga=rbind(ca20,ca50)
@@ -5019,8 +4994,8 @@ plot(Caatinga$individual.local.identifier..ID.~Caatinga$date,xlab = "Sampling pe
 
 ###################################################################################################
    ### Amazonia Mamiraua (Brazil)
-animals <- as(move.data,'data.frame')
-Brazil=subset(animals,country=='Brazil')
+jaguar_df <- as(move.data,'data.frame')
+Brazil=subset(jaguar_df,country=='Brazil')
 mam93=subset(Brazil,id=='93')
 mam94=subset(Brazil,id=='94')
 mam95=subset(Brazil,id=='95')
@@ -5037,8 +5012,8 @@ plot(Mamiraua$individual.local.identifier..ID.~Mamiraua$date,xlab = "Sampling pe
 ###################################################################################################
    ### Pantanal (Brazil)
    ###Oncafari
-animals <- as(move.data,'data.frame')
-Brazil=subset(animals,country=='Brazil')
+jaguar_df <- as(move.data,'data.frame')
+Brazil=subset(jaguar_df,country=='Brazil')
 oncafari14=subset(Brazil,id=='14')
 oncafari15=subset(Brazil,id=='15')
 oncafari19=subset(Brazil,id=='19')
@@ -5056,8 +5031,8 @@ plot(Oncafari$individual.local.identifier..ID.~Oncafari$date,xlab = "Sampling pe
 
 
 ###Taiama
-animals <- as(move.data,'data.frame')
-Brazil=subset(animals,country=='Brazil')
+jaguar_df <- as(move.data,'data.frame')
+Brazil=subset(jaguar_df,country=='Brazil')
 taiama12=subset(Brazil,id=='12')
 taiama13=subset(Brazil,id=='13')
 taiama18=subset(Brazil,id=='18')
@@ -5079,8 +5054,8 @@ ggmap(m)+geom_path(data=taiama12,aes(x=x,y=y),colour = "white")+geom_path(data=t
 plot(Taiama$individual.local.identifier..ID.~Taiama$date,xlab = "Sampling period",ylab = "Individuals ID Number")
 
 ###Panthera
-animals <- as(move.data,'data.frame')
-Brazil=subset(animals,country=='Brazil')
+jaguar_df <- as(move.data,'data.frame')
+Brazil=subset(jaguar_df,country=='Brazil')
 panthera27=subset(Brazil,id=='27')
 panthera28=subset(Brazil,id=='28')
 panthera29=subset(Brazil,id=='29')
@@ -5117,8 +5092,8 @@ ggmap(m)+geom_path(data=panthera27,aes(x=x,y=y),colour = "white")+geom_path(data
 plot(Panthera2$individual.local.identifier..ID.~Panthera2$date,xlab = "Sampling period",ylab = "Individuals ID Number")
 
 ###Rio Negro - Pantanal Brazil
-animals <- as(move.data,'data.frame')
-Brazil=subset(animals,country=='Brazil')
+jaguar_df <- as(move.data,'data.frame')
+Brazil=subset(jaguar_df,country=='Brazil')
 rionegro101=subset(Brazil,id=='101')
 rionegro102=subset(Brazil,id=='102')
 rionegro103=subset(Brazil,id=='103')
@@ -5132,8 +5107,8 @@ plot(RioNegro$individual.local.identifier..ID.~RioNegro$date,xlab = "Sampling pe
 
 
 ###Sao Bento - Pantanal Brazil
-animals <- as(move.data,'data.frame')
-Brazil=subset(animals,country=='Brazil')
+jaguar_df <- as(move.data,'data.frame')
+Brazil=subset(jaguar_df,country=='Brazil')
 
 saobento105=subset(Brazil,id=='105')
 saobento106=subset(Brazil,id=='106')
@@ -5163,8 +5138,8 @@ plot(BrPantanal$individual.local.identifier..ID.~BrPantanal$date,xlab = "Samplin
 
 ###################################################################################################
    ### Greater Lacandona Ecosystem(Mex)   44 to 48
-animals <- as(move.data,'data.frame')
-Mexico=subset(animals,country=='Mexico')
+jaguar_df <- as(move.data,'data.frame')
+Mexico=subset(jaguar_df,country=='Mexico')
 glMex44=subset(Mexico,id=='44')
 glMex45=subset(Mexico,id=='45')
 glMex46=subset(Mexico,id=='46')
@@ -5188,8 +5163,8 @@ ggmap(m)+geom_path(data=X49_df,aes(x=x, y=y),colour = "red") #plot the map and t
 plot(X49_df$individual.local.identifier..ID.~X49_df $date,xlab = "Sampling period",ylab = "Individuals ID Number")
 
 ####################### Mexico Sonora #################
-animals <- as(move.data,'data.frame')
-Mexico=subset(animals,country=='Mexico')
+jaguar_df <- as(move.data,'data.frame')
+Mexico=subset(jaguar_df,country=='Mexico')
 Sonora43=subset(Mexico,id=='43')
 Sonora64=subset(Mexico,id=='64')
 Sonora=rbind(Sonora43,Sonora64)
@@ -5198,8 +5173,8 @@ ggmap(m)+geom_path(data=Sonora64,aes(x=x,y=y),colour = "orange")+geom_path(data=
 plot(Sonora$individual.local.identifier..ID.~Sonora$date,xlab = "Sampling period",ylab = "Individuals ID Number")
 
 ####################### Mexico East & Greater Lacandona#################
-animals <- as(move.data,'data.frame')
-Mexico=subset(animals,country=='Mexico')
+jaguar_df <- as(move.data,'data.frame')
+Mexico=subset(jaguar_df,country=='Mexico')
 EastMex49=subset(Mexico,id=='49')
 ## Mexico East & Greater Lacandona ##
 GL_e_EMex=rbind(glMex44,glMex45,glMex46,glMex47,glMex48,EastMex49)
