@@ -72,6 +72,11 @@ str(date.time)
 # Date/Time as POSIXct object
 mov.data.org$timestamp.posix <- as.POSIXct(date.time, 
                                            format = "%m/%d/%Y %H:%M", tz = 'GMT')
+
+# We need to adjust this POSIXct object to local time
+# Example: 
+# mov.data.org$timestamp.posix - 3*60*60 # here we need to load the local time for each individual
+
 str(mov.data.org)
 
 #-----------------------------
