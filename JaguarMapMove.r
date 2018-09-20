@@ -13,7 +13,7 @@ install.load::install_load("ggmap","maptools",'move',"circular","RCurl","dplyr",
 ### The require() can be used inside functions as it gives a warning message and returns a logical value. 
 ### FALSE if the requested package is not found and TRUE if the package is loaded.###(Movement data should be checked and cleaned (for outliers, duplicated timestamps, etc)first!!! 
 ### Load and adjust the data (already cleaned) and create a dataframe object
-mov.data.org <- read.delim(file="c:/RWorkDir/jaguardatapaper/mov.data.org.txt")
+#mov.data.org <- read.delim(file="c:/RWorkDir/jaguardatapaper/mov.data.org.txt") ## comentted because it is a local path
 mov.data.org <- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:tag.local.identifier))
 str(mov.data.org)
 
