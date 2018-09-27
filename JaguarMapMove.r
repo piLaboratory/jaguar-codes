@@ -16,7 +16,7 @@ install.load::install_load("ggmap","maptools",'move',"circular","RCurl","dplyr",
 #mov.data.org <- read.delim(file="c:/RWorkDir/jaguardatapaper/mov.data.org.txt") ## comentted because it is a local path
 mov.data.org <- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:tag.local.identifier))
 str(mov.data.org)
-summary(mov.data.org)
+## summary(mov.data.org)
 
 # Add Individual info ## Commented because is not generic!!!
 #info <- read.delim(file="c:/RWorkDir/jaguardatapaper/info.txt") ### preparation to merge deleted
