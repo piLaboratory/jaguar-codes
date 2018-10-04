@@ -72,12 +72,19 @@ str(date.time)
 # Date/Time as POSIXct object
 mov.data.org$timestamp.posix <- as.POSIXct(date.time, 
                                            format = "%m/%d/%Y %H:%M", tz = 'GMT')
-
-# We need to adjust this POSIXct object to local time
-# Example: 
-# mov.data.org$timestamp.posix - 3*60*60 # here we need to load the local time for each individual
-
+										   
 str(mov.data.org)
+
+##################################################################################################
+###  Get local time!!!
+
+# I included a column to represent the local timezone (already with the - signal) to them multiply the timestamp and get the difference:
+mov.data.org$local_time <- mov.data.org$timestamp.posix + mov.data.org$timezone*60*60
+mov.data.org$timestamp.posix.GMT <- mov.data.org$timestamp.posix
+mov.data.org$timestamp.posix <- mov.data.org$local_time ### If we do that all the (timestamp.posix)'s calculations will be based on local time
+str(mov.data.org)
+################################################################
+
 
 #-----------------------------
 # Distribution of fix rates
