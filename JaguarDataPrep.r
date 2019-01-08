@@ -3,23 +3,25 @@
 #############################################################################################################################						
 ### Alan E. de Barros/ adapted from Bernardo Niebuhr data preparation, Luca Borger lectures and amt John Fieberg's scripts (from MoveBank) 																	  
 rm(list= ls())                                                  ### For a fresh start
-setwd("C:/RWorkDir/jaguardatapaper")                            ### Set directory
-###########################################################################################################         																					
+## setwd("C:/RWorkDir/jaguardatapaper")                            ### Set directory ## NOT GENERIC
+###########################################################################################################
+source("DataPrepFunctions.R")
+
 ## Load packages
 if(!require(install.load)) install.packages('install.load'); library(install.load)
 install.load::install_load("ggmap","maptools",'move',"circular","RCurl","dplyr","readr","caTools","adehabitatLT","rgl",
 "lubridate","raster","amt","tibble","knitr","leaflet","ezknitr","lattice","rgdal","sp")
 
 ### Load and adjust the data and create a dataframe object
-mov.data.org <- read.delim(file="c:/RWorkDir/jaguardatapaper/mov.data.org.txt")
+mov.data.org <- read.delim(file="data/mov.data.org.txt")
 
 mov.data.org <- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:tag.local.identifier))
-str(mov.data.org)
+## str(mov.data.org)
 
 # Add Individual info
-info <- read.delim(file="c:/RWorkDir/jaguardatapaper/info.txt")
+info <- read.delim(file="data/info.txt")
 
-#ind.info <- read.delim(file="c:/RWorkDir/jaguardatapaper/Jaguar_additional information.txt")
+#ind.info <- read.delim(file="data/Jaguar_additional information.txt")
 #info <- ind.info %>%
 #   dplyr::select(ID, Sex, Estimated.Age, Weight, Collar.Type, Collar.Brand, Planned.Schedule)
 #info <- info %>% rename(individual.local.identifier..ID.=ID)
@@ -30,7 +32,7 @@ info <- read.delim(file="c:/RWorkDir/jaguardatapaper/info.txt")
 #info <- info %>% rename(brand=Collar.Brand)
 #info <- info %>% rename(schedule=Planned.Schedule)
 ### Movement Parameters (ctmm)
-#movpar <- read.delim(file="c:/RWorkDir/jaguardatapaper/movementparameters.txt")
+#movpar <- read.delim(file="data/movementparameters.txt")
 #str(movpar)
 #movpar = movpar[-118,]   # there were an extra row of NA so I deleted that
 #movpar <- movpar %>%
@@ -40,42 +42,30 @@ info <- read.delim(file="c:/RWorkDir/jaguardatapaper/info.txt")
 #Merge movpar with id info and save txt
 #info <- merge(info,movpar)   
 #info <- info[with(info,order(individual.local.identifier..ID.)),]
-#write.table(info,file="c:/RWorkDir/jaguardatapaper/info.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(info,file="data/info.txt",row.names = F,quote=F,col.names=T,sep="\t")
 
 #Merge movement with individual info/parameters
 merged<- merge(mov.data.org,info)
 mov.data.org <- merged 
-str(mov.data.org)
-#write.table(info,file="c:/RWorkDir/jaguardatapaper/mov.data.org.txt",row.names = F,quote=F,col.names=T,sep="\t")
+## str(mov.data.org)
+#write.table(info,file="data/mov.data.org.txt",row.names = F,quote=F,col.names=T,sep="\t")
 ####################################################
 
 ### Organize data
 #mov.data.org 
 
-# Add 2000 to years
-get.year <- function(time.stamp) {
-  init <- gregexpr('/', time.stamp, fixed = T)[[1]][2] + 1
-  end <- gregexpr(' ', time.stamp, fixed = T)[[1]][1] - 1
-  substr(time.stamp, init, end)
-}
 
 # Test
-get.year(time.stamp = mov.data.org$timestamp[10000])
+##get.year(time.stamp = mov.data.org$timestamp[10000])
 # All individuals
 year <- as.numeric(sapply(mov.data.org$timestamp, get.year))
-table(year)
+##table(year)
 
 # Add 1900/2000
 new.year <- as.character(ifelse(year > 50, year + 1900, year + 2000))
-table(new.year)
+##table(new.year)
 
-# New dates
-set.year <- function(time.stamp, year) {
-  init <- gregexpr('/', time.stamp, fixed = T)[[1]][2]
-  end <- gregexpr(' ', time.stamp, fixed = T)[[1]][1]
-  paste(substr(time.stamp, 1, init), year,
-        substr(time.stamp, end, nchar(time.stamp)), sep = "")
-}
+
 
 
 # Test
@@ -83,19 +73,19 @@ set.year(time.stamp = as.character(mov.data.org$timestamp[10000]), year = '2013'
 # All individuals
 date.time <- as.character(mapply(set.year, as.character(mov.data.org$timestamp),
                                  new.year))
-str(date.time)
+##str(date.time)
 #date.time
 #########################################################
 
 # All individuals
 date.time <- as.character(mapply(set.year, as.character(mov.data.org$timestamp),
                                  new.year))
-str(date.time)
+##str(date.time)
 #date.time
 # Date/Time as POSIXct object
 mov.data.org$timestamp.posix <- as.POSIXct(date.time, 
                                            format = "%m/%d/%Y %H:%M", tz = 'GMT')
-str(mov.data.org)
+##str(mov.data.org)
 
 ##################################################################################################
 ###  Get local time!!!
@@ -104,7 +94,7 @@ str(mov.data.org)
 mov.data.org$local_time <- mov.data.org$timestamp.posix + mov.data.org$timezone*60*60
 mov.data.org$timestamp.posix.GMT <- mov.data.org$timestamp.posix
 mov.data.org$timestamp.posix <- mov.data.org$local_time ### If we do that all the (timestamp.posix)'s calculations will be based on local time
-str(mov.data.org)
+##str(mov.data.org)
 
 ################################################################
 ## adehabitatLT
@@ -127,11 +117,11 @@ move.data <- move(x = mov.traj.df$x, y = mov.traj.df$y,
                   proj = CRS('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'),
                   data = mov.traj.df, animal = mov.traj.df$id, sensor = 'GPS')
 move.data  ### moveStack
-summary(move.data)
+##summary(move.data)
 
 ###Separate individual animals' trajectories 
 unstacked <- split(move.data)
-head(unstacked)
+##head(unstacked)
 jaguar_df <- as(move.data, "data.frame")
 #id <- as.integer(levels(jaguar_df$id))[jaguar_df$id]
 age <- as.numeric(levels(jaguar_df$age))[jaguar_df$age]
@@ -157,8 +147,8 @@ ifelse(jaguar_df$hour==23,"night",ifelse(jaguar_df$hour==0,"night",ifelse(jaguar
 ifelse(jaguar_df$hour==3,"night",ifelse(jaguar_df$hour==4,"night","riseset"))))))))))))))))))))
 
 
-head(jaguar_df)
-str(jaguar_df)
+##head(jaguar_df)
+##str(jaguar_df)
 
 #########################################################################################################							   							   									  
 #' ######################## More Data checking and cleaning ##########################################
@@ -175,7 +165,7 @@ all.equal(jaguar_df,jaguar_ord)
 #' Check for duplicated observations (ones with same lat, long, timestamp,
 #'  and individual identifier). No duplicate observations in this data set
 ind2<-jaguar_df %>% select("date","x","y","id") %>% duplicated
-sum(ind2) # no duplicates
+##sum(ind2) # no duplicates
 jaguar_df<-jaguar_df[ind2!=TRUE,]
 ### or duplicatedLocs <- which(jaguar_df$date[1:(nrow(jaguar_df)-1)] == jaguar_df$date[2:(nrow(jaguar_df))])
 
@@ -183,11 +173,11 @@ jaguar_df<-jaguar_df[ind2!=TRUE,]
 ### Further removals can be done later if required
 excludes <- filter(jaguar_df, dt < 1200)
 ### see excludeds based on id
-table(select(excludes, id))             
+##table(select(excludes, id))             
 removed<- anti_join(jaguar_df, excludes)   ### test if were all removed
-filter(removed, dt < 1200)
+##filter(removed, dt < 1200)
 jaguar_df <- removed 
-str(jaguar_df)
+##str(jaguar_df)
 
 ## Cleaning up columns which will be in excess due to repetition of analysis ########################################################################
 jaguar_df$dx <- NULL
@@ -211,110 +201,118 @@ jaguar_df$collar_type <- NULL
 jaguar_df$brand <- NULL
 jaguar_df$local_time <- NULL
 #jaguar_df$timezone <- NULL
-head(jaguar_df) 
-str(jaguar_df)
+##head(jaguar_df) 
+##str(jaguar_df)
 
-#write.table(jaguar_df,file="c:/RWorkDir/jaguardatapaper/jaguar_df.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#jaguar_df <- read.delim(file="c:/RWorkDir/jaguardatapaper/jaguar_df.txt")
+#write.table(jaguar_df,file="data/jaguar_df.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#jaguar_df <- read.delim(file="data/jaguar_df.txt")
 
 ###############################################################################################################################
 ###  Add UTMs  #################
 ###############################################################################################################################
 ### Looking at project regions and grouping then when they occur within the same UTM zone
 
-table(jaguar_df$project_region)
+##table(jaguar_df$project_region)
 
 ###############################################################################################################################
                                ###  ATLANTIC FOREST WEST  ###    (Project regions 1 and 2)
 ###############################################################################################################################
+### Old code that is repeated ###
 ### # 1) Atlantic Forest W1 
 AFW1=subset(jaguar_df,project_region=='Atlantic Forest W1')
-head(AFW1)
-str(AFW1)
-table(AFW1$id)
+## head(AFW1)
+## str(AFW1)
+## table(AFW1$id)
 ft=ftable(AFW1$id)
 f<-as.data.frame.table(ft)
 f$Var1 <- NULL
 f$Var2 <- NULL
-subset(f,Freq>0)
-range(AFW1$x);range(AFW1$y) 
+##subset(f,Freq>0)
+##range(AFW1$x);range(AFW1$y) 
 coord.latlong = SpatialPoints(cbind(AFW1$x,AFW1$y), proj4string = CRS("+proj=longlat +datum=WGS84"))
-coord.latlong
+##coord.latlong
 # Transforming coordinate to UTM 
 coord.UTM <- spTransform(coord.latlong , CRS("+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs"))
-coord.UTM
+##coord.UTM
 coord.latlong.df <- as.data.frame(coord.latlong)
 coord.utm.df <- as.data.frame(coord.UTM)
-head(coord.latlong.df)
-head(coord.utm.df)
-par(mfrow = c(1, 2))
-plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
-plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
+## head(coord.latlong.df)
+## head(coord.utm.df)
+## par(mfrow = c(1, 2))
+## plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
+## plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
 locsj_matx=cbind(coordinates(coord.UTM), coordinates(coord.latlong))
 locsj_df<- as.data.frame(locsj_matx)
-head(locsj_df)
-head(AFW1)
+##head(locsj_df)
+##head(AFW1)
 point.names<-c("utm_x","utm_y","long_x","lat_y")
 colnames(locsj_df)<-point.names
-head(locsj_df)
+##head(locsj_df)
 
 AFW1=cbind(AFW1, locsj_df)
-head(AFW1); str(AFW1)
-#write.table(AFW1,file="c:/RWorkDir/jaguardatapaper/AFW1.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#AFW1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/AFW1.txt")
-head(AFW1); str(AFW1)
+##head(AFW1); str(AFW1)
+#write.table(AFW1,file="data/AFW1.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#AFW1 <- read.delim(file="data/AFW1.txt")
+##head(AFW1); str(AFW1)
+
+## New code with function to avoid repetition of commands ##
+
+AFW1 <- crs.convert(data = subset(jaguar_df,project_region=='Atlantic Forest W1'),
+                    crs.input = "+proj=longlat +datum=WGS84",
+                    crs.output = "+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs",
+                    point.lab = c("utm_x", "utm_y", "lat_x", "lat_y") )
 
 #############################################
 ### # 2) Atlantic Forest W2
 AFW2=subset(jaguar_df,project_region=='Atlantic Forest W2')
-head(AFW2)
-str(AFW2)
-table(AFW2$id)
+## head(AFW2)
+## str(AFW2)
+## table(AFW2$id)
 ft=ftable(AFW2$id)
 f<-as.data.frame.table(ft)
 f$Var1 <- NULL
 f$Var2 <- NULL
-subset(f,Freq>0)
-range(AFW2$x);range(AFW2$y) 
+##subset(f,Freq>0)
+##range(AFW2$x);range(AFW2$y) 
 coord.latlong = SpatialPoints(cbind(AFW2$x,AFW2$y), proj4string = CRS("+proj=longlat +datum=WGS84"))
-coord.latlong
+##coord.latlong
 # Transforming coordinate to UTM 
 coord.UTM <- spTransform(coord.latlong , CRS("+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs"))
-coord.UTM
+##coord.UTM
 coord.latlong.df <- as.data.frame(coord.latlong)
 coord.utm.df <- as.data.frame(coord.UTM)
-head(coord.latlong.df)
-head(coord.utm.df)
-par(mfrow = c(1, 2))
-plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
-plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
+## head(coord.latlong.df)
+## head(coord.utm.df)
+## par(mfrow = c(1, 2))
+## plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
+## plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
 locsj_matx=cbind(coordinates(coord.UTM), coordinates(coord.latlong))
 locsj_df<- as.data.frame(locsj_matx)
-head(locsj_df)
-head(AFW2)
+## head(locsj_df)
+## head(AFW2)
 point.names<-c("utm_x","utm_y","long_x","lat_y")
 colnames(locsj_df)<-point.names
-head(locsj_df)
+##head(locsj_df)
 
 AFW2=cbind(AFW2, locsj_df)
-head(AFW2)
+##head(AFW2)
 
-#write.table(AFW2,file="c:/RWorkDir/jaguardatapaper/AFW2.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#AFW1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/AFW1.txt")
-head(AFW2); str(AFW2)
+#write.table(AFW2,file="data/AFW2.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#AFW1 <- read.delim(file="data/AFW1.txt")
+##head(AFW2); str(AFW2)
 
 
 AFW=rbind(AFW1,AFW2)
-head(AFW)
+##head(AFW)
 ft=ftable(AFW$id)
 f<-as.data.frame.table(ft)
 f$Var1 <- NULL
 f$Var2 <- NULL
-subset(f,Freq>0)
+##subset(f,Freq>0)
 
-write.table(AFW,file="c:/RWorkDir/jaguardatapaper/AFW.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#AFW <- read.delim(file="c:/RWorkDir/jaguardatapaper/AFW.txt")
-head(AFW); str(AFW)
+write.table(AFW,file="data/AFW.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#AFW <- read.delim(file="data/AFW.txt")
+##head(AFW); str(AFW)
 
 ###############################################################################################################################
                                     ###  CAATINGA  ###  
@@ -322,39 +320,39 @@ head(AFW); str(AFW)
 ### # 3) Caatinga
 
 Caatinga=subset(jaguar_df,project_region=='Caatinga')
-head(Caatinga)
-str(Caatinga)
-table(Caatinga$id)
+##head(Caatinga)
+##str(Caatinga)
+##table(Caatinga$id)
 ft=ftable(Caatinga$id)
 f<-as.data.frame.table(ft)
 f$Var1 <- NULL
 f$Var2 <- NULL
-subset(f,Freq>0)
-range(Caatinga$x);range(Caatinga$y) 
+## subset(f,Freq>0)
+## range(Caatinga$x);range(Caatinga$y) 
 coord.latlong = SpatialPoints(cbind(Caatinga$x,Caatinga$y), proj4string = CRS("+proj=longlat +datum=WGS84"))
-coord.latlong
+##coord.latlong
 # Transforming coordinate to UTM 
 coord.UTM <- spTransform(coord.latlong , CRS("+proj=utm +zone=23L +south +datum=WGS84 +units=m +no_defs"))
-coord.UTM
+##coord.UTM
 coord.latlong.df <- as.data.frame(coord.latlong)
 coord.utm.df <- as.data.frame(coord.UTM)
-head(coord.latlong.df)
-head(coord.utm.df)
-par(mfrow = c(1, 2))
-plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
-plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
+## head(coord.latlong.df)
+## head(coord.utm.df)
+## par(mfrow = c(1, 2))
+## plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
+## plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
 locsj_matx=cbind(coordinates(coord.UTM ), coordinates(coord.latlong))
 locsj_df<- as.data.frame(locsj_matx)
-head(locsj_df)
-head(Caatinga)
+##head(locsj_df)
+##head(Caatinga)
 point.names<-c("utm_x","utm_y","long_x","lat_y")
 colnames(locsj_df)<-point.names
-head(locsj_df)
+##head(locsj_df)
 
 Caatinga=cbind(Caatinga, locsj_df)
-head(Caatinga); str(Caatinga)
-write.table(Caatinga,file="c:/RWorkDir/jaguardatapaper/Caatinga.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Caatinga <- read.delim(file="c:/RWorkDir/jaguardatapaper/Caatinga.txt")
+##head(Caatinga); str(Caatinga)
+write.table(Caatinga,file="data/Caatinga.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Caatinga <- read.delim(file="data/Caatinga.txt")
 
 ###############################################################################################################################
                                     ###  CERRADO   ###    2 Projects (4 and 5)
@@ -362,40 +360,40 @@ write.table(Caatinga,file="c:/RWorkDir/jaguardatapaper/Caatinga.txt",row.names =
 ### # 4)  Cerrado1
 
 Cerrado1=subset(jaguar_df,project_region=='Cerrado1')
-head(Cerrado1)
-str(Cerrado1)
-table(Cerrado1$id)
+## head(Cerrado1)
+## str(Cerrado1)
+## table(Cerrado1$id)
 ft=ftable(Cerrado1$id)
 f<-as.data.frame.table(ft)
 f$Var1 <- NULL
 f$Var2 <- NULL
-subset(f,Freq>0)
-range(Cerrado1$x);range(Cerrado1$y) 
+## subset(f,Freq>0)
+## range(Cerrado1$x);range(Cerrado1$y) 
 coord.latlong = SpatialPoints(cbind(Cerrado1$x,Cerrado1$y), proj4string = CRS("+proj=longlat +datum=WGS84"))
 coord.latlong
 # Transforming coordinate to UTM 
 coord.UTM <- spTransform(coord.latlong , CRS("+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs"))
-coord.UTM
+##coord.UTM
 coord.latlong.df <- as.data.frame(coord.latlong)
 coord.utm.df <- as.data.frame(coord.UTM)
-head(coord.latlong.df)
-head(coord.utm.df)
-par(mfrow = c(1, 2))
-plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
-plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
+## head(coord.latlong.df)
+## head(coord.utm.df)
+## par(mfrow = c(1, 2))
+## plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
+## plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
 locsj_matx=cbind(coordinates(coord.UTM ), coordinates(coord.latlong))
 locsj_df<- as.data.frame(locsj_matx)
-head(locsj_df)
-head(Cerrado1)
+##head(locsj_df)
+##head(Cerrado1)
 point.names<-c("utm_x","utm_y","long_x","lat_y")
 colnames(locsj_df)<-point.names
-head(locsj_df)
+##head(locsj_df)
 
 Cerrado1=cbind(Cerrado1, locsj_df)
-head(Cerrado1)
-write.table(Cerrado1,file="c:/RWorkDir/jaguardatapaper/Cerrado1.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Cerrado1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Cerrado1.txt")
-head(Cerrado1); str(Cerrado1)
+##head(Cerrado1)
+write.table(Cerrado1,file="data/Cerrado1.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Cerrado1 <- read.delim(file="data/Cerrado1.txt")
+##head(Cerrado1); str(Cerrado1)
 
 
 ###############################################################################################################################
@@ -403,52 +401,52 @@ head(Cerrado1); str(Cerrado1)
 ###############################################################################################################################
 Cerrado2=subset(jaguar_df,project_region=='Cerrado2')
 #jfl89=subset(jaguar_df,id=='89')  # This animal occurs in 2 UTM zones 22K (40%) and 22L (60%)
-head(Cerrado2)
-str(Cerrado2)
-table(Cerrado2$id)
+## head(Cerrado2)
+## str(Cerrado2)
+## table(Cerrado2$id)
 ft=ftable(Cerrado2$id)
 f<-as.data.frame.table(ft)
 f$Var1 <- NULL
 f$Var2 <- NULL
-subset(f,Freq>0)
-range(Cerrado2$x);range(Cerrado2$y) 
+##subset(f,Freq>0)
+##range(Cerrado2$x);range(Cerrado2$y) 
 coord.latlong = SpatialPoints(cbind(Cerrado2$x,Cerrado2$y), proj4string = CRS("+proj=longlat +datum=WGS84"))
-coord.latlong
+##coord.latlong
 # Transforming coordinate to UTM 
 coord.UTM <- spTransform(coord.latlong , CRS("+proj=utm +zone=22L +south +datum=WGS84 +units=m +no_defs"))
-coord.UTM
+##coord.UTM
 coord.latlong.df <- as.data.frame(coord.latlong)
 coord.utm.df <- as.data.frame(coord.UTM)
-head(coord.latlong.df)
-head(coord.utm.df)
-par(mfrow = c(1, 2))
-plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
-plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
+## head(coord.latlong.df)
+## head(coord.utm.df)
+## par(mfrow = c(1, 2))
+## plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
+## plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
 locsj_matx=cbind(coordinates(coord.UTM ), coordinates(coord.latlong))
 locsj_df<- as.data.frame(locsj_matx)
-head(locsj_df)
-head(Cerrado2)
+## head(locsj_df)
+## head(Cerrado2)
 point.names<-c("utm_x","utm_y","long_x","lat_y")
 colnames(locsj_df)<-point.names
-head(locsj_df)
+##head(locsj_df)
 
 Cerrado2=cbind(Cerrado2, locsj_df)
-head(Cerrado2)
-write.table(Cerrado2,file="c:/RWorkDir/jaguardatapaper/Cerrado2.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Cerrado2 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Cerrado2.txt")
-head(Cerrado2); str(Cerrado2)
+##head(Cerrado2)
+write.table(Cerrado2,file="data/Cerrado2.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Cerrado2 <- read.delim(file="data/Cerrado2.txt")
+##head(Cerrado2); str(Cerrado2)
 
 
 Cerrado=rbind(Cerrado1,Cerrado2)
-head(Cerrado)
+##head(Cerrado)
 ft=ftable(Cerrado$id)
 f<-as.data.frame.table(ft)
 f$Var1 <- NULL
 f$Var2 <- NULL
-subset(f,Freq>0)
+##subset(f,Freq>0)
 
-write.table(Cerrado,file="c:/RWorkDir/jaguardatapaper/Cerrado.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Cerrado <- read.delim(file="c:/RWorkDir/jaguardatapaper/Cerrado.txt")
+write.table(Cerrado,file="data/Cerrado.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Cerrado <- read.delim(file="data/Cerrado.txt")
 
 ###############################################################################################################################
                                     ###  COSTA RICA  ### 
@@ -456,40 +454,40 @@ write.table(Cerrado,file="c:/RWorkDir/jaguardatapaper/Cerrado.txt",row.names = F
 ### # 6) Costa Rica
 
 CRica=subset(jaguar_df,project_region=='Costa Rica')
-head(CRica)
-str(CRica)
-table(CRica$id)
+##head(CRica)
+##str(CRica)
+##table(CRica$id)
 ft=ftable(CRica$id)
 f<-as.data.frame.table(ft)
 f$Var1 <- NULL
 f$Var2 <- NULL
-subset(f,Freq>0)
-range(CRica$x);range(CRica$y) 
+## subset(f,Freq>0)
+## range(CRica$x);range(CRica$y) 
 coord.latlong = SpatialPoints(cbind(CRica$x,CRica$y), proj4string = CRS("+proj=longlat +datum=WGS84"))
-coord.latlong
+##coord.latlong
 # Transforming coordinate to UTM 
 coord.UTM <- spTransform(coord.latlong , CRS("+proj=utm +zone=16P +north +datum=WGS84 +units=m +no_defs"))
-coord.UTM
+##coord.UTM
 coord.latlong.df <- as.data.frame(coord.latlong)
 coord.utm.df <- as.data.frame(coord.UTM)
-head(coord.latlong.df)
-head(coord.utm.df)
-par(mfrow = c(1, 2))
-plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
-plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
+## head(coord.latlong.df)
+## head(coord.utm.df)
+## par(mfrow = c(1, 2))
+## plot(coord.latlong.df, axes = TRUE, main = "Lat-Long Coordinates", cex.axis = 0.95)
+## plot(coord.utm.df, axes = TRUE, main = "UTM Coordinates", col = "red", cex.axis = 0.95)
 locsj_matx=cbind(coordinates(coord.UTM ), coordinates(coord.latlong))
 locsj_df<- as.data.frame(locsj_matx)
-head(locsj_df)
-head(CRica)
+##head(locsj_df)
+##head(CRica)
 point.names<-c("utm_x","utm_y","long_x","lat_y")
 colnames(locsj_df)<-point.names
-head(locsj_df)
+##head(locsj_df)
 
 CRica=cbind(CRica, locsj_df)
-head(CRica)
+##head(CRica)
 
-write.table(CRica,file="c:/RWorkDir/jaguardatapaper/CRica.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#CRica<- read.delim(file="c:/RWorkDir/jaguardatapaper/CRica.txt")
+write.table(CRica,file="data/CRica.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#CRica<- read.delim(file="data/CRica.txt")
 
 ###############################################################################################################################
                                     ###   DRY CHACO  ###   
@@ -550,8 +548,8 @@ f<-as.data.frame.table(ft)
 f$Var1 <- NULL
 f$Var2 <- NULL
 subset(f,Freq>0)
-write.table(Drych1,file="c:/RWorkDir/jaguardatapaper/Drych1.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Drych1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Drych1.txt")
+write.table(Drych1,file="data/Drych1.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Drych1 <- read.delim(file="data/Drych1.txt")
 head(Drych1); str(Drych1)
 
 
@@ -583,8 +581,8 @@ f<-as.data.frame.table(ft)
 f$Var1 <- NULL
 f$Var2 <- NULL
 subset(f,Freq>0)
-write.table(Drych2,file="c:/RWorkDir/jaguardatapaper/Drych2.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Drych2 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Drych2.txt")
+write.table(Drych2,file="data/Drych2.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Drych2 <- read.delim(file="data/Drych2.txt")
 head(Drych2); str(Drych2)
 
 
@@ -596,8 +594,8 @@ f$Var1 <- NULL
 f$Var2 <- NULL
 subset(f,Freq>0)
 str(Drych)
-#write.table(Drych,file="c:/RWorkDir/jaguardatapaper/Drych.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Drych <- read.delim(file="c:/RWorkDir/jaguardatapaper/Drych.txt")
+#write.table(Drych,file="data/Drych.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Drych <- read.delim(file="data/Drych.txt")
 ###############################################################################################################################
                                  ###    HUMID CHACO  ###
 ###############################################################################################################################
@@ -632,8 +630,8 @@ point.names<-c("utm_x","utm_y","long_x","lat_y")
 colnames(locsj_df)<-point.names
 head(locsj_df)
 
-write.table(Hch,file="c:/RWorkDir/jaguardatapaper/Hch.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Hch <- read.delim(file="c:/RWorkDir/jaguardatapaper/Hch.txt")
+write.table(Hch,file="data/Hch.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Hch <- read.delim(file="data/Hch.txt")
 Hch=cbind(Hch, locsj_df)
 head(Hch); str(Hch)
 
@@ -673,8 +671,8 @@ head(locsj_df)
 
 FPy=cbind(FPy, locsj_df)
 
-write.table(FPy,file="c:/RWorkDir/jaguardatapaper/FPy.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#FPy <- read.delim(file="c:/RWorkDir/jaguardatapaper/FPy.txt")
+write.table(FPy,file="data/FPy.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#FPy <- read.delim(file="data/FPy.txt")
 head(FPy); str(FPy)
 
 ###############################################################################################################################
@@ -732,8 +730,8 @@ f$Var1 <- NULL
 f$Var2 <- NULL
 subset(f,Freq>0)
 
-write.table(Iguazu1,file="c:/RWorkDir/jaguardatapaper/Iguazu1.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Iguazu1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Iguazu1.txt")
+write.table(Iguazu1,file="data/Iguazu1.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Iguazu1 <- read.delim(file="data/Iguazu1.txt")
 head(Iguazu1); str(Iguazu1)
 
 
@@ -765,8 +763,8 @@ f$Var1 <- NULL
 f$Var2 <- NULL
 subset(f,Freq>0)
 
-write.table(Iguazu2,file="c:/RWorkDir/jaguardatapaper/Iguazu2.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Iguazu2 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Iguazu2.txt")
+write.table(Iguazu2,file="data/Iguazu2.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Iguazu2 <- read.delim(file="data/Iguazu2.txt")
 head(Iguazu2); str(Iguazu2)
 
 
@@ -778,8 +776,8 @@ f$Var1 <- NULL
 f$Var2 <- NULL
 subset(f,Freq>0)
 
-write.table(Iguazu,file="c:/RWorkDir/jaguardatapaper/Iguazu.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Iguazu <- read.delim(file="c:/RWorkDir/jaguardatapaper/Iguazu.txt")
+write.table(Iguazu,file="data/Iguazu.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Iguazu <- read.delim(file="data/Iguazu.txt")
 str(Iguazu)
 
 ###################################################################################################################################
@@ -818,8 +816,8 @@ colnames(locsj_df)<-point.names
 head(locsj_df)
 
 Mamiraua=cbind(Mamiraua, locsj_df)
-write.table(Mamiraua,file="c:/RWorkDir/jaguardatapaper/Mamiraua.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Mamiraua <- read.delim(file="c:/RWorkDir/jaguardatapaper/Mamiraua.txt")
+write.table(Mamiraua,file="data/Mamiraua.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Mamiraua <- read.delim(file="data/Mamiraua.txt")
 head(Mamiraua); str(Mamiraua)
 
 ##########################################   Dry Amazonia, PA, translocated ################################################### 
@@ -856,8 +854,8 @@ colnames(locsj_df)<-point.names
 head(locsj_df)
 
 iopPA=cbind(iopPA, locsj_df)
-write.table(iopPA,file="c:/RWorkDir/jaguardatapaper/iopPA.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#iopPA <- read.delim(file="c:/RWorkDir/jaguardatapaper/iopPA.txt")
+write.table(iopPA,file="data/iopPA.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#iopPA <- read.delim(file="data/iopPA.txt")
 head(iopPA); str(iopPA)
 
 ###################################################################################################################################
@@ -896,8 +894,8 @@ point.names<-c("utm_x","utm_y","long_x","lat_y")
 colnames(locsj_df)<-point.names
 head(locsj_df)
 Lacandona=cbind(Lacandona, locsj_df)
-write.table(Lacandona,file="c:/RWorkDir/jaguardatapaper/Lacandona.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Lacandona <- read.delim(file="c:/RWorkDir/jaguardatapaper/Lacandona.txt")
+write.table(Lacandona,file="data/Lacandona.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Lacandona <- read.delim(file="data/Lacandona.txt")
 head(Lacandona); str(Lacandona)
 
 #####   Mexico East # 16)  ####################################################################################################   
@@ -932,8 +930,8 @@ point.names<-c("utm_x","utm_y","long_x","lat_y")
 colnames(locsj_df)<-point.names
 head(locsj_df)
 MexEast=cbind(MexEast, locsj_df)
-write.table(MexEast,file="c:/RWorkDir/jaguardatapaper/MexEast.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#MexEast <- read.delim(file="c:/RWorkDir/jaguardatapaper/MexEast.txt")
+write.table(MexEast,file="data/MexEast.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#MexEast <- read.delim(file="data/MexEast.txt")
 head(MexEast); str(MexEast)
 
 #####   Mexico Sonora    # 17)  ##################################################################################################
@@ -968,8 +966,8 @@ point.names<-c("utm_x","utm_y","long_x","lat_y")
 colnames(locsj_df)<-point.names
 head(locsj_df)
 Sonora=cbind(Sonora, locsj_df)
-write.table(Sonora,file="c:/RWorkDir/jaguardatapaper/Sonora.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Sonora <- read.delim(file="c:/RWorkDir/jaguardatapaper/Sonora.txt")
+write.table(Sonora,file="data/Sonora.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Sonora <- read.delim(file="data/Sonora.txt")
 head(Sonora); str(Sonora)
 
 #############  ###  Mexico ###
@@ -981,8 +979,8 @@ f$Var1 <- NULL
 f$Var2 <- NULL
 subset(f,Freq>0)
 head(Mex)
-write.table(Mex,file="c:/RWorkDir/jaguardatapaper/Mex.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Mex <- read.delim(file="c:/RWorkDir/jaguardatapaper/Mex.txt")
+write.table(Mex,file="data/Mex.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Mex <- read.delim(file="data/Mex.txt")
 
 ###############################################################################################################################
                                     ###   PANTANAL  ###  
@@ -1027,8 +1025,8 @@ head(locsj_df)
 Pantanal=cbind(Pantanal, locsj_df)
 head(Pantanal)
  
-write.table(Pantanal,file="c:/RWorkDir/jaguardatapaper/Pantanal.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#Pantanal <- read.delim(file="c:/RWorkDir/jaguardatapaper/Pantanal.txt")
+write.table(Pantanal,file="data/Pantanal.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#Pantanal <- read.delim(file="data/Pantanal.txt")
 
 #######################  Jaguar Dataframe with UTMs ########################################################################
 head(AFW1);head(AFW2),head(Caatinga);head(Cerrado1);head(Cerrado2);head(CRica);head(Pantanal);head(Drych1);str(Drych2);head(Hch);
@@ -1038,9 +1036,9 @@ jaguar=rbind(AFW1,AFW2,Caatinga,Cerrado1,Cerrado2,CRica,Pantanal,Drych1,Drych2,H
 #head(jaguar); str(jaguar)
 jaguar_df <- jaguar
 
-write.table(jaguar,file="c:/RWorkDir/jaguardatapaper/jaguar.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#write.table(jaguar_df,file="c:/RWorkDir/jaguardatapaper/jaguar_df.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#jaguar <- read.delim(file="c:/RWorkDir/jaguardatapaper/jaguar.txt")
+write.table(jaguar,file="data/jaguar.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#write.table(jaguar_df,file="data/jaguar_df.txt",row.names = F,quote=F,col.names=T,sep="\t")
+#jaguar <- read.delim(file="data/jaguar.txt")
 
 
 
@@ -1050,13 +1048,13 @@ write.table(jaguar,file="c:/RWorkDir/jaguardatapaper/jaguar.txt",row.names = F,q
  
                                ### ATLANTIC FOREST WEST  ###    (Project regions 1 and 2)
 
-#AFW <- read.delim(file="c:/RWorkDir/jaguardatapaper/AFW.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#AFW <- read.delim(file="data/AFW.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(AFW$age))[AFW$age]
 #weight <- as.numeric(levels(AFW$weight))[AFW$weight]
 #AFW$id <- as.factor(AFW$individual.local.identifier..ID.)  
 #AFW$age <- age   ### converted to number
 #AFW$weight <- weight   ### converted to number
-#AFW <- read.delim(file="c:/RWorkDir/jaguardatapaper/AFW.txt")
+#AFW <- read.delim(file="data/AFW.txt")
 #AFW$timestamp.posix <- as.character(AFW$timestamp.posix)
 #AFW$timestamp.posix<- as.POSIXct(AFW$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #AFW$date <- as.character(AFW$date)
@@ -1098,6 +1096,24 @@ class(trk)<-trk.class
 trk
       ###  Atlantic Forest West =>  AFWtrk   ####
 AFWtrk <-trk; AFWtrk
+
+## With the function (avoids repetition)
+AFWtrk <- trk.convert(data = AFW,
+                      .x=utm_x,
+                      .y=utm_y,
+                      .t=date,
+                      id=id,
+                      Event_ID=Event_ID,
+                      project_region=project_region,
+                      sex=sex,
+                      age=age,
+                      weight=weight, 
+                      status=status,
+                      period=period,
+                      long_x=long_x,
+                      lat_y=lat_y,
+                      crs = CRS("+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs"))
+
 ########################################
  AFWtrk=rbind(AFW1trk,AFW2trk); AFWtrk
    ### Objects for AFW project regions
@@ -1108,13 +1124,13 @@ AFWtrk <-trk; AFWtrk
                                       ###  CAATINGA  ###  
 ### # 3) Caatinga
 
-#Caatinga <- read.delim(file="c:/RWorkDir/jaguardatapaper/Caatinga.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Caatinga <- read.delim(file="data/Caatinga.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Caatinga$age))[Caatinga$age]
 #weight <- as.numeric(levels(Caatinga$weight))[Caatinga$weight]
 #Caatinga$id <- as.factor(Caatinga$individual.local.identifier..ID.)  
 #Caatinga$age <- age   ### converted to number
 #Caatinga$weight <- weight   ### converted to number
-#Caatinga <- read.delim(file="c:/RWorkDir/jaguardatapaper/Caatinga.txt")
+#Caatinga <- read.delim(file="data/Caatinga.txt")
 #Caatinga$timestamp.posix <- as.character(Caatinga$timestamp.posix)
 #Caatinga$timestamp.posix<- as.POSIXct(Caatinga$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Caatinga$date <- as.character(Caatinga$date)
@@ -1161,13 +1177,13 @@ Caatingatrk <-trk; Caatingatrk
                                ###  CERRADO   ###       (2 Projects: 4 and 5)
 									
 ### # 4)  Cerrado1
-#Cerrado1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Cerrado1.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Cerrado1 <- read.delim(file="data/Cerrado1.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Cerrado1$age))[Cerrado1$age]
 #weight <- as.numeric(levels(Cerrado1$weight))[Cerrado1$weight]
 #Cerrado1$id <- as.factor(Cerrado1$individual.local.identifier..ID.)  
 #Cerrado1$age <- age   ### converted to number
 #Cerrado1$weight <- weight   ### converted to number
-#Cerrado1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Cerrado1.txt")
+#Cerrado1 <- read.delim(file="data/Cerrado1.txt")
 #Cerrado1$timestamp.posix <- as.character(Cerrado1$timestamp.posix)
 #Cerrado1$timestamp.posix<- as.POSIXct(Cerrado1$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Cerrado1$date <- as.character(Cerrado1$date)
@@ -1212,13 +1228,13 @@ Cerrado1trk <-trk; Cerrado1trk
 
 ### # 5)   Cerrado2
 
-#Cerrado2 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Cerrado2.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Cerrado2 <- read.delim(file="data/Cerrado2.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Cerrado2$age))[Cerrado2$age]
 #weight <- as.numeric(levels(Cerrado2$weight))[Cerrado2$weight]
 #Cerrado2$id <- as.factor(Cerrado2$individual.local.identifier..ID.)  
 #Cerrado2$age <- age   ### converted to number
 #Cerrado2$weight <- weight   ### converted to number
-#Cerrado2 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Cerrado2.txt")
+#Cerrado2 <- read.delim(file="data/Cerrado2.txt")
 #Cerrado2$timestamp.posix <- as.character(Cerrado2$timestamp.posix)
 #Cerrado2$timestamp.posix<- as.POSIXct(Cerrado2$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Cerrado2$date <- as.character(Cerrado2$date)
@@ -1267,13 +1283,13 @@ Cerradotrk=rbind(Cerrado1trk,Cerrado2trk); Cerradotrk
                                    ###  COSTA RICA  ### 
 ### # 6) Costa Rica
 
-#CRica <- read.delim(file="c:/RWorkDir/jaguardatapaper/CRica.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#CRica <- read.delim(file="data/CRica.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(CRica$age))[CRica$age]
 #weight <- as.numeric(levels(CRica$weight))[CRica$weight]
 #CRica$id <- as.factor(CRica$individual.local.identifier..ID.)  
 #CRica$age <- age   ### converted to number
 #CRica$weight <- weight   ### converted to number
-#CRica <- read.delim(file="c:/RWorkDir/jaguardatapaper/CRica.txt")
+#CRica <- read.delim(file="data/CRica.txt")
 #CRica$timestamp.posix <- as.character(CRica$timestamp.posix)
 #CRica$timestamp.posix<- as.POSIXct(CRica$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #CRica$date <- as.character(CRica$date)
@@ -1320,13 +1336,13 @@ CRicatrk <-trk; CRicatrk
 
 ### # 7) Drych1 
 
-#Drych1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Drych1.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Drych1 <- read.delim(file="data/Drych1.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Drych1$age))[Drych1$age]
 #weight <- as.numeric(levels(Drych1$weight))[Drych1$weight]
 #Drych1$id <- as.factor(Drych1$individual.local.identifier..ID.)  
 #Drych1$age <- age   ### converted to number
 #Drych1$weight <- weight   ### converted to number
-#Drych1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Drych1.txt")
+#Drych1 <- read.delim(file="data/Drych1.txt")
 #Drych1$timestamp.posix <- as.character(Drych1$timestamp.posix)
 #Drych1$timestamp.posix<- as.POSIXct(Drych1$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Drych1$date <- as.character(Drych1$date)
@@ -1371,13 +1387,13 @@ Drych1trk <-trk
 
 ### # 8) Drych2   
 
-#Drych2 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Drych2.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Drych2 <- read.delim(file="data/Drych2.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Drych2$age))[Drych2$age]
 #weight <- as.numeric(levels(Drych2$weight))[Drych2$weight]
 #Drych2$id <- as.factor(Drych2$individual.local.identifier..ID.)  
 #Drych2$age <- age   ### converted to number
 #Drych2$weight <- weight   ### converted to number
-#Drych2 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Drych2.txt")
+#Drych2 <- read.delim(file="data/Drych2.txt")
 #Drych2$timestamp.posix <- as.character(Drych2$timestamp.posix)
 #Drych2$timestamp.posix<- as.POSIXct(Drych2$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Drych2$date <- as.character(Drych2$date)
@@ -1426,13 +1442,13 @@ Drychtrk=rbind(Drych1trk,Drych2trk); Drychtrk
                                  ###    HUMID CHACO  ###
 ### # 9) Humid Chaco       
 
-#Hch <- read.delim(file="c:/RWorkDir/jaguardatapaper/Hch.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Hch <- read.delim(file="data/Hch.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Hch$age))[Hch$age]
 #weight <- as.numeric(levels(Hch$weight))[Hch$weight]
 #Hch$id <- as.factor(Hch$individual.local.identifier..ID.)  
 #Hch$age <- age   ### converted to number
 #Hch$weight <- weight   ### converted to number
-#Hch <- read.delim(file="c:/RWorkDir/jaguardatapaper/Hch.txt")
+#Hch <- read.delim(file="data/Hch.txt")
 #Hch$timestamp.posix <- as.character(Hch$timestamp.posix)
 #Hch$timestamp.posix<- as.POSIXct(Hch$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Hch$date <- as.character(Hch$date)
@@ -1478,13 +1494,13 @@ Hchtrk <-trk
 							   
 ### # 10) Forest Paraguay   
 
-#FPy <- read.delim(file="c:/RWorkDir/jaguardatapaper/FPy.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#FPy <- read.delim(file="data/FPy.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(FPy$age))[FPy$age]
 #weight <- as.numeric(levels(FPy$weight))[FPy$weight]
 #FPy$id <- as.factor(FPy$individual.local.identifier..ID.)  
 #FPy$age <- age   ### converted to number
 #FPy$weight <- weight   ### converted to number
-#FPy <- read.delim(file="c:/RWorkDir/jaguardatapaper/FPy.txt")
+#FPy <- read.delim(file="data/FPy.txt")
 #FPy$timestamp.posix <- as.character(FPy$timestamp.posix)
 #FPy$timestamp.posix<- as.POSIXct(FPy$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #FPy$date <- as.character(FPy$date)
@@ -1531,13 +1547,13 @@ FPytrk <-trk
 	   
 ### # 11      Iguazu1
 
-#Iguazu1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Iguazu1.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Iguazu1 <- read.delim(file="data/Iguazu1.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Iguazu1$age))[Iguazu1$age]
 #weight <- as.numeric(levels(Iguazu1$weight))[Iguazu1$weight]
 #Iguazu1$id <- as.factor(Iguazu1$individual.local.identifier..ID.)  
 #Iguazu1$age <- age   ### converted to number
 #Iguazu1$weight <- weight   ### converted to number
-#Iguazu1 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Iguazu1.txt")
+#Iguazu1 <- read.delim(file="data/Iguazu1.txt")
 #Iguazu1$timestamp.posix <- as.character(Iguazu1$timestamp.posix)
 #Iguazu1$timestamp.posix<- as.POSIXct(Iguazu1$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Iguazu1$date <- as.character(Iguazu1$date)
@@ -1583,13 +1599,13 @@ Iguazu1trk <-trk
 ################################################# 
 ### # 12 Iguazu2
 
-#Iguazu2 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Iguazu2.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Iguazu2 <- read.delim(file="data/Iguazu2.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Iguazu2$age))[Iguazu2$age]
 #weight <- as.numeric(levels(Iguazu2$weight))[Iguazu2$weight]
 #Iguazu2$id <- as.factor(Iguazu2$individual.local.identifier..ID.)  
 #Iguazu2$age <- age   ### converted to number
 #Iguazu2$weight <- weight   ### converted to number
-#Iguazu2 <- read.delim(file="c:/RWorkDir/jaguardatapaper/Iguazu2.txt")
+#Iguazu2 <- read.delim(file="data/Iguazu2.txt")
 #Iguazu2$timestamp.posix <- as.character(Iguazu2$timestamp.posix)
 #Iguazu2$timestamp.posix<- as.POSIXct(Iguazu2$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Iguazu2$date <- as.character(Iguazu2$date)
@@ -1638,13 +1654,13 @@ Iguazutrk=rbind(Iguazu1trk,Iguazu2trk); Iguazutrk
                                     ###   AMAZONIA  ###    
  ### # 13)  Amazonia Mamiraua (Brazil)    ####  Flooded  ########################
  
-#Mamiraua <- read.delim(file="c:/RWorkDir/jaguardatapaper/Mamiraua.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Mamiraua <- read.delim(file="data/Mamiraua.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Mamiraua$age))[Mamiraua$age]
 #weight <- as.numeric(levels(Mamiraua$weight))[Mamiraua$weight]
 #Mamiraua$id <- as.factor(Mamiraua$individual.local.identifier..ID.)  
 #Mamiraua$age <- age   ### converted to number
 #Mamiraua$weight <- weight   ### converted to number
-#Mamiraua <- read.delim(file="c:/RWorkDir/jaguardatapaper/Mamiraua.txt")
+#Mamiraua <- read.delim(file="data/Mamiraua.txt")
 #Mamiraua$timestamp.posix <- as.character(Mamiraua$timestamp.posix)
 #Mamiraua$timestamp.posix<- as.POSIXct(Mamiraua$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Mamiraua$date <- as.character(Mamiraua$date)
@@ -1689,13 +1705,13 @@ Mamirauatrk <-trk
 ################################################################################################################################# 
 ### # 14        Dry/ East Amazonia, IOP PA, translocated
 
-#iopPA <- read.delim(file="c:/RWorkDir/jaguardatapaper/iopPA.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#iopPA <- read.delim(file="data/iopPA.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(iopPA$age))[iopPA$age]
 #weight <- as.numeric(levels(iopPA$weight))[iopPA$weight]
 #iopPA$id <- as.factor(iopPA$individual.local.identifier..ID.)  
 #iopPA$age <- age   ### converted to number
 #iopPA$weight <- weight   ### converted to number
-#iopPA <- read.delim(file="c:/RWorkDir/jaguardatapaper/iopPA.txt")
+#iopPA <- read.delim(file="data/iopPA.txt")
 #iopPA$timestamp.posix <- as.character(iopPA$timestamp.posix)
 #iopPA$timestamp.posix<- as.POSIXct(iopPA$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #iopPA$date <- as.character(iopPA$date)
@@ -1741,13 +1757,13 @@ iopPAtrk <-trk
                                   ### Greater Lacandona, Mexico ##
 											 
  ### # 15 Lacandona
-#Lacandona <- read.delim(file="c:/RWorkDir/jaguardatapaper/Lacandona.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Lacandona <- read.delim(file="data/Lacandona.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Lacandona$age))[Lacandona$age]
 #weight <- as.numeric(levels(Lacandona$weight))[Lacandona$weight]
 #Lacandona$id <- as.factor(Lacandona$individual.local.identifier..ID.)  
 #Lacandona$age <- age   ### converted to number
 #Lacandona$weight <- weight   ### converted to number
-#Lacandona <- read.delim(file="c:/RWorkDir/jaguardatapaper/Lacandona.txt")
+#Lacandona <- read.delim(file="data/Lacandona.txt")
 #Lacandona$timestamp.posix <- as.character(Lacandona$timestamp.posix)
 #Lacandona$timestamp.posix<- as.POSIXct(Lacandona$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Lacandona$date <- as.character(Lacandona$date)
@@ -1793,13 +1809,13 @@ Lacandonatrk <-trk
 ######################################################################################################################## 
                                       ### # 16) MexEast, Mexico
  ### # 16) MexEast
-#MexEast <- read.delim(file="c:/RWorkDir/jaguardatapaper/MexEast.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#MexEast <- read.delim(file="data/MexEast.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(MexEast$age))[MexEast$age]
 #weight <- as.numeric(levels(MexEast$weight))[MexEast$weight]
 #MexEast$id <- as.factor(MexEast$individual.local.identifier..ID.)  
 #MexEast$age <- age   ### converted to number
 #MexEast$weight <- weight   ### converted to number
-#MexEast <- read.delim(file="c:/RWorkDir/jaguardatapaper/MexEast.txt")
+#MexEast <- read.delim(file="data/MexEast.txt")
 #MexEast$timestamp.posix <- as.character(MexEast$timestamp.posix)
 #MexEast$timestamp.posix<- as.POSIXct(MexEast$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #MexEast$date <- as.character(MexEast$date)
@@ -1846,13 +1862,13 @@ MexEasttrk <-trk
                               ### Sonora, Mexico ###
 
  ### # 17)  Sonora
-#Sonora <- read.delim(file="c:/RWorkDir/jaguardatapaper/Sonora.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Sonora <- read.delim(file="data/Sonora.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Sonora$age))[Sonora$age]
 #weight <- as.numeric(levels(Sonora$weight))[Sonora$weight]
 #Sonora$id <- as.factor(Sonora$individual.local.identifier..ID.)  
 #Sonora$age <- age   ### converted to number
 #Sonora$weight <- weight   ### converted to number
-#Sonora <- read.delim(file="c:/RWorkDir/jaguardatapaper/Sonora.txt")
+#Sonora <- read.delim(file="data/Sonora.txt")
 #Sonora$timestamp.posix <- as.character(Sonora$timestamp.posix)
 #Sonora$timestamp.posix<- as.POSIXct(Sonora$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Sonora$date <- as.character(Sonora$date)
@@ -1898,13 +1914,13 @@ Sonoratrk <-trk
                                   ######   PANTANAL  ######  
 									
 ### # 18) PantanalTotal Brazil&Paraguay     7 Projects in total, all in the same UTM zone
-#Pantanal <- read.delim(file="c:/RWorkDir/jaguardatapaper/Pantanal.txt")  # <-- if use read table it will be required to adjust variables again!!!
+#Pantanal <- read.delim(file="data/Pantanal.txt")  # <-- if use read table it will be required to adjust variables again!!!
 #age <- as.numeric(levels(Pantanal$age))[Pantanal$age]
 #weight <- as.numeric(levels(Pantanal$weight))[Pantanal$weight]
 #Pantanal$id <- as.factor(Pantanal$individual.local.identifier..ID.)  
 #Pantanal$age <- age   ### converted to number
 #Pantanal$weight <- weight   ### converted to number
-#Pantanal <- read.delim(file="c:/RWorkDir/jaguardatapaper/Pantanal.txt")
+#Pantanal <- read.delim(file="data/Pantanal.txt")
 #Pantanal$timestamp.posix <- as.character(Pantanal$timestamp.posix)
 #Pantanal$timestamp.posix<- as.POSIXct(Pantanal$timestamp.posix, format ="%Y-%m-%d %H:%M:%S", tz = 'GMT') 
 #Pantanal$date <- as.character(Pantanal$date)
