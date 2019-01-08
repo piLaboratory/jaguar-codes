@@ -1,0 +1,118 @@
+individual.local.identifier..ID.	status	model	sex	age	weight	collar_type	brand	schedule	project_region	project_bioveg	timezone
+1	Resident	OUF	Female	3	60	GPS Globalstar	Northstar	4 h	Humid chaco	Humid chaco	-4
+2	Resident	OUF	Female	9	45	GPS Globalstar	Northstar	4 h	Forest Paraguay	Atlantic Forest	-4
+3	Resident	OU	Male	6	101	GPS Globalstar	Northstar	4 h	Humid chaco	Humid chaco	-4
+4	Resident	OUF	Female	4	68	GPS Globalstar	Northstar	4 h	Humid chaco	Humid chaco	-4
+5	Not Resident	Not Resident	Female	6	74	GPS Globalstar	Northstar	4 h	Humid chaco	Humid chaco	-4
+6	Resident	OUF	Male	4	91	GPS Globalstar	Northstar	4 h	Humid chaco	Atlantic Forest	-4
+7	Resident	OUF	Male	10	110	GPS Globalstar	Northstar	4 h	Humid chaco	Humid chaco	-4
+8	Resident	OUF	Male	2	59	GPS Globalstar	Northstar	4 h	Forest Paraguay	Atlantic Forest	-4
+9	Resident	OUF	Female	1	NA	GPS Globalstar	Telonics	2 h from 1800 to 0600 h	Humid chaco	Humid chaco	-4
+10	Resident	OUF	Female	6	NA	GPS Globalstar	Telonics	2 h from 1800 to 0600 h	Humid chaco	Humid chaco	-4
+11	Resident	OU	Female	9	NA	GPS Globalstar	Telonics	2 h from 1800 to 0600 h	Humid chaco	Humid chaco	-4
+12	Not Resident	Not Resident	Female	4	"70,5"	GPS Iridium	Lotek	1h	Taiama	Pantanal	-4
+13	Resident	OUF	Male	8	101	GPS Iridium	Lotek	1h	Taiama	Pantanal	-4
+14	Not Estimated	Not Estimated	Male	5	112	GPS Iridium	Lotek	1h	Oncafari	Pantanal	-4
+15	Resident	OUF	Male	5	115	GPS Iridium	Lotek	1h	Oncafari	Pantanal	-4
+16	Resident	OUF	Male	5	90	GPS Globalstar	Northstar	4 h	Dry chaco	Dry chaco	-4
+17	Not Resident	Not Resident	Male	2	55	GPS Globalstar	Northstar	4 h	Cerrado1	Cerrado	-3
+18	Resident	OUF	Male	5	110	GPS Iridium	Lotek	1h	Taiama	Pantanal	-4
+19	Resident	OUF	Female	10	85	GPS Iridium	Lotek	1h	Oncafari	Pantanal	-4
+20	Not Resident	Not Resident	Male	5	37	GPS Iridium	Sirtrack	1h	Caatinga	Caatinga	-3
+21	Resident	OUF	Female	5	56	GPS Globalstar	Northstar	4 h	Forest Paraguay	Atlantic Forest	-4
+22	Resident	OUF	Male	7	80	GPS Iridium	Lotek	1h	Taiama	Pantanal	-4
+23	Not Estimated	Not Estimated	Male	4	68.4	GPS Iridium	Lotek	1h	Taiama	Pantanal	-4
+24	Not Resident	Not Resident	Male	5	80	GPS Globalstar	Northstar	4 h	Para	Amazonia	-3
+25	Resident	OUF	Female	10	90	GPS Iridium	Lotek	1h	Oncafari	Pantanal	-4
+26	Resident	OUF	Female	3	42	GPS Iridium	Lotek	2h	Costa Rica	Rainforest North	-6
+27	Resident	OU	Female	6	61	GPS Globalstar	Vectronic Aerospace	4h	Panthera2	Pantanal	-4
+28	Resident	OU	Female	3	NA	GPS Globalstar	Vectronic Aerospace	4h	Panthera1	Pantanal	-4
+29	Resident	OUF	Female	10	65	GPS Globalstar	Vectronic Aerospace	4h	Panthera1	Pantanal	-4
+30	Resident	OU	Female	7	64	GPS Globalstar	Vectronic Aerospace	4h	Panthera2	Pantanal	-4
+31	Resident	OU	Female	11	93	GPS Globalstar	Vectronic Aerospace	4h	Panthera2	Pantanal	-4
+32	Resident	OU	Female	8	70	GPS Globalstar	Vectronic Aerospace	4h	Panthera2	Pantanal	-4
+33	Resident	OU	Female	6	72	GPS Globalstar	Vectronic Aerospace	4h	Panthera2	Pantanal	-4
+34	Resident	OU	Female	7	68	GPS store-on-board	Televilt	8h	Atlantic Forest W1	Atlantic Forest	-3
+35	Resident	OUF	Female	4	59	GPS store-on-board	Televilt	8h	Atlantic Forest W1	Atlantic Forest	-3
+36	Resident	OU	Female	7	56	GPS store-on-board	Televilt	8h	Atlantic Forest W1	Atlantic Forest	-3
+37	Resident	OU	Female	5	86	GPS store-on-board	Televilt	8h	Atlantic Forest W1	Atlantic Forest	-3
+38	Not Estimated	Not Estimated	Female	NA	55	GPS store-on-board	Televilt	8h	Atlantic Forest W1	Atlantic Forest	-3
+39	Resident	OU	Female	7	64	GPS store-on-board	Televilt	8h	Atlantic Forest W2	Atlantic Forest	-3
+40	Resident	OU	Female	3.5	68	GPS store-on-board	Televilt	8h	Atlantic Forest W2	Atlantic Forest	-3
+41	Resident	OUF	Female	4	82.5	GPS Iridium	Lotek	1h	Taiama	Pantanal	-4
+42	Resident	OUF	Male	7	71	GPS remote download	Televilt	0.5	Iguazu	Atlantic Forest	-3
+43	Resident	OU	Female	8	32	GPS Iridium	ATS	2h	Mexico Sonora	Thornscrub	-7
+44	Resident	OU	Female	6	34	GPS Argos	Telonics	4.8 h	Greater Lacandona	Rainforest North	-6
+45	Not Estimated	Not Estimated	Female	8	36	GPS Argos	Telonics	4.8 h	Greater Lacandona	Rainforest North	-6
+46	Resident	OUF	Female	5	33	GPS Argos	Telonics	4.8 h	Greater Lacandona	Rainforest North	-6
+47	Resident	OUF	Male	4	50	GPS Argos	Telonics	4.8 h	Greater Lacandona	Rainforest North	-6
+48	Resident	OUF	Male	10	55	GPS Argos	Telonics	4.8 h	Greater Lacandona	Rainforest North	-6
+49	Resident	OUF	Male	3	NA	GPS IRIDIUM	Lotek	2HR	Mexico East	Rainforest North	-6
+50	Not Resident	Not Resident	Male	8	43	GPS Iridium	Lotek	1h	Caatinga	Caatinga	-3
+51	Resident	OUF	Male	6	99	GPS Globalstar	Northstar	4 h	Pantanal Paraguay	Pantanal	-4
+52	Not Estimated	Not Estimated	Female	5	77.8	GPS Iridium	Lotek	1h	Taiama	Pantanal	-4
+53	Resident	OUF	Male	8	105	GPS Globalstar	Vectronic Aerospace	4h	Panthera2	Pantanal	-4
+54	Resident	OUF	Male	NA	NA	GPS Globalstar	Vectronic Aerospace	4h	Panthera1	Pantanal	-4
+55	Resident	OU	Male	9	110	GPS Globalstar	Vectronic Aerospace	4h	Panthera2	Pantanal	-4
+56	Resident	OUF	Male	8	100	GPS Globalstar	Vectronic Aerospace	4h	Panthera1	Pantanal	-4
+57	Not Estimated	Not Estimated	Male	6	80	GPS Globalstar	Vectronic Aerospace	4h	Panthera1	Pantanal	-4
+58	Resident	OU	Male	6	90	GPS store-on-board	Televilt	8h	Atlantic Forest W1	Atlantic Forest	-3
+59	Resident	OUF	Male	10	110	GPS Globalstar	Vectronic Aerospace	4h	Panthera2	Pantanal	-4
+60	Resident	OU	Male	8	115	GPS Globalstar	Vectronic Aerospace	4h	Panthera2	Pantanal	-4
+61	Resident	OUF	Male	9	75	GPS Globalstar	Vectronic Aerospace	4h	Panthera2	Pantanal	-4
+62	Resident	OU	Male	8	98	GPS store-on-board	Televilt	8h	Atlantic Forest W1	Atlantic Forest	-3
+63	Resident	OUF	Male	5	79	GPS store-on-board	Televilt	8h	Atlantic Forest W2	Atlantic Forest	-3
+64	Resident	OU	Male	5	50	GPS Iridium	ATS	2h	Mexico Sonora	Thornscrub	-7
+65	Resident	OUF	Female	2	48	GPS Globalstar	Northstar	4 h	Cerrado1	Cerrado	-3
+66	Resident	OU	Female	2	48	GPS Globalstar	Lotek	2h	Iguazu	Atlantic Forest	-3
+67	Not Estimated	Not Estimated	Female	2	49	GPS Globalstar	Northstar	4 h	Cerrado1	Cerrado	-3
+68	Resident	OUF	Male	10	110	GPS Iridium	Lotek	1h	Oncafari	Pantanal	-4
+69	Resident	OUF	Female	3	82	GPS Iridium	Lotek	1h	Oncafari	Pantanal	-4
+70	Resident	OUF	Male	5	89	GPS store-on-board	Telonics	4 h	Dry chaco	Dry chaco	-4
+71	Resident	OUF	Female	9	41	GPS store-on-board	Telonics	4 h	Dry chaco	Dry chaco	-4
+72	Resident	OUF	Male	2	40	GPS store-on-board	Telonics	4 h	Dry chaco	Dry chaco	-4
+73	Resident	OUF	Male	5	84	GPS store-on-board	Telonics	4 h	Dry chaco	Dry chaco	-4
+74	Resident	OU	Female	4	66	GPS store-on-board	Telonics	4 h	Pantanal Paraguay	Pantanal	-4
+75	Resident	OUF	Female	2	66	GPS store-on-board	Telonics	4 h	Pantanal Paraguay	Pantanal	-4
+76	Resident	OUF	Female	6	51	GPS store-on-board	Telonics	4 h	Dry chaco	Atlantic Forest	-4
+77	Resident	OUF	Male	7	105	GPS store-on-board	Telonics	4 h	Dry chaco	Dry chaco	-4
+78	Resident	OUF	Female	6	61	GPS store-on-board	Telonics	4 h	Forest Paraguay	Atlantic Forest	-4
+79	Resident	OUF	Female	10	76	GPS Iridium	Lotek	1h	Oncafari	Pantanal	-4
+80	Not Resident	Not Resident	Male	1.5	42	GPS remote download	Televilt	1.5 h	Iguazu	Atlantic Forest	-3
+81	Not Resident	Not Resident	Male	4	100	GPS Iridium	Lotek	2h	Taiama	Pantanal	-4
+82	Resident	OUF	Male	6	110	GPS Globalstar	Northstar	4 h	Cerrado1	Cerrado	-3
+83	Not Resident	Not Resident	Male	"3,5"	58	GPS remote download	Televilt	4h	Iguazu	Atlantic Forest	-3
+84	Resident	OUF	Female	7	95	GPS Iridium	Lotek	1h	Oncafari	Pantanal	-4
+85	Resident	OUF	Male	2	52	GPS Globalstar	Northstar	4 h	Cerrado1	Cerrado	-3
+86	Resident	OUF	Female	10	90	GPS Iridium	Lotek	1h	Oncafari	Pantanal	-4
+87	Resident	OUF	Female	5	90	GPS Iridium	Lotek	1h	Oncafari	Pantanal	-4
+88	Resident	OU	Female	5	65.7	GPS Globalstar	Lotek	2h	Taiama	Pantanal	-4
+89	Resident	OUF	Male	6	95	GPS Globalstar	Northstar	6h	Cerrado2	Cerrado	-3
+90	Resident	OUF	Female	6	52	GPS Globalstar	Lotek	2h	Iguazu	Atlantic Forest	-3
+91	Resident	OUF	Male	4	102	GPS remote download	Televilt	6h	Taiama	Pantanal	-4
+92	Resident	OU	Female	4	70	GPS remote download	Televilt	6h	Taiama	Pantanal	-4
+93	Resident	OUF	Male	7	50	GPS Argos	Telonics	6h	Mamiraua	Amazonia_flood	-4
+94	Resident	OUF	Male	7	NA	GPS Argos	Telonics	6h	Mamiraua	Amazonia_flood	-4
+95	Resident	OUF	Male	8	49	GPS Argos	Telonics	2h	Mamiraua	Amazonia_flood	-4
+96	Resident	OUF	Female	6	42	GPS Argos	Telonics	6h	Mamiraua	Amazonia_flood	-4
+97	Resident	OU	Male	7	55	GPS Argos	Telonics	6h	Mamiraua	Amazonia_flood	-4
+98	Resident	OUF	Female	11	NA	GPS Argos	Telonics	5h	Mamiraua	Amazonia_flood	-4
+99	Resident	OUF	Female	4	40	GPS Argos	Telonics	2h	Mamiraua	Amazonia_flood	-4
+100	Resident	OUF	Female	6	NA	GPS Argos	Telonics	6h	Mamiraua	Amazonia_flood	-4
+101	Resident	OUF	Male	7	115	GPS Globalstar	Northstar	6h	Rio Negro	Pantanal	-4
+102	Not Resident	Not Resident	Female	7	92	GPS Globalstar	Northstar	6h	Rio Negro	Pantanal	-4
+103	Not Estimated	Not Estimated	Female	1.5	60	GPS Globalstar	Northstar	6h	Rio Negro	Pantanal	-4
+104	Resident	OUF	Male	5	130	GPS Globalstar	Northstar	6h	Rio Negro	Pantanal	-4
+105	Resident	OU	Female	3	70	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+106	Resident	OUF	Male	3	112	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+107	Resident	OUF	Male	9	124	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+108	Resident	OUF	Male	7	128	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+109	Resident	OU	Female	3.5	68	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+110	Resident	OU	Male	4	110	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+111	Resident	OU	Female	8	92	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+112	Resident	OU	Female	0.8	22	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+113	Resident	OU	Female	4.5	80	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+114	Resident	OU	Female	8	76	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+115	Resident	OUF	Female	2	44	GPS remote download	Televilt	3h	Sao Bento	Pantanal	-4
+116	Resident	OUF	Male	6	96	GPS Iridium	Lotek	1h	Taiama	Pantanal	-4
+117	Resident	OUF	Female	6	70	GPS Iridium	Lotek	1h	Taiama	Pantanal	-4
