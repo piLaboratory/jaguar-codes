@@ -17,7 +17,8 @@ install.load::install_load("RCurl", "dplyr", "readr", "lubridate", "tibble") # A
 install.load::install_load("circular", "caTools") # Stats packages
 install.load::install_load("knitr", "ezknitr") # To render documents
 
-### Load and adjust the data and create a dataframe object
+#---
+## Load and adjust the data and create a dataframe object
 mov.data.org <- read.delim(file="data/mov.data.org.txt")
 
 mov.data.org <- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:tag.local.identifier))
@@ -25,6 +26,9 @@ mov.data.org <- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:ta
 
 # Add Individual info
 info <- read.delim(file="data/info.txt")
+
+#######
+# Sugestao: adicionar 1 ou 2 comandos para reorganizar geral - renomear, drop columns etc.
 
 #ind.info <- read.delim(file="data/Jaguar_additional information.txt")
 #info <- ind.info %>%
@@ -50,7 +54,7 @@ info <- read.delim(file="data/info.txt")
 #write.table(info,file="data/info.txt",row.names = F,quote=F,col.names=T,sep="\t")
 
 #Merge movement with individual info/parameters
-merged<- merge(mov.data.org,info)
+merged<- merge(mov.data.org, info)
 mov.data.org <- merged 
 ## str(mov.data.org)
 #write.table(info,file="data/mov.data.org.txt",row.names = F,quote=F,col.names=T,sep="\t")
@@ -265,7 +269,7 @@ AFW1=cbind(AFW1, locsj_df)
 AFW1 <- crs.convert(data = subset(jaguar_df,project_region=='Atlantic Forest W1'),
                     crs.input = "+proj=longlat +datum=WGS84",
                     crs.output = "+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs",
-                    point.lab = c("utm_x", "utm_y", "lat_x", "lat_y") )
+                    point.names = c("utm_x", "utm_y", "lat_x", "lat_y") )
 
 #############################################
 ### # 2) Atlantic Forest W2
@@ -1174,7 +1178,7 @@ class(trk)
 class(trk)<-trk.class
 
 #' Lets take a look at what we created
-trk
+trk 
 Caatingatrk <-trk; Caatingatrk
 ###########################################################################################################
 
