@@ -3,14 +3,19 @@
 #############################################################################################################################						
 ### Alan E. de Barros/ adapted from Bernardo Niebuhr data preparation, Luca Borger lectures and amt John Fieberg's scripts (from MoveBank) 																	  
 rm(list= ls())                                                  ### For a fresh start
-## setwd("C:/RWorkDir/jaguardatapaper")                            ### Set directory ## NOT GENERIC
+## setwd("C:/RWorkDir/jaguardatapaper")                         ### Set directory to main folder repository ## NOT GENERIC
 ###########################################################################################################
-source("DataPrepFunctions.R")
+source("R/DataPrepFunctions.R")
 
+#--- 
 ## Load packages
 if(!require(install.load)) install.packages('install.load'); library(install.load)
-install.load::install_load("ggmap","maptools",'move',"circular","RCurl","dplyr","readr","caTools","adehabitatLT","rgl",
-"lubridate","raster","amt","tibble","knitr","leaflet","ezknitr","lattice","rgdal","sp")
+install.load::install_load("move", "adehabitatLT", "amt") # Movement packages
+install.load::install_load("maptools", "raster", "rgdal","sp") # Spatial packages
+install.load::install_load("ggmap", "rgl", "lattice", "leaflet") # Visualization packages
+install.load::install_load("RCurl", "dplyr", "readr", "lubridate", "tibble") # Aux packages
+install.load::install_load("circular", "caTools") # Stats packages
+install.load::install_load("knitr", "ezknitr") # To render documents
 
 ### Load and adjust the data and create a dataframe object
 mov.data.org <- read.delim(file="data/mov.data.org.txt")
