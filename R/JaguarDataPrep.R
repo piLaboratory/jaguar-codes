@@ -24,13 +24,13 @@ install.load::install_load("circular", "caTools") # Stats packages
 install.load::install_load("knitr", "ezknitr") # To render documents 
 
 
-### Load and adjust the data and create a dataframe object
+#' Load and adjust the data and create a dataframe object
 mov.data.org <- read.delim(file="data/mov.data.org.txt")
 
 mov.data.org <- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:tag.local.identifier))
-## str(mov.data.org)
+#' #str(mov.data.org)
 
-# Add Individual info
+#'  Add Individual info
 info <- read.delim(file="data/info.txt")
 
 #ind.info <- read.delim(file="data/Jaguar_additional information.txt")
