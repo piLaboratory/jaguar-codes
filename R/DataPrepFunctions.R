@@ -46,7 +46,6 @@ crs.convert <- function(data, crs.input="+proj=longlat +datum=WGS84", crs.output
 trk.convert <- function(data, ...){
     trk <- mk_track(data, ...)
     trk <- trk %>% arrange(id)
-    trk <- trk %>% time_of_day()
     nesttrk<-trk%>%nest(-id)
     ## We can add a columns to each nested column of data using purrr::map
     trk<-trk %>% nest(-id) %>% 
@@ -69,4 +68,3 @@ trk.convert <- function(data, ...){
     class(trk)<-trk.class
     return(trk)
 }
-
