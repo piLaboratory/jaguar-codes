@@ -1,19 +1,26 @@
 #' ---
 #' title: "Jaguar Data Preparation"
 #' authors: "Alan E. de Barros,Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima, Claudia Kanda, Milton Ribeiro, Ronaldo Morato, Paulo Prado"
-#' adapted from Bernardo Niebuhr data preparation, Luca Borger lectures and amt John Fieberg's scripts
-#' date: "05 Mar 2019"
+#' date: ""
 #' ---
 #' 
 #' 
-#' ### Preamble
+#' #  **Jaguar Data Preparation**
 #' 
+#' #### *Alan E. de Barros,Bernardo Niebuhr,Vanesa Bejarano,Julia Oshima,Claudia Kanda,Milton Ribeiro,Ronaldo Morato,Paulo Prado*
+#' date: "March, 08 2019"
+# Adapted from Bernardo Niebuhr data preparation, Luca Borger lectures and John Fieberg's amt's movebank scripts
+#'
+#'
+
+#' 
+#' 
+#' 
+#' #### *Preamble*
 #' For a fresh start, clean everything in working memory
 rm(list= ls())                                                 
 #' 
-#' Load packages
-#' #+warning=FALSE, message=FALSE
-#'
+#' Install and load packages
 if(!require(install.load)) install.packages('install.load'); library(install.load)
 install.load::install_load("move", "adehabitatLT", "amt") # Movement packages
 install.load::install_load("maptools", "raster", "rgdal","sp") # Spatial packages
@@ -23,26 +30,26 @@ install.load::install_load("circular", "caTools") # Stats packages
 install.load::install_load("knitr", "ezknitr") # To render documents 
 #'
 #'
-#' # Source functions from GitHub local directory 
-#' Do not required to set directory if Rscript have been opened from GitHub local directory
+#' ### Source functions from GitHub local directory 
+# Do not required to set directory if Rscript have been opened from the GitHub local directory
 source("DataPrepFunctions.R") 
 #'
-#' # Load the data and create a dataframe object: # (Call for ../data/filename.txt) 
-#' 
+#' #### Load the data and create a dataframe object:
 mov.data.org <- read.delim(file="../data/mov.data.org.txt")
 mov.data.org <- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:tag.local.identifier))
 #'
-#' # Add Individual info  (see older development files for details)
+#' #### Add Individual info  (see older development files for details)
 info <- read.delim(file="../data/info.txt")
 #'
-#' Merge movement with individual info/parameters
+#' #### Merge movement with individual info/parameters
 merged<- merge(mov.data.org,info)
 mov.data.org <- merged 
 #'
-#' Organize data
+#' #### Organize data
 #' 
 #' Test
 #' get.year(time.stamp = mov.data.org$timestamp[10000])
+#' 
 #' All individuals
 year <- as.numeric(sapply(mov.data.org$timestamp, get.year))
 #' Add 1900/2000
@@ -58,15 +65,16 @@ mov.data.org$timestamp.posix <- as.POSIXct(date.time,
 mov.data.org$GMTtime <- mov.data.org$timestamp.posix
 #'
 #'
-#'  ## Get local time
+#' ## Get local time
 #'  
-#' A column to represent the local timezone (already with the - signal) has been included to then multiply the timestamp and get the difference:
+# A column to represent the local timezone (already with the - signal) has been included to then multiply the timestamp and get the difference:
 mov.data.org$local_time <- mov.data.org$timestamp.posix + mov.data.org$timezone*60*60
 mov.data.org$timestamp.posix <- mov.data.org$local_time 
 #' Now all the (timestamp.posix)'s calculations are based on local time
 #' 
 #' 
-#' ## adehabitatLT
+#' ### Adjusting for Movement Packages
+#' ### adehabitatLT
 #'
 #' Transforms in ltraj object
 coords <- data.frame(mov.data.org$location.long, mov.data.org$location.lat)
@@ -77,18 +85,17 @@ mov.traj <- as.ltraj(xy = coords, date=mov.data.org$timestamp.posix,
 mov.traj.df <- ld(mov.traj)
 #'
 #'
-#' ## move
+#' ### move
 # Organize data as a move package format
 move.data <- move(x = mov.traj.df$x, y = mov.traj.df$y, 
                   time = mov.traj.df$date, 
                   proj = CRS('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'),
                   data = mov.traj.df, animal = mov.traj.df$id, sensor = 'GPS')
-#' move.data  ### moveStack
-#'
-###Separate individual animals' trajectories 
+#' move.data  (moveStack)
+#' Separate individual animals' trajectories 
 unstacked <- split(move.data)
-#' head(unstacked)
 jaguar_df <- as(move.data, "data.frame")
+
 #' Reclassifying variables
 age <- as.numeric(levels(jaguar_df$age))[jaguar_df$age]
 weight <- as.numeric(levels(jaguar_df$weight))[jaguar_df$weight]
@@ -175,12 +182,13 @@ jaguar_df <- removed
 #'
 #'
 #'
-#' ### Add UTMs and Ajust Posix accordingly with timezone
+#' ## Add UTMs and Adjust Posix accordingly with timezone
 #'
-#' Grouping project regions when they occur within the same UTM zone
-#' Code with function => crs.convert
+#' #### Grouping project regions when they occur within the same UTM zone
+# Code with function => crs.convert
 #' 
-#' ##    ATLANTIC FOREST WEST    (Project regions 1 and 2)
+#' 
+#' ###    ATLANTIC FOREST WEST    (Project regions 1 and 2)
 #'
 #' 1) Atlantic Forest W1
 AFW1 <- crs.convert(data = subset(jaguar_df,project_region=='Atlantic Forest W1'),
@@ -198,26 +206,25 @@ AFW2 <- crs.convert(data =subset(jaguar_df,project_region=='Atlantic Forest W2')
 AFW2$date <- as.character(AFW2$date)
 AFW2$date <- as.POSIXct(AFW2$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+3") 
 #'
-#' ## Atlantic Forest West
+#' Atlantic Forest West
 AFW=rbind(AFW1,AFW2)
 
 #'
 #'
-#' ##  CAATINGA   
+#' ### CAATINGA   
 #'
 #' 3) Caatinga
 Caatinga <- crs.convert(data = subset(jaguar_df,project_region=='Caatinga'),
                     crs.input = "+proj=longlat +datum=WGS84",
                     crs.output = "+proj=utm +zone=23L +south +datum=WGS84 +units=m +no_defs",
                     point.names = c("utm_x", "utm_y", "long_x", "lat_y"))
-#' ## Caatinga
 Caatinga$date <- as.character(Caatinga$date)
 Caatinga$date <- as.POSIXct(Caatinga$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+3") 
 
 #'
 #'
 #'
-#' ##  CERRADO   2 Projects (4 and 5)
+#' ### CERRADO   2 Projects (4 and 5)
 #'
 #' 4)  Cerrado1
 #' 
@@ -230,7 +237,7 @@ Cerrado1$date <- as.POSIXct(Cerrado1$date, format ="%Y-%m-%d %H:%M:%S", tz = "Et
 
 
 #'
-#' ## 5)  Cerrado2
+#' 5)  Cerrado2
 #' 
 Cerrado2<- crs.convert(data = subset(jaguar_df,project_region=='Cerrado2'),
                        crs.input = "+proj=longlat +datum=WGS84",
@@ -238,15 +245,11 @@ Cerrado2<- crs.convert(data = subset(jaguar_df,project_region=='Cerrado2'),
                        point.names = c("utm_x", "utm_y", "long_x", "lat_y"))
 Cerrado2$date <- as.character(Cerrado2$date)
 Cerrado2$date <- as.POSIXct(Cerrado2$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+3") 
-
-#' 
-#' #' ##  Cerrado - Adjusting posix
 Cerrado=rbind(Cerrado1,Cerrado2)
 
-
 #'
 #'
-#' ## COSTA RICA
+#' ### COSTA RICA
 #'
 #' 6) Costa Rica
 #'
@@ -261,7 +264,7 @@ CRica$date <- as.POSIXct(CRica$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+
 
 #'
 #'
-#' ##   DRY CHACO 
+#' ###   DRY CHACO 
 #' Transforming coordinate to UTM # ids: 16,70 => (most 20K), ids: 76,77 => (20 K); ids: 71,72,73 => (21 K) 
 #' 
 Drych=subset(jaguar_df,project_region=='Dry chaco')
@@ -276,7 +279,8 @@ X77=subset(Drych,id=='77')
 Drych1=rbind(X16,X70,X76,X77)
 Drych2=rbind(X71,X72,X73)
 #'
-#' 7) Drych1    ## 76,77  Zone 20 K; 16 & 70 (most is in Zone 20 K too, but a little bit in 21K)
+#' 7) Drych1    
+# 76,77  Zone 20 K; 16 & 70 (most is in Zone 20 K too, but a little bit in 21K)
 Drych1<- crs.convert(data = Drych1,
                     crs.input = "+proj=longlat +datum=WGS84",
                     crs.output = "+proj=utm +zone=20K +south +datum=WGS84 +units=m +no_defs",
@@ -286,21 +290,20 @@ Drych1$date <- as.POSIXct(Drych1$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GM
 
 #' 
 #'
-#' 8) Drych2  # 71,72,73 => (21 K)
-#' 
+#' 8) Drych2  
+# 71,72,73 => (21 K)
 Drych2<- crs.convert(data = Drych2,
                      crs.input = "+proj=longlat +datum=WGS84",
                      crs.output = "+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs",
                      point.names = c("utm_x", "utm_y", "long_x", "lat_y"))
 Drych2$date <- as.character(Drych2$date)
 Drych2$date <- as.POSIXct(Drych2$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+4") 
-#' 
-#' # Dry Chaco Total
+# Dry Chaco Total
 Drych=rbind(Drych1,Drych2)
 #'
 #'
 
-#' ##  HUMID CHACO
+#' ###  HUMID CHACO
 #' 
 #' 9) Humid Chaco  
 #'      
@@ -314,7 +317,7 @@ Hch$date <- as.POSIXct(Hch$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+4")
 #' 
 #' 
 
-#' ##  FOREST PARAGUAY 
+#' ###  FOREST PARAGUAY 
 #' 
 #' 10) Forest Paraguay   
 #' 
@@ -328,10 +331,10 @@ FPy$date <- as.POSIXct(FPy$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+4")
 #' 
 #'
 #'
-#' ## Iguazu
+#' ### IGUAZU
 #'
 Iguazu=subset(jaguar_df,project_region=='Iguazu')
-#' Transforming coordinate to UTM   # 42,66,80,90 => (21 J);      83 => (22 J) 
+# Transforming coordinate to UTM   # 42,66,80,90 => (21 J);      83 => (22 J) 
 X42=subset(Iguazu,id=='42')
 X66=subset(Iguazu,id=='66')
 X80=subset(Iguazu,id=='80')
@@ -341,8 +344,8 @@ X83=subset(Iguazu,id=='83')
 Iguazu1=rbind(X42,X66,X80,X90)
 Iguazu2=(X83)
 #'
-#' 11) Iguazu1    ## # 42,66,80,90 => ( Zone 21 J)
-#' 
+#' 11) Iguazu1    
+# 42,66,80,90 => ( Zone 21 J)
 Iguazu1<- crs.convert(data = Iguazu1,
                      crs.input = "+proj=longlat +datum=WGS84",
                      crs.output = "+proj=utm +zone=21J +south +datum=WGS84 +units=m +no_defs",
@@ -352,23 +355,21 @@ Iguazu1$date <- as.POSIXct(Iguazu1$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/
 
 #'
 #'
-#' 12) Iguazu2    ##  83 => (22 J) 
-#' 
+#' 12) Iguazu2    
+#  83 => (22 J) 
 Iguazu2<- crs.convert(data = Iguazu2,
                       crs.input = "+proj=longlat +datum=WGS84",
                       crs.output = "+proj=utm +zone=22J +south +datum=WGS84 +units=m +no_defs",
                       point.names = c("utm_x", "utm_y", "long_x", "lat_y"))
 Iguazu2$date <- as.character(Iguazu2$date)
 Iguazu2$date <- as.POSIXct(Iguazu2$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+3") 
-
-#' ## Iguazu
+#' Iguazu
 Iguazu=rbind(Iguazu1,Iguazu2)
 #'
 #'
-#' ##  AMAZONIA
+#' ###  AMAZONIA
 #' 
 #' 13)  Amazonia Mamiraua (Brazil) - Flooded Amazonia
-#' 
 Mamiraua<- crs.convert(data = subset(jaguar_df,project_region=='Mamiraua'),
                   crs.input = "+proj=longlat +datum=WGS84",
                   crs.output = "+proj=utm +zone=20M +south +datum=WGS84 +units=m +no_defs",
@@ -378,9 +379,9 @@ Mamiraua$date <- as.POSIXct(Mamiraua$date, format ="%Y-%m-%d %H:%M:%S", tz = "Et
 
 #' 
 #'
-#'  Dry Amazonia, PA, translocated 
-#' 14 IOP Para Amazonia   ### Translocated   
-#' 
+#' Dry Amazonia, PA, translocated 
+#' 14) IOP Para Amazonia   
+# Translocated animal   
 iopPA<- crs.convert(data = subset(jaguar_df,id=='24'),
                        crs.input = "+proj=longlat +datum=WGS84",
                        crs.output = "+proj=utm +zone=22M +south +datum=WGS84 +units=m +no_defs",
@@ -388,13 +389,11 @@ iopPA<- crs.convert(data = subset(jaguar_df,id=='24'),
 iopPA$date <- as.character(iopPA$date)
 iopPA$date <- as.POSIXct(iopPA$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+3") 
 
-#'                   
-#'              
 #'
-#' ##   Mexico
 #'
-#'  Greater Lacandona # 15), Mexico 
-#'  
+#' ###   MEXICO
+#'
+#'  Greater Lacandona  15) Mexico 
 Lacandona<- crs.convert(data = subset(jaguar_df,project_region=='Greater Lacandona'),
                     crs.input = "+proj=longlat +datum=WGS84",
                     crs.output = "+proj=utm +zone=15Q +south +datum=WGS84 +units=m +no_defs",
@@ -404,8 +403,7 @@ Lacandona$date <- as.POSIXct(Lacandona$date, format ="%Y-%m-%d %H:%M:%S", tz = "
 
 #'  
 #'
-#' ##  Mexico East  16) 
-#'  
+#' Mexico East  16) 
 MexEast<- crs.convert(data = subset(jaguar_df,project_region=='Mexico East'),
                         crs.input = "+proj=longlat +datum=WGS84",
                         crs.output = "+proj=utm +zone=16Q +south +datum=WGS84 +units=m +no_defs",
@@ -415,8 +413,7 @@ MexEast$date <- as.POSIXct(MexEast$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/
 
 #'  
 #'
-#' ## Mexico Sonora 17) 
-#' 
+#' Mexico Sonora 17) 
 Sonora<- crs.convert(data = subset(jaguar_df,project_region=='Mexico Sonora'),
                       crs.input = "+proj=longlat +datum=WGS84",
                       crs.output = "+proj=utm +zone=12R +south +datum=WGS84 +units=m +no_defs",
@@ -425,13 +422,13 @@ Sonora$date <- as.character(Sonora$date)
 Sonora$date <- as.POSIXct(Sonora$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+7") 
 
 #'
-#' ##  Mexico
+#'  Mexico
 Mex=rbind(Lacandona,MexEast,Sonora)
 
 #'
 #'
 #'
-#' ##  PANTANAL 
+#' ###  PANTANAL 
 #' 
 #' 18) PantanalTotal Brazil&Paraguay   -  7 Projects in total, all in the same UTM zone
 #' 
@@ -444,12 +441,12 @@ Pantanal$date <- as.POSIXct(Pantanal$date, format ="%Y-%m-%d %H:%M:%S", tz = "Et
 
 #'
 #'
-#' ##  Jaguar Dataframe with UTMs 
+#' ###  Jaguar Dataframe with UTMs 
 #' head(AFW1);head(AFW2);head(Caatinga);head(Cerrado1);head(Cerrado2);head(CRica);head(Pantanal);head(Drych1);str(Drych)
 #' head(Hch);head(FPy);head(Iguazu1);head(Iguazu2);head(Mamiraua);head(iopPA);head(Lacandona);head(MexEast);head(Sonora)
 jaguar_df=rbind(AFW1,AFW2,Caatinga,Cerrado1,Cerrado2,CRica,Pantanal,Drych1,Drych2,Hch,FPy,Iguazu1,Iguazu2,Mamiraua,iopPA,Lacandona,MexEast,Sonora)
-#' head(jaguar); str(jaguar)
-#'#" Need re-order data again
+
+#' Need re-order the data again
 jaguar_ord <- jaguar_df[order(jaguar_df$id,jaguar_df$date),]
 jaguar_df <- jaguar_ord
 #'
@@ -459,18 +456,19 @@ jaguar_df$Event_ID <- seq.int(nrow(jaguar_df))
 jaguar<-jaguar_df
 
 #' In case we want save and read it as txt
-#' write.table(jaguar_df,file="../data/jaguar_df.txt",row.names = F,quote=F,col.names=T,sep="\t")
-#' jaguar <- read.delim(file="../data/jaguar_df.txt")
+# write.table(jaguar_df,file="../data/jaguar_df.txt",row.names = F,quote=F,col.names=T,sep="\t")
+# jaguar <- read.delim(file="../data/jaguar_df.txt")
 #' 
 #' 
 #' 
 
 #' 
-#' ## Creating a track in amt (commom to both RSF and SSF) based on UTM and project regions 
+#' ## Creating a track in amt 
+# Commom to both RSF and SSF and based on UTM and project regions 
 #' 
-#' ## ATLANTIC FOREST WEST     (Project regions 1 and 2)
+#' ### ATLANTIC FOREST WEST  (Project regions 1 and 2)
 #'
-#' # Atlantic Forest West
+#' Atlantic Forest West
 AFWtrk <- trk.convert(data = AFW,
                       .x=utm_x,
                       .y=utm_y,
@@ -489,9 +487,9 @@ AFWtrk <- trk.convert(data = AFW,
  AFW1trk=AFWtrk %>% filter(project_region == "Atlantic Forest W1")
  AFW2trk=AFWtrk %>% filter(project_region == "Atlantic Forest W2")
 
-#'##  CAATINGA 
+#'###  CAATINGA 
 #'
-#'# 3) Caatinga   
+#' 3) Caatinga   
 Caatingatrk <- trk.convert(data = Caatinga,
                       .x=utm_x,
                       .y=utm_y,
@@ -509,9 +507,9 @@ Caatingatrk <- trk.convert(data = Caatinga,
 
 
 #'
-#' ##  CERRADO   ###       (2 Projects: 4 and 5)
+#' ###  CERRADO   (2 Projects: 4 and 5)
 #' 
-#'# 4 Cerrado1   
+#' 4) Cerrado1   
 Cerrado1trk <- trk.convert(data = Cerrado1,
                            .x=utm_x,
                            .y=utm_y,
@@ -527,7 +525,7 @@ Cerrado1trk <- trk.convert(data = Cerrado1,
                            lat_y=lat_y,
                            crs = CRS("+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs"))
 
-#'# 5 Cerrado2   
+#' 5) Cerrado2   
 Cerrado2trk <- trk.convert(data = Cerrado2,
                            .x=utm_x,
                            .y=utm_y,
@@ -543,16 +541,15 @@ Cerrado2trk <- trk.convert(data = Cerrado2,
                            lat_y=lat_y,
                            crs = CRS("+proj=utm +zone=22L +south +datum=WGS84 +units=m +no_defs"))
 
-#'
-#' # Cerradotrk
+#' Cerradotrk
 Cerradotrk=rbind(Cerrado1trk,Cerrado2trk)
 #'
 
+
 #'
-#'
-#' ##  COSTA RICA  
+#' ###  COSTA RICA  
 #' 
-#' # 6) Costa Rica
+#' 6) Costa Rica
 CRicatrk <- trk.convert(data = CRica,
                           .x=utm_x,
                           .y=utm_y,
@@ -568,9 +565,9 @@ CRicatrk <- trk.convert(data = CRica,
                           lat_y=lat_y,
                           crs = CRS("+proj=utm +zone=16P +north +datum=WGS84 +units=m +no_defs"))
 
-#' ## DRY CHACO
+#' ### DRY CHACO
 #'
-#' # 7) Drych1
+#' 7) Drych1
 Drych1trk <- trk.convert(data = Drych1,
                         .x=utm_x,
                         .y=utm_y,
@@ -585,7 +582,7 @@ Drych1trk <- trk.convert(data = Drych1,
                         long_x=long_x,
                         lat_y=lat_y,
                         crs = CRS("+proj=utm +zone=20K +south +datum=WGS84 +units=m +no_defs"))
-#' # 8) Drych2
+#' 8) Drych2
 Drych2trk <- trk.convert(data = Drych2,
                          .x=utm_x,
                          .y=utm_y,
@@ -602,14 +599,14 @@ Drych2trk <- trk.convert(data = Drych2,
                          crs = CRS("+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs"))
 
 #'
-#' #  DRY CHACO trk => Drychtrk
+#'  DRY CHACO trk => Drychtrk
 Drychtrk=rbind(Drych1trk,Drych2trk)
 #'
 #'
 
-#' ## HUMID CHACO  
+#' ### HUMID CHACO  
 #' 
-#' # 9) Humid Chaco       
+#' 9) Humid Chaco       
 Hchtrk <- trk.convert(data = Hch,
                          .x=utm_x,
                          .y=utm_y,
@@ -627,9 +624,9 @@ Hchtrk <- trk.convert(data = Hch,
 #'
 #'
 
-#' ##   FOREST PARAGUAY 
+#' ###   FOREST PARAGUAY 
 							   
-#' # 10) Forest Paraguay   
+#' 10) Forest Paraguay   
 FPytrk <- trk.convert(data = FPy,
                       .x=utm_x,
                       .y=utm_y,
@@ -648,9 +645,9 @@ FPytrk <- trk.convert(data = FPy,
 #'
 #'   
 
-#'        ## Iguazu
+#' ### IGUAZU
 #'	   
-#' # 11      Iguazu1
+#' 11) Iguazu1
 Iguazu1trk <- trk.convert(data = Iguazu1,
                       .x=utm_x,
                       .y=utm_y,
@@ -667,7 +664,7 @@ Iguazu1trk <- trk.convert(data = Iguazu1,
                       crs = CRS("+proj=utm +zone=21J +south +datum=WGS84 +units=m +no_defs"))
 
 #'
-#'# 12) Iguazu2
+#' 12) Iguazu2
 Iguazu2trk <- trk.convert(data = Iguazu2,
                           .x=utm_x,
                           .y=utm_y,
@@ -683,13 +680,13 @@ Iguazu2trk <- trk.convert(data = Iguazu2,
                           lat_y=lat_y,
                           crs = CRS("+proj=utm +zone=22J +south +datum=WGS84 +units=m +no_defs"))
 #'
-#' ##  Iguazutrk   
+#'  Iguazutrk   
 Iguazutrk=rbind(Iguazu1trk,Iguazu2trk)
 #' 
 #' 
 
-#' ##   AMAZONIA   
-#' # 13) Flooded  Amazonia, Mamiraua (Brazil)   
+#' ###   AMAZONIA   
+#' 13) Flooded  Amazonia, Mamiraua (Brazil)   
 Mamirauatrk <- trk.convert(data = Mamiraua,
                           .x=utm_x,
                           .y=utm_y,
@@ -708,7 +705,7 @@ Mamirauatrk <- trk.convert(data = Mamiraua,
  
 #'
 #'
-#' ## 14        Dry/ East Amazonia, IOP PA, translocated
+#' 14   Dry/ East Amazonia, IOP PA, translocated
 iopPAtrk <- trk.convert(data = iopPA,
                            .x=utm_x,
                            .y=utm_y,
@@ -726,9 +723,9 @@ iopPAtrk <- trk.convert(data = iopPA,
 
 #' 
 #' 
-#' # Greater Lacandona, Mexico
+#' ### Greater Lacandona, Mexico
 #' 
-#' 15 Lacandona
+#' 15) Lacandona
 Lacandonatrk <- trk.convert(data = Lacandona,
                         .x=utm_x,
                         .y=utm_y,
@@ -746,7 +743,7 @@ Lacandonatrk <- trk.convert(data = Lacandona,
 
 #'
 #'
-#' ## 16) MexEast, Mexico
+#' 16) MexEast, Mexico
 MexEasttrk <- trk.convert(data = MexEast,
                             .x=utm_x,
                             .y=utm_y,
@@ -764,9 +761,9 @@ MexEasttrk <- trk.convert(data = MexEast,
 
 #'
 #'
-#' ## Sonora, Mexico
+#' ### Sonora, Mexico
 #' 
-#' # 17)  Sonora
+#' 17)  Sonora
 Sonoratrk <- trk.convert(data = Sonora,
                           .x=utm_x,
                           .y=utm_y,
@@ -784,9 +781,9 @@ Sonoratrk <- trk.convert(data = Sonora,
 
 #' 
 #' 
-#' ##   PANTANAL
+#' ###   PANTANAL
 #' 
-#'  # 18) PantanalTotal Brazil&Paraguay  -  7 Projects in total, all in the same UTM zone
+#' 18) PantanalTotal Brazil&Paraguay  -  7 Projects in total, all in the same UTM zone
 Pantanaltrk <- trk.convert(data = Pantanal,
                          .x=utm_x,
                          .y=utm_y,
@@ -802,7 +799,7 @@ Pantanaltrk <- trk.convert(data = Pantanal,
                          lat_y=lat_y,
                          crs = CRS("+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs"))
 #'  
-#' # Objects for Pantanal project regions
+#' Objects for Pantanal project regions
  Oncafaritrk=Pantanaltrk %>% filter(project_region == "Oncafari")
  Paraguaytrk=Pantanaltrk %>% filter(project_region == "Pantanal Paraguay")
  Panthera1trk=Pantanaltrk %>% filter(project_region == "Panthera1")
@@ -813,32 +810,25 @@ Pantanaltrk <- trk.convert(data = Pantanal,
  
 #' 
 #' 
-#' ##    ALL  JAGUARS  trk =>     jaguartrk  
+#' ###    ALL  JAGUARS  trk =>     jaguartrk  
 #'		   
-#' # All Project regions trk
-jaguartrk=rbind(AFW1trk,AFW2trk,Caatingatrk,Cerrado1trk,Cerrado2trk,CRicatrk,Drychtrk, Hchtrk,FPytrk,Iguazutrk,Mamirauatrk,iopPAtrk,Lacandonatrk, MexEasttrk, Sonoratrk,Oncafaritrk,Paraguaytrk,Panthera1trk,Panthera2trk,RioNegrotrk,SaoBentotrk,Taiamatrk) 
+#' All Project regions trk
+jaguartrk=rbind(AFW1trk,AFW2trk,Caatingatrk,Cerrado1trk,Cerrado2trk,CRicatrk,Drychtrk, Hchtrk,FPytrk,Iguazutrk,
+                Mamirauatrk,iopPAtrk,Lacandonatrk, MexEasttrk, Sonoratrk,Oncafaritrk,Paraguaytrk,Panthera1trk,
+                Panthera2trk,RioNegrotrk,SaoBentotrk,Taiamatrk) 
 
 #'
-#' Need adjust to ezknitr
-ezknit(file = "analysis/explore.Rmd", out_dir = "reports/human",
-       params = list("DATASET_NAME" = "human.dat"), keep_html = FALSE)
-
-sessionInfo()	  
-
-proc.time()-ptm
-
 #'
-#' Dataframe for each individual (run only if need any specic individual)
- 
- X1=subset(jaguar_df,id=='1')
- X2=subset(jaguar_df,id=='2')
- X3=subset(jaguar_df,id=='3')
- X4=subset(jaguar_df,id=='4')
- X5=subset(jaguar_df,id=='5')
- X6=subset(jaguar_df,id=='6')
- X7=subset(jaguar_df,id=='7')
- X8=subset(jaguar_df,id=='8')
- X9=subset(jaguar_df,id=='9')
+#' Dataframe for each individual (to run if we need any specic individual)
+X1=subset(jaguar_df,id=='1')
+X2=subset(jaguar_df,id=='2')
+X3=subset(jaguar_df,id=='3')
+X4=subset(jaguar_df,id=='4')
+X5=subset(jaguar_df,id=='5')
+X6=subset(jaguar_df,id=='6')
+X7=subset(jaguar_df,id=='7')
+X8=subset(jaguar_df,id=='8')
+X9=subset(jaguar_df,id=='9')
 X10=subset(jaguar_df,id=='10') 
 X11=subset(jaguar_df,id=='11') 
 X12=subset(jaguar_df,id=='12') 
@@ -947,5 +937,17 @@ X114=subset(jaguar_df,id=='114')
 X115=subset(jaguar_df,id=='115')
 X116=subset(jaguar_df,id=='116')
 X117=subset(jaguar_df,id=='117')
+
+#'
+#' Produce an output using ezknitr
+ezspin(file = "JaguarDataPrep.R", out_dir = "reports",
+       params = list("DATASET_NAME" = "jaguar.dat"), 
+       keep_html = TRUE, keep_rmd = TRUE)
+
+open_output_dir()
+#' Other info
+sessionInfo()	  
+proc.time()
+
 
  
