@@ -1,21 +1,14 @@
 ---
 title: "Jaguar Data Preparation"
-authors: "Alan E. de Barros,Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima, Claudia Kanda, Milton Ribeiro, Ronaldo Morato, Paulo Prado"
+authors: "Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima, Claudia Kanda, Milton Ribeiro, Ronaldo Morato, Paulo Prado"
 date: ""
 ---
 
-
 #  **Jaguar Data Preparation**
 
-#### *Alan E. de Barros,Bernardo Niebuhr,Vanesa Bejarano,Julia Oshima,Claudia Kanda,Milton Ribeiro,Ronaldo Morato,Paulo Prado*
+#### *Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima,Claudia Kanda, Milton Ribeiro, Ronaldo Morato,Paulo Prado*
 date: "March, 08 2019"
-
-
-```r
-# Adapted from Bernardo Niebuhr data preparation, Luca Borger lectures and John Fieberg's amt's movebank scripts
-```
-
-
+##### Scripts adapted from Bernardo Niebuhr data preparation, and Luca Borger and John Fieberg's lectures.
 
 
 
@@ -122,7 +115,7 @@ Date/Time as POSIXct object
 
 ```r
 mov.data.org$timestamp.posix <- as.POSIXct(date.time, 
-                                           format = "%m/%d/%Y %H:%M", tz = 'GMT')
+                                           format = "%m/%d/%Y %H:%M", tz = 'UTC')
 mov.data.org$GMTtime <- mov.data.org$timestamp.posix
 ```
 
@@ -159,10 +152,10 @@ mov.traj.df <- ld(mov.traj)
 
 
 ### move
+Organize data as a move package format
 
 
 ```r
-# Organize data as a move package format
 move.data <- move(x = mov.traj.df$x, y = mov.traj.df$y, 
                   time = mov.traj.df$date, 
                   proj = CRS('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'),
@@ -170,18 +163,11 @@ move.data <- move(x = mov.traj.df$x, y = mov.traj.df$y,
 ```
 
 move.data  (moveStack)
-Separate individual animals' trajectories 
+Separate individual animals' trajectories and convert move object to a dataframe
 
 
 ```r
-unstacked <- split(move.data)
-```
-
-```
-## Error in split(as.data.frame(coordinates(x)), f): argument "f" is missing, with no default
-```
-
-```r
+# unstacked <- split(move.data)
 jaguar_df <- as(move.data, "data.frame")
 ```
 
@@ -280,7 +266,7 @@ jaguar_df$period=ifelse(jaguar_df$hour==7,"day",
 ```
 
 
-# More Data checking and cleaning 
+### More Data checking and cleaning 
 
 Delete observations where missing lat or long or a timestamp. (There are no missing observations but it is a good practice)
 
@@ -340,9 +326,8 @@ jaguar_df <- removed
 
 
 
-## Add UTMs and Adjust Posix accordingly with timezone
-
-#### Grouping project regions when they occur within the same UTM zone
+### Add UTMs and POSIX timezone
+#### Grouping project regions when they occur within the same UTM and time zone
 
 
 ```r
@@ -709,36 +694,33 @@ Pantanal$date <- as.POSIXct(Pantanal$date, format ="%Y-%m-%d %H:%M:%S", tz = "Et
 
 
 
-###  Jaguar Dataframe with UTMs 
+###  Jaguar Dataframe with UTMs  
 head(AFW1);head(AFW2);head(Caatinga);head(Cerrado1);head(Cerrado2);head(CRica);head(Pantanal);head(Drych1);str(Drych)
 head(Hch);head(FPy);head(Iguazu1);head(Iguazu2);head(Mamiraua);head(iopPA);head(Lacandona);head(MexEast);head(Sonora)
+
+#### *Important Note: A single dataframe canot hold multiple POSIX*
+This will assign the POSIXct of the first region (AFW in this case). 
+Hence it is required to store the regional POSIXct in multiple dataframes (or within a tibble for example)
 
 
 ```r
 jaguar_df=rbind(AFW1,AFW2,Caatinga,Cerrado1,Cerrado2,CRica,Pantanal,Drych1,Drych2,Hch,FPy,Iguazu1,Iguazu2,Mamiraua,iopPA,Lacandona,MexEast,Sonora)
 ```
 
-Need re-order the data again
+Need re-order the data again and create a new Event_ID
 
 
 ```r
 jaguar_ord <- jaguar_df[order(jaguar_df$id,jaguar_df$date),]
 jaguar_df <- jaguar_ord
-```
-
-
-And create a new Event_ID
-
-
-```r
 jaguar_df$Event_ID <- seq.int(nrow(jaguar_df))
 ```
 
-Save as an additional object
+We assign UTC again just to store a full dataframe with UTMS but bellow we use regional POSIXct to create trks (amt package).
 
 
 ```r
-jaguar<-jaguar_df
+jaguar_df$date <- jaguar_df$timestamp.posix
 ```
 
 In case we want save and read it as txt
@@ -753,13 +735,8 @@ In case we want save and read it as txt
 
 
 
-## Creating a track in amt 
-
-
-```r
-# Commom to both RSF and SSF and based on UTM and project regions 
-```
-
+## Creating tracks in amt 
+#### Based on UTM, project regions and timezones (Commom to both RSF and SSF)
 
 ### ATLANTIC FOREST WEST  (Project regions 1 and 2)
 
@@ -1136,8 +1113,9 @@ iopPAtrk <- trk.convert(data = iopPA,
 
 
 
-### Greater Lacandona, Mexico
+###   MEXICO
 
+Greater Lacandona
 15) Lacandona
 
 
@@ -1164,7 +1142,7 @@ Lacandonatrk <- trk.convert(data = Lacandona,
 
 
 
-16) MexEast, Mexico
+16) MexEast
 
 
 ```r
@@ -1189,8 +1167,6 @@ MexEasttrk <- trk.convert(data = MexEast,
 ```
 
 
-
-### Sonora, Mexico
 
 17)  Sonora
 
@@ -1273,131 +1249,131 @@ jaguartrk=rbind(AFW1trk,AFW2trk,Caatingatrk,Cerrado1trk,Cerrado2trk,CRicatrk,Dry
 
 
 
-Dataframe for each individual (to run if we need any specic individual)
+Dataframe for each individual with adjusted timezones (to run if we need any specic individual)
 
 
 ```r
-X1=subset(jaguar_df,id=='1')
-X2=subset(jaguar_df,id=='2')
-X3=subset(jaguar_df,id=='3')
-X4=subset(jaguar_df,id=='4')
-X5=subset(jaguar_df,id=='5')
-X6=subset(jaguar_df,id=='6')
-X7=subset(jaguar_df,id=='7')
-X8=subset(jaguar_df,id=='8')
-X9=subset(jaguar_df,id=='9')
-X10=subset(jaguar_df,id=='10') 
-X11=subset(jaguar_df,id=='11') 
-X12=subset(jaguar_df,id=='12') 
-X13=subset(jaguar_df,id=='13')
-X14=subset(jaguar_df,id=='14') 
-X15=subset(jaguar_df,id=='15') 
-X16=subset(jaguar_df,id=='16') 
-X17=subset(jaguar_df,id=='17') 
-X18=subset(jaguar_df,id=='18') 
-X19=subset(jaguar_df,id=='19') 
-X20=subset(jaguar_df,id=='20')
-X21=subset(jaguar_df,id=='21')
-X22=subset(jaguar_df,id=='22')
-X23=subset(jaguar_df,id=='23')
-X24=subset(jaguar_df,id=='24')
-X25=subset(jaguar_df,id=='25')
-X26=subset(jaguar_df,id=='26')
-X27=subset(jaguar_df,id=='27')
-X28=subset(jaguar_df,id=='28')
-X29=subset(jaguar_df,id=='29')
-X30=subset(jaguar_df,id=='30')
-X31=subset(jaguar_df,id=='31')
-X32=subset(jaguar_df,id=='32')
-X33=subset(jaguar_df,id=='33')
-X34=subset(jaguar_df,id=='34')
-X35=subset(jaguar_df,id=='35')
-X36=subset(jaguar_df,id=='36')
-X37=subset(jaguar_df,id=='37')
-X38=subset(jaguar_df,id=='38')
-X39=subset(jaguar_df,id=='39')
-X40=subset(jaguar_df,id=='40')
-X41=subset(jaguar_df,id=='41')
-X42=subset(jaguar_df,id=='42')
-X43=subset(jaguar_df,id=='43')
-X44=subset(jaguar_df,id=='44')
-X45=subset(jaguar_df,id=='45')
-X46=subset(jaguar_df,id=='46')
-X47=subset(jaguar_df,id=='47')
-X48=subset(jaguar_df,id=='48')
-X49=subset(jaguar_df,id=='49')
-X50=subset(jaguar_df,id=='50')
-X51=subset(jaguar_df,id=='51')
-X52=subset(jaguar_df,id=='52')
-X53=subset(jaguar_df,id=='53')
-X54=subset(jaguar_df,id=='54')
-X55=subset(jaguar_df,id=='55')
-X56=subset(jaguar_df,id=='56')
-X57=subset(jaguar_df,id=='57')
-X58=subset(jaguar_df,id=='58')
-X59=subset(jaguar_df,id=='59')
-X60=subset(jaguar_df,id=='60')
-X61=subset(jaguar_df,id=='61')
-X62=subset(jaguar_df,id=='62')
-X63=subset(jaguar_df,id=='63')
-X64=subset(jaguar_df,id=='64')
-X65=subset(jaguar_df,id=='65')
-X66=subset(jaguar_df,id=='66')
-X67=subset(jaguar_df,id=='67')
-X68=subset(jaguar_df,id=='68')
-X69=subset(jaguar_df,id=='69')
-X70=subset(jaguar_df,id=='70')
-X71=subset(jaguar_df,id=='71')
-X72=subset(jaguar_df,id=='72')
-X73=subset(jaguar_df,id=='73')
-X74=subset(jaguar_df,id=='74')
-X75=subset(jaguar_df,id=='75')
-X76=subset(jaguar_df,id=='76')
-X77=subset(jaguar_df,id=='77')
-X78=subset(jaguar_df,id=='78')
-X79=subset(jaguar_df,id=='79')
-X80=subset(jaguar_df,id=='80')
-X81=subset(jaguar_df,id=='81')
-X82=subset(jaguar_df,id=='82')
-X83=subset(jaguar_df,id=='83')
-X84=subset(jaguar_df,id=='84')
-X85=subset(jaguar_df,id=='85')
-X86=subset(jaguar_df,id=='86')
-X87=subset(jaguar_df,id=='87')
-X88=subset(jaguar_df,id=='88')
-X89=subset(jaguar_df,id=='89')
-X90=subset(jaguar_df,id=='90')
-X91=subset(jaguar_df,id=='91')
-X92=subset(jaguar_df,id=='92')
-X93=subset(jaguar_df,id=='93')
-X94=subset(jaguar_df,id=='94')
-X95=subset(jaguar_df,id=='95')
-X96=subset(jaguar_df,id=='96')
-X97=subset(jaguar_df,id=='97')
-X98=subset(jaguar_df,id=='98')
-X99=subset(jaguar_df,id=='99')
-X100=subset(jaguar_df,id=='100')
-X101=subset(jaguar_df,id=='101')
-X102=subset(jaguar_df,id=='102')
-X103=subset(jaguar_df,id=='103')
-X104=subset(jaguar_df,id=='104')
-X105=subset(jaguar_df,id=='105')
-X106=subset(jaguar_df,id=='106')
-X107=subset(jaguar_df,id=='107')
-X108=subset(jaguar_df,id=='108')
-X109=subset(jaguar_df,id=='109')
-X110=subset(jaguar_df,id=='110')
-X111=subset(jaguar_df,id=='111')
-X112=subset(jaguar_df,id=='112')
-X113=subset(jaguar_df,id=='113')
-X114=subset(jaguar_df,id=='114')
-X115=subset(jaguar_df,id=='115')
-X116=subset(jaguar_df,id=='116')
-X117=subset(jaguar_df,id=='117')
+X1=subset(Hch,id=='1')   ####### Hch
+X2=subset(FPy,id=='2')   ######### FPy
+X3=subset(Hch,id=='3')   ####### Hch
+X4=subset(Hch,id=='4')   ####### Hch
+X5=subset(Hch,id=='5')   ####### Hch
+X6=subset(Hch,id=='6')   ####### Hch
+X7=subset(Hch,id=='7')   ####### Hch
+X8=subset(FPy,id=='8')   ######### FPy
+X9=subset(Hch,id=='9')   ####### Hch
+X10=subset(Hch,id=='10') ####### Hch
+X11=subset(Hch,id=='11') ####### Hch
+X12=subset(Pantanal,id=='12') ########## Pantanal
+X13=subset(Pantanal,id=='13') ########## Pantanal
+X14=subset(Pantanal,id=='14') ########## Pantanal
+X15=subset(Pantanal,id=='15') ########## Pantanal
+X16=subset(Drych1,id=='16') ######### Drych1
+X17=subset(Cerrado1,id=='17') ############### Cerrado1
+X18=subset(Pantanal,id=='18') ########## Pantanal
+X19=subset(Pantanal,id=='19') ########## Pantanal
+X20=subset(Caatinga,id=='20') ################# Caatinga 
+X21=subset(FPy,id=='21')  ######### FPy
+X22=subset(Pantanal,id=='22') ########## Pantanal
+X23=subset(Pantanal,id=='23') ########## Pantanal
+X24=subset(iopPA,id=='24') ###### iopPA
+X25=subset(Pantanal,id=='25') ########## Pantanal
+X26=subset(CRica,id=='26')  ######### CRica
+X27=subset(Pantanal,id=='27') ########## Pantanal
+X28=subset(Pantanal,id=='28') ########## Pantanal
+X29=subset(Pantanal,id=='29') ########## Pantanal
+X30=subset(Pantanal,id=='30') ########## Pantanal
+X31=subset(Pantanal,id=='31') ########## Pantanal
+X32=subset(Pantanal,id=='32') ########## Pantanal
+X33=subset(Pantanal,id=='33') ########## Pantanal
+X34=subset(AFW1,id=='34')   ############### AFW1
+X35=subset(AFW1,id=='35')   ############### AFW1
+X36=subset(AFW1,id=='36')   ############### AFW1
+X37=subset(AFW1,id=='37')   ############### AFW1
+X38=subset(AFW1,id=='38')   ############### AFW1
+X39=subset(AFW2,id=='39')   ###############  AFW2
+X40=subset(AFW2,id=='40')   ###############  AFW2
+X41=subset(Pantanal,id=='41') ########## Pantanal
+X42=subset(Iguazu1,id=='42') ######## Iguazu1
+X43=subset(Sonora,id=='43') ######## Sonora
+X44=subset(Lacandona,id=='44') ######## Lacandona
+X45=subset(Lacandona,id=='45') ######## Lacandona
+X46=subset(Lacandona,id=='46')  ######## Lacandona
+X47=subset(Lacandona,id=='47')  ######## Lacandona
+X48=subset(Lacandona,id=='48')  ######## Lacandona
+X49=subset(MexEast,id=='49')  ######### MexEast
+X50=subset(Caatinga,id=='50')  ############### Caatinga
+X51=subset(Pantanal,id=='51') ########## Pantanal
+X52=subset(Pantanal,id=='52') ########## Pantanal
+X53=subset(Pantanal,id=='53') ########## Pantanal
+X54=subset(Pantanal,id=='54') ########## Pantanal
+X55=subset(Pantanal,id=='55') ########## Pantanal
+X56=subset(Pantanal,id=='56') ########## Pantanal
+X57=subset(Pantanal,id=='57') ########## Pantanal
+X58=subset(AFW1,id=='58')   ###############  AFW1
+X59=subset(Pantanal,id=='59') ########## Pantanal
+X60=subset(Pantanal,id=='60') ########## Pantanal
+X61=subset(Pantanal,id=='61') ########## Pantanal
+X62=subset(AFW1,id=='62')   ###############  AFW1
+X63=subset(AFW2,id=='63')   ###############  AFW2
+X64=subset(Sonora,id=='64') ######## Sonora
+X65=subset(Cerrado1,id=='65')  ########## Cerrado1
+X66=subset(Iguazu1,id=='66')  ########## Iguazu1
+X67=subset(Cerrado1,id=='67')  ########## Cerrado1
+X68=subset(Pantanal,id=='68') ########## Pantanal
+X69=subset(Pantanal,id=='69') ########## Pantanal
+X70=subset(Drych1,id=='70')  ######## Drych1
+X71=subset(Drych2,id=='71') ####### Drych2
+X72=subset(Drych2,id=='72') ####### Drych2
+X73=subset(Drych2,id=='73') ####### Drych2
+X74=subset(Pantanal,id=='74')  ########## Pantanal
+X75=subset(Pantanal,id=='75')  ########## Pantanal
+X76=subset(Drych1,id=='76') ####### Drych1
+X77=subset(Drych1,id=='77') ####### Drych1
+X78=subset(FPy,id=='78')  ####### FPy
+X79=subset(Pantanal,id=='79') ########## Pantanal
+X80=subset(Iguazu1,id=='80') ######## Iguazu1
+X81=subset(Pantanal,id=='81') ########## Pantanal
+X82=subset(Cerrado1,id=='82')  ########## Cerrado1
+X83=subset(Iguazu2,id=='83')  ########## Iguazu2
+X84=subset(Pantanal,id=='84')  ########## Pantanal
+X85=subset(Cerrado1,id=='85')  ########## Cerrado1
+X86=subset(Pantanal,id=='86') ########## Pantanal
+X87=subset(Pantanal,id=='87') ########## Pantanal
+X88=subset(Pantanal,id=='88') ########## Pantanal
+X89=subset(Cerrado2,id=='89') ######### Cerrado2
+X90=subset(Iguazu1,id=='90') ######### Iguazu1
+X91=subset(Pantanal,id=='91') ########## Pantanal
+X92=subset(Pantanal,id=='92') ########## Pantanal
+X93=subset(Mamiraua,id=='93') ######### Mamiraua
+X94=subset(Mamiraua,id=='94') ######### Mamiraua
+X95=subset(Mamiraua,id=='95') ######### Mamiraua
+X96=subset(Mamiraua,id=='96') ######### Mamiraua
+X97=subset(Mamiraua,id=='97') ######### Mamiraua
+X98=subset(Mamiraua,id=='98') ######### Mamiraua
+X99=subset(Mamiraua,id=='99') ######### Mamiraua
+X100=subset(Mamiraua,id=='100')######### Mamiraua
+X101=subset(Pantanal,id=='101') ########## Pantanal
+X102=subset(Pantanal,id=='102') ########## Pantanal
+X103=subset(Pantanal,id=='103') ########## Pantanal
+X104=subset(Pantanal,id=='104') ########## Pantanal
+X105=subset(Pantanal,id=='105') ########## Pantanal
+X106=subset(Pantanal,id=='106') ########## Pantanal
+X107=subset(Pantanal,id=='107')########## Pantanal
+X108=subset(Pantanal,id=='108')########## Pantanal
+X109=subset(Pantanal,id=='109')########## Pantanal
+X110=subset(Pantanal,id=='110')########## Pantanal
+X111=subset(Pantanal,id=='111')########## Pantanal
+X112=subset(Pantanal,id=='112')########## Pantanal
+X113=subset(Pantanal,id=='113')########## Pantanal
+X114=subset(Pantanal,id=='114')########## Pantanal
+X115=subset(Pantanal,id=='115')########## Pantanal
+X116=subset(Pantanal,id=='116')########## Pantanal
+X117=subset(Pantanal,id=='117')########## Pantanal
 ```
 
 
-Produce an output using ezknitr
+#### Produce an Rmd and html outputs using ezknitr
 
 
 ```r
@@ -1457,41 +1433,39 @@ sessionInfo()
 ## [31] install.load_1.2.1 
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] webshot_0.5.1           httr_1.4.0             
-##  [3] tools_3.5.2             utf8_1.1.4             
-##  [5] R6_2.3.0                lazyeval_0.2.1         
-##  [7] manipulateWidget_0.10.0 withr_2.1.2            
-##  [9] tidyselect_0.2.5        compiler_3.5.2         
-## [11] cli_1.0.1               xml2_1.2.0             
-## [13] scales_1.0.0            mvtnorm_1.0-8          
-## [15] stringr_1.3.1           digest_0.6.18          
-## [17] foreign_0.8-71          R.utils_2.7.0          
-## [19] jpeg_0.1-8              pkgconfig_2.0.2        
-## [21] htmltools_0.3.6         highr_0.7              
-## [23] maps_3.3.0              htmlwidgets_1.3        
-## [25] rlang_0.3.0.1           rstudioapi_0.8         
-## [27] shiny_1.2.0             bindr_0.1.1            
-## [29] jsonlite_1.5            crosstalk_1.0.0        
-## [31] R.oo_1.22.0             magrittr_1.5           
-## [33] Matrix_1.2-15           Rcpp_1.0.0             
-## [35] munsell_0.5.0           fansi_0.4.0            
-## [37] proto_1.0.0             R.methodsS3_1.7.1      
-## [39] stringi_1.2.4           yaml_2.2.0             
-## [41] plyr_1.8.4              grid_3.5.2             
-## [43] parallel_3.5.2          promises_1.0.1         
-## [45] crayon_1.3.4            miniUI_0.1.1.1         
-## [47] splines_3.5.2           mapproj_1.2.6          
-## [49] hms_0.4.2               pillar_1.3.0           
-## [51] rjson_0.2.20            markdown_0.8           
-## [53] reshape2_1.4.3          codetools_0.2-15       
-## [55] glue_1.3.0              evaluate_0.12          
-## [57] png_0.1-7               httpuv_1.4.5           
-## [59] RgoogleMaps_1.4.3       gtable_0.2.0           
-## [61] purrr_0.2.5             tidyr_0.8.2            
-## [63] assertthat_0.2.0        xfun_0.4               
-## [65] mime_0.6                xtable_1.8-3           
-## [67] later_0.7.5             survival_2.43-3        
-## [69] memoise_1.1.0
+##  [1] httr_1.4.0              maps_3.3.0             
+##  [3] tidyr_0.8.2             jsonlite_1.5           
+##  [5] splines_3.5.2           R.utils_2.7.0          
+##  [7] shiny_1.2.0             assertthat_0.2.0       
+##  [9] highr_0.7               yaml_2.2.0             
+## [11] pillar_1.3.0            glue_1.3.0             
+## [13] digest_0.6.18           manipulateWidget_0.10.0
+## [15] promises_1.0.1          R.oo_1.22.0            
+## [17] htmltools_0.3.6         httpuv_1.4.5           
+## [19] Matrix_1.2-15           plyr_1.8.4             
+## [21] pkgconfig_2.0.2         mvtnorm_1.0-8          
+## [23] purrr_0.2.5             xtable_1.8-3           
+## [25] webshot_0.5.1           scales_1.0.0           
+## [27] jpeg_0.1-8              later_0.7.5            
+## [29] withr_2.1.2             lazyeval_0.2.1         
+## [31] proto_1.0.0             survival_2.43-3        
+## [33] magrittr_1.5            crayon_1.3.4           
+## [35] mime_0.6                evaluate_0.12          
+## [37] memoise_1.1.0           R.methodsS3_1.7.1      
+## [39] xml2_1.2.0              foreign_0.8-71         
+## [41] tools_3.5.2             hms_0.4.2              
+## [43] RgoogleMaps_1.4.3       stringr_1.3.1          
+## [45] munsell_0.5.0           compiler_3.5.2         
+## [47] rlang_0.3.0.1           grid_3.5.2             
+## [49] rstudioapi_0.8          rjson_0.2.20           
+## [51] htmlwidgets_1.3         miniUI_0.1.1.1         
+## [53] crosstalk_1.0.0         gtable_0.2.0           
+## [55] codetools_0.2-15        markdown_0.8           
+## [57] reshape2_1.4.3          R6_2.3.0               
+## [59] bindr_0.1.1             stringi_1.2.4          
+## [61] parallel_3.5.2          Rcpp_1.0.0             
+## [63] mapproj_1.2.6           png_0.1-7              
+## [65] tidyselect_0.2.5        xfun_0.4
 ```
 
 ```r
@@ -1499,7 +1473,7 @@ proc.time()
 ```
 
 ```
-##    user  system elapsed 
-## 1055.92   37.62 5358.71
+##     user   system  elapsed 
+##  4806.10    76.84 10989.81
 ```
 
