@@ -288,12 +288,15 @@ mov.data.org$GMTtime &lt;- mov.data.org$timestamp.posix
 
 <h2>Get local time</h2>
 
-<pre><code class="r"># A column to represent the local timezone (already with the - signal) has been included to then multiply the timestamp and get the difference:
-mov.data.org$local_time &lt;- mov.data.org$timestamp.posix + mov.data.org$timezone*60*60
+<p>A column to represent the local timezone (already with the - signal) has been included to then multiply the timestamp and get the difference:</p>
+
+<pre><code class="r">mov.data.org$local_time &lt;- mov.data.org$timestamp.posix + mov.data.org$timezone*60*60
 mov.data.org$timestamp.posix &lt;- mov.data.org$local_time 
 </code></pre>
 
 <p>Now all the (timestamp.posix)&#39;s calculations are based on local time</p>
+
+<h4><em>Note: UTC has also been assigned to the local time here. But the correct timezones of each region are assigned below</em></h4>
 
 <h3>Adjusting for Movement Packages</h3>
 
@@ -371,6 +374,8 @@ jaguar_df$Event_ID  &lt;- NULL
 # jaguar_df$dt &lt;- NULL
 </code></pre>
 
+<p>Create columns for different time periods</p>
+
 <pre><code class="r">jaguar_df$week &lt;- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format=&quot;%W&quot;))
 jaguar_df$day &lt;- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format=&quot;%j&quot;))
 jaguar_df$year &lt;- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format=&quot;%Y&quot;))
@@ -378,6 +383,8 @@ jaguar_df$hour &lt;- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),f
 jaguar_df$min &lt;- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format=&quot;%M&quot;))
 jaguar_df$time &lt;- jaguar_df$hour + (jaguar_df$min)/60
 </code></pre>
+
+<p>Day, Night and riseset (Sunrise or Sunset)</p>
 
 <pre><code class="r"># day  7 to 16  and  night 19 to 4 and  sun riseset 5,6,17,18
 #jaguar_df$month=as.numeric(substr(jaguar_df$date,6,7))
@@ -1375,8 +1382,8 @@ X117=subset(Pantanal,id==&#39;117&#39;)########## Pantanal
 <pre><code class="r">proc.time()
 </code></pre>
 
-<pre><code>##     user   system  elapsed 
-##  4806.10    76.84 10989.81
+<pre><code>##    user  system elapsed 
+## 1034.54   38.00 1134.90
 </code></pre>
 
 </body>

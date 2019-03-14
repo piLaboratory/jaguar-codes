@@ -1,9 +1,4 @@
-#' ---
-#' title: "Jaguar Data Preparation"
-#' authors: "Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima, Claudia Kanda, Milton Ribeiro, Ronaldo Morato, Paulo Prado"
-#' date: ""
-#' ---
-#' 
+#'
 #' #  **Jaguar Data Preparation**
 #' 
 #' #### *Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima,Claudia Kanda, Milton Ribeiro, Ronaldo Morato,Paulo Prado*
@@ -26,6 +21,7 @@ install.load::install_load("RCurl", "dplyr", "readr", "lubridate", "tibble") # A
 install.load::install_load("circular", "caTools") # Stats packages
 install.load::install_load("knitr", "ezknitr") # To render documents 
 #'
+
 #'
 #' ### Source functions from GitHub local directory 
 # Do not required to set directory if Rscript have been opened from the GitHub local directory
@@ -64,10 +60,11 @@ mov.data.org$GMTtime <- mov.data.org$timestamp.posix
 #'
 #' ## Get local time
 #'  
-# A column to represent the local timezone (already with the - signal) has been included to then multiply the timestamp and get the difference:
+#' A column to represent the local timezone (already with the - signal) has been included to then multiply the timestamp and get the difference:
 mov.data.org$local_time <- mov.data.org$timestamp.posix + mov.data.org$timezone*60*60
 mov.data.org$timestamp.posix <- mov.data.org$local_time 
 #' Now all the (timestamp.posix)'s calculations are based on local time
+#' #### *Note: UTC has also been assigned to the local time here. But the correct timezones of each region are assigned below*
 #' 
 #' 
 #' ### Adjusting for Movement Packages
@@ -124,13 +121,14 @@ jaguar_df$Event_ID  <- NULL
 #jaguar_df$timezone <- NULL
 # jaguar_df$dt <- NULL
 #'
+#' Create columns for different time periods
 jaguar_df$week <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format="%W"))
 jaguar_df$day <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format="%j"))
 jaguar_df$year <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format="%Y"))
 jaguar_df$hour <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format="%H"))
 jaguar_df$min <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format="%M"))
 jaguar_df$time <- jaguar_df$hour + (jaguar_df$min)/60
-#'
+#' Day, Night and riseset (Sunrise or Sunset)
 # day  7 to 16  and  night 19 to 4 and  sun riseset 5,6,17,18
 #jaguar_df$month=as.numeric(substr(jaguar_df$date,6,7))
 jaguar_df$period=ifelse(jaguar_df$hour==7,"day",
