@@ -1,90 +1,9 @@
-###########################################################################################################
-                            ############# Jaguar Map Move ##############   
-###########################################################################################################						
-######################################## Preparation ######################################################
-rm(list= ls())                                                  ### For a fresh start
-## Commented because is not generic
-#setwd("C:/RWorkDir/jaguardatapaper")                           ### Set directory (because it is a local setting)
-###########################################################################################################         																					
-###Enter jaguar data from Morato et al. 2018/ Bernardo scripts  
-  ## Load packages
-if(!require(install.load)) install.packages('install.load'); library(install.load)
-install.load::install_load("ggmap","maptools",'move',"circular","RCurl","dplyr","readr","caTools","adehabitatLT","ggsn","magick","rgl","tidyverse","htmltools","rglwidget")                                       
-### The require() can be used inside functions as it gives a warning message and returns a logical value. 
-### FALSE if the requested package is not found and TRUE if the package is loaded.###(Movement data should be checked and cleaned (for outliers, duplicated timestamps, etc)first!!! 
-### Load and adjust the data (already cleaned) and create a dataframe object
-#mov.data.org <- read.delim(file="c:/RWorkDir/jaguardatapaper/mov.data.org.txt") ## comentted because it is a local path
-mov.data.org <- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:tag.local.identifier))
-str(mov.data.org)
-## summary(mov.data.org)
-
-# Add Individual info ## Commented because is not generic!!!
-#info <- read.delim(file="c:/RWorkDir/jaguardatapaper/info.txt") ### preparation to merge deleted
-
-#Merge movement with individual info/parameters
-merged<- merge(mov.data.org,info)
-mov.data.org <- merged 
-str(mov.data.org)
-
-##########################
-# Organize data
-#mov.data.org 
-
-# Add 2000 to years
-get.year <- function(time.stamp) {
-  init <- gregexpr('/', time.stamp, fixed = T)[[1]][2] + 1
-  end <- gregexpr(' ', time.stamp, fixed = T)[[1]][1] - 1
-  substr(time.stamp, init, end)
-}
-
-# Test
-get.year(time.stamp = mov.data.org$timestamp[10000])
-# All individuals
-year <- as.numeric(sapply(mov.data.org$timestamp, get.year))
-table(year)
-
-# Add 1900/2000
-new.year <- as.character(ifelse(year > 50, year + 1900, year + 2000))
-table(new.year)
-
-# New dates
-set.year <- function(time.stamp, year) {
-  init <- gregexpr('/', time.stamp, fixed = T)[[1]][2]
-  end <- gregexpr(' ', time.stamp, fixed = T)[[1]][1]
-  paste(substr(time.stamp, 1, init), year,
-        substr(time.stamp, end, nchar(time.stamp)), sep = "")
-}
-
-
-# Test
-set.year(time.stamp = as.character(mov.data.org$timestamp[10000]), year = '2013')
-# All individuals
-date.time <- as.character(mapply(set.year, as.character(mov.data.org$timestamp),
-                                 new.year))
-str(date.time)
-#date.time
-#########################################################
-
-# All individuals
-date.time <- as.character(mapply(set.year, as.character(mov.data.org$timestamp),
-                                 new.year))
-str(date.time)
-#date.time
-# Date/Time as POSIXct object
-mov.data.org$timestamp.posix <- as.POSIXct(date.time, 
-                                           format = "%m/%d/%Y %H:%M", tz = 'GMT')
-										   
-str(mov.data.org)
-
-##################################################################################################
-###  Get local time!!!
-
-# I included a column to represent the local timezone (already with the - signal) to them multiply the timestamp and get the difference:
-mov.data.org$local_time <- mov.data.org$timestamp.posix + mov.data.org$timezone*60*60
-mov.data.org$timestamp.posix.GMT <- mov.data.org$timestamp.posix
-mov.data.org$timestamp.posix <- mov.data.org$local_time ### If we do that all the (timestamp.posix)'s calculations will be based on local time
-str(mov.data.org)
-################################################################
+#' #  **Jaguar Map Move**
+#' 
+#' #### *Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima,Claudia Kanda, Milton Ribeiro, Ronaldo Morato,Paulo Prado*
+#' date: "March, 13 2019"
+#' #### Run JaguarDataPrep first  
+#'
 
 
 #-----------------------------

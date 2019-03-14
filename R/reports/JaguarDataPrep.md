@@ -1,8 +1,3 @@
----
-title: "Jaguar Data Preparation"
-authors: "Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima, Claudia Kanda, Milton Ribeiro, Ronaldo Morato, Paulo Prado"
-date: ""
----
 
 #  **Jaguar Data Preparation**
 
@@ -123,15 +118,16 @@ mov.data.org$GMTtime <- mov.data.org$timestamp.posix
 
 ## Get local time
  
+A column to represent the local timezone (already with the - signal) has been included to then multiply the timestamp and get the difference:
 
 
 ```r
-# A column to represent the local timezone (already with the - signal) has been included to then multiply the timestamp and get the difference:
 mov.data.org$local_time <- mov.data.org$timestamp.posix + mov.data.org$timezone*60*60
 mov.data.org$timestamp.posix <- mov.data.org$local_time 
 ```
 
 Now all the (timestamp.posix)'s calculations are based on local time
+#### *Note: UTC has also been assigned to the local time here. But the correct timezones of each region are assigned below*
 
 
 ### Adjusting for Movement Packages
@@ -226,6 +222,7 @@ jaguar_df$Event_ID  <- NULL
 ```
 
 
+Create columns for different time periods
 
 
 ```r
@@ -237,7 +234,7 @@ jaguar_df$min <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),forma
 jaguar_df$time <- jaguar_df$hour + (jaguar_df$min)/60
 ```
 
-
+Day, Night and riseset (Sunrise or Sunset)
 
 
 ```r
@@ -1473,7 +1470,7 @@ proc.time()
 ```
 
 ```
-##     user   system  elapsed 
-##  4806.10    76.84 10989.81
+##    user  system elapsed 
+## 1034.54   38.00 1134.90
 ```
 
