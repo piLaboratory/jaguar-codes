@@ -2,67 +2,86 @@
 #' 
 #' #### *Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima,Claudia Kanda, Milton Ribeiro, Ronaldo Morato,Paulo Prado*
 #' date: "March, 13 2019"
-#' #### Run JaguarDataPrep first  
+#' #### Run JaguarDataPrep first !!! 
 #'
+#' ### Visualize all data with leaflet
+leaflet(jaguar_df)%>%addTiles()%>%addCircles(jaguar_df$x, jaguar_df$y)%>% addProviderTiles(providers$Esri.WorldImagery)
 
 
-#-----------------------------
-# Distribution of fix rates
-mov.data.diff <- mov.data.org
+#' ### Organize data again accordingly with packages for visualization/visual analysis
+#' 
+#' ####  amt
+#'  already set in data prep (e.g. jaguartrk with the entire tibble dataset)
+jaguartrk
 
-# Calculation of time between fixes
-time.between <- function(individual, dat) {
-  # Select individual
-  ind <- dat[dat$individual.local.identifier..ID. == individual,]
-  # Calculate difference in time, in hours, and return
-  c(as.numeric(diff.POSIXt(ind$timestamp.posix), units = 'hours'), NA)
-}
-# All individuals
-inds <- unique(mov.data.diff$individual.local.identifier..ID.)
-mov.data.diff$time.diff <- unlist(sapply(inds, FUN = time.between, dat = mov.data.diff))
-
-# Histogram
-for(i in inds) {
-  print(paste(i, paste(range(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == i], na.rm = T), collapse = ', '), sep = ': '))
-}
-
-hist(mov.data.diff$time.diff[mov.data.diff$time.diff > 0 & mov.data.diff$time.diff < 48],
-     main = 'All individuals pooled', xlab = "Time between fixes (h)")
-#-----------------------------
-
-## adehabitatLT
-# Transforms in ltraj object
-coords <- data.frame(mov.data.org$location.long, mov.data.org$location.lat)
-mov.traj <- as.ltraj(xy = coords, date=mov.data.org$timestamp.posix, 
-                     id=mov.data.org$individual.local.identifier..ID., 
-                     burst=mov.data.org$individual.local.identifier..ID., 
-                     infolocs = mov.data.org[,-c(3:4, ncol(mov.data.org))])
-mov.traj.df <- ld(mov.traj)
-#mov.traj
-#plot(mov.traj)
-#hist(mov.traj.df$dist)
-
-## move
-# Organize data as a move package format
-move.data <- move(x = mov.traj.df$x, y = mov.traj.df$y, 
-                  time = mov.traj.df$date, 
+#' 
+#' #### move
+move.data <- move(x = jaguar_df$x, y = jaguar_df$y, 
+                  time = jaguar_df$date, 
                   proj = CRS('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'),
-                  data = mov.traj.df, animal = mov.traj.df$id, sensor = 'GPS')
+                  data = jaguar_df, animal = jaguar_df$id, sensor = 'GPS')
 
 move.data  ### moveStack
 ###Separate individual animals' trajectories 
 unstacked <- split(move.data)
 head(unstacked)
-jaguar_df <- as(move.data, "data.frame")
+
+
+#-----------------------------
+# Distribution of fix rates
+mov.data.diff <- jaguar_df
+
+# Calculation of time between fixes
+time.between <- function(individual, dat) {
+  # Select individual
+  ind <- dat[dat$id == individual,]
+  # Calculate difference in time, in hours, and return
+  c(as.numeric(diff.POSIXt(ind$timestamp.posix), units = 'hours'), NA)
+}
+# All individuals
+inds <- unique(mov.data.diff$id)
+mov.data.diff$time.diff <- unlist(sapply(inds, FUN = time.between, dat = mov.data.diff))
+
+# Histogram
+for(i in inds) {
+  print(paste(i, paste(range(mov.data.diff$time.diff[mov.data.diff$id == i], na.rm = T), collapse = ', '), sep = ': '))
+}
+
+hist(mov.data.diff$time.diff[mov.data.diff$time.diff > 0 & mov.data.diff$time.diff < 48],
+     main = 'All individuals pooled', xlab = "Time between fixes (h)")
+
+hist(mov.data.diff$time.diff[mov.data.diff$time.diff > 0 & mov.data.diff$time.diff > 720],
+     main = 'All individuals pooled', xlab = "Time between fixes (h)")
+
+table(mov.data.diff$time.diff[mov.data.diff$time.diff  > 720])
+z=(mov.data.diff$time.diff[mov.data.diff$time.diff  > 720])
+
+# Checking the range
+(summary_range=tapply(Pantanal$date,list(Pantanal$id),range))
+# Checking the range in terms of days
+(dr=with(Pantanal, tapply(date, list(id), function(date) max(date)-min(date))))
+
+
+#-----------------------------
+
 
 	## Plot individual animals' trajectories (Maximum Zoom to include all points)
 #X1	
 unstacked <- split(move.data)
 X1=unstacked$X1
 X1_df <- as(X1, "data.frame")
-head(X1_df)
+head(X1)
 nrow(X1_df)
 range(X1_df$date)
+#' Now, using leaflet
+leaflet(X1)%>%addTiles()%>%addCircles(X1$x, X1$y)
+
+leaflet(X1)%>%addTiles()%>%addCircles(X1$x, X1$y)%>% addProviderTiles(providers$Esri.NatGeoWorldMap)
+
+leaflet(X1)%>%addTiles()%>%addCircles(X1$x, X1$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+
+
 m <- get_map(bbox(extent(X1)*1.1), source="google", zoom=12, maptype="satellite") #define the box for map based on the trajectory coordinates
 ggmap(m)+geom_path(data=X1_df,aes(x=x, y=y),colour = "red") #plot the map and the trajectory
 #aes(colour = as.numeric(date)
