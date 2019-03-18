@@ -2,7 +2,7 @@
 #  **Jaguar Data Preparation**
 
 #### *Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima,Claudia Kanda, Milton Ribeiro, Ronaldo Morato,Paulo Prado*
-date: "March, 08 2019"
+date: "March, 13 2019"
 ##### Scripts adapted from Bernardo Niebuhr data preparation, and Luca Borger and John Fieberg's lectures.
 
 
@@ -846,11 +846,9 @@ Cerrado2trk <- trk.convert(data = Cerrado2,
 ## .t found, creating `track_xyt`.
 ```
 
-Cerradotrk
-
-
 ```r
-Cerradotrk=rbind(Cerrado1trk,Cerrado2trk)
+# Cerradotrk
+# Cerradotrk=rbind(Cerrado1trk,Cerrado2trk) # This apparently would assign only the first UTM zone for both
 ```
 
 
@@ -932,11 +930,11 @@ Drych2trk <- trk.convert(data = Drych2,
 ```
 
 
- DRY CHACO trk => Drychtrk
 
 
 ```r
-Drychtrk=rbind(Drych1trk,Drych2trk)
+#  DRY CHACO trk => Drychtrk
+# Drychtrk=rbind(Drych1trk,Drych2trk) # This apparently would assign only the first UTM zone for both
 ```
 
 
@@ -1048,11 +1046,11 @@ Iguazu2trk <- trk.convert(data = Iguazu2,
 ```
 
 
- Iguazutrk   
 
 
 ```r
-Iguazutrk=rbind(Iguazu1trk,Iguazu2trk)
+# Iguazutrk   
+# Iguazutrk=rbind(Iguazu1trk,Iguazu2trk) # This apparently would assign only the first UTM zone for both
 ```
 
 
@@ -1233,163 +1231,278 @@ Objects for Pantanal project regions
 
 
 
-###    ALL  JAGUARS  trk =>     jaguartrk  
-		   
-All Project regions trk
+
+Dataframe and trk for each individual with adjusted timezones (to run if we need any specic individual)
 
 
 ```r
-jaguartrk=rbind(AFW1trk,AFW2trk,Caatingatrk,Cerrado1trk,Cerrado2trk,CRicatrk,Drychtrk, Hchtrk,FPytrk,Iguazutrk,
-                Mamirauatrk,iopPAtrk,Lacandonatrk, MexEasttrk, Sonoratrk,Oncafaritrk,Paraguaytrk,Panthera1trk,
-                Panthera2trk,RioNegrotrk,SaoBentotrk,Taiamatrk) 
+J1=subset(Hch,id=='1')   ####### Hch
+J1trk<-Hchtrk %>% filter(id=="1")
+J2=subset(FPy,id=='2')   ######### FPy
+J2trk<-FPytrk %>% filter(id=="2")
+J3=subset(Hch,id=='3')   ####### Hch
+J3trk<-Hchtrk %>% filter(id=="3")
+J4=subset(Hch,id=='4')   ####### Hch
+J4trk<-Hchtrk %>% filter(id=="4")
+J5=subset(Hch,id=='5')   ####### Hch
+J5trk<-Hchtrk %>% filter(id=="5")
+J6=subset(Hch,id=='6')   ####### Hch
+J6trk<-Hchtrk %>% filter(id=="6")
+J7=subset(Hch,id=='7')   ####### Hch
+J7trk<-Hchtrk %>% filter(id=="7")
+J8=subset(FPy,id=='8')   ######### FPy
+J8trk<-FPytrk %>% filter(id=="8")
+J9=subset(Hch,id=='9')   ####### Hch
+J9trk<-Hchtrk %>% filter(id=="9")
+J10=subset(Hch,id=='10') ####### Hch
+J10trk<-Hchtrk %>% filter(id=="10")
+J11=subset(Hch,id=='11') ####### Hch
+J11trk<-Hchtrk %>% filter(id=="11")
+J12=subset(Pantanal,id=='12') ########## Pantanal
+J12trk<-Pantanaltrk %>% filter(id=="12")
+J13=subset(Pantanal,id=='13') ########## Pantanal
+J13trk<-Pantanaltrk %>% filter(id=="13")
+J14=subset(Pantanal,id=='14') ########## Pantanal
+J14trk<-Pantanaltrk %>% filter(id=="14")
+J15=subset(Pantanal,id=='15') ########## Pantanal
+J15trk<-Pantanaltrk %>% filter(id=="15")
+J16=subset(Drych1,id=='16') ######### Drych1
+J16trk<-Drych1trk %>% filter(id=="16")
+J17=subset(Cerrado1,id=='17') ############### Cerrado1
+J17trk<-Cerrado1trk %>% filter(id=="17")
+J18=subset(Pantanal,id=='18') ########## Pantanal
+J18trk<-Pantanaltrk %>% filter(id=="18")
+J19=subset(Pantanal,id=='19') ########## Pantanal
+J19trk<-Pantanaltrk %>% filter(id=="19")
+J20=subset(Caatinga,id=='20') ################# Caatinga 
+J20trk<-Caatingatrk %>% filter(id=="20")
+J21=subset(FPy,id=='21')  ######### FPy
+J21trk<-FPytrk %>% filter(id=="21")
+J22=subset(Pantanal,id=='22') ########## Pantanal
+J22trk<-Pantanaltrk %>% filter(id=="22")
+J23=subset(Pantanal,id=='23') ########## Pantanal
+J23trk<-Pantanaltrk %>% filter(id=="23")
+J24=subset(iopPA,id=='24') ###### iopPA
+J24trk<-iopPAtrk %>% filter(id=="24")
+J25=subset(Pantanal,id=='25') ########## Pantanal
+J25trk<-Pantanaltrk %>% filter(id=="25")
+J26=subset(CRica,id=='26')  ######### CRica
+J26trk<-CRicatrk %>% filter(id=="26")
+J27=subset(Pantanal,id=='27') ########## Pantanal
+J27trk<-Pantanaltrk %>% filter(id=="27")
+J28=subset(Pantanal,id=='28') ########## Pantanal
+J28trk<-Pantanaltrk %>% filter(id=="28")
+J29=subset(Pantanal,id=='29') ########## Pantanal
+J29trk<-Pantanaltrk %>% filter(id=="29")
+J30=subset(Pantanal,id=='30') ########## Pantanal
+J30trk<-Pantanaltrk %>% filter(id=="30")
+J31=subset(Pantanal,id=='31') ########## Pantanal
+J31trk<-Pantanaltrk %>% filter(id=="31")
+J32=subset(Pantanal,id=='32') ########## Pantanal
+J32trk<-Pantanaltrk %>% filter(id=="32")
+J33=subset(Pantanal,id=='33') ########## Pantanal
+J33trk<-Pantanaltrk %>% filter(id=="33")
+J34=subset(AFW1,id=='34')   ############### AFW1
+J34trk<-AFW1trk %>% filter(id=="34")
+J35=subset(AFW1,id=='35')   ############### AFW1
+J35trk<-AFW1trk %>% filter(id=="35")
+J36=subset(AFW1,id=='36')   ############### AFW1
+J36trk<-AFW1trk %>% filter(id=="36")
+J37=subset(AFW1,id=='37')   ############### AFW1
+J37trk<-AFW1trk %>% filter(id=="37")
+J38=subset(AFW1,id=='38')   ############### AFW1
+J38trk<-AFW1trk %>% filter(id=="38")
+J39=subset(AFW2,id=='39')   ###############  AFW2
+J39trk<-AFW2trk %>% filter(id=="39")
+J40=subset(AFW2,id=='40')   ###############  AFW2
+J40trk<-AFW2trk %>% filter(id=="40")
+J41=subset(Pantanal,id=='41') ########## Pantanal
+J41trk<-Pantanaltrk %>% filter(id=="41")
+J42=subset(Iguazu1,id=='42') ######## Iguazu1
+J42trk<-Iguazu1trk %>% filter(id=="42")
+J43=subset(Sonora,id=='43') ######## Sonora
+J43trk<-Sonoratrk %>% filter(id=="43")
+J44=subset(Lacandona,id=='44') ######## Lacandona
+J44trk<-Lacandonatrk %>% filter(id=="44")
+J45=subset(Lacandona,id=='45') ######## Lacandona
+J45trk<-Lacandonatrk %>% filter(id=="45")
+J46=subset(Lacandona,id=='46')  ######## Lacandona
+J46trk<-Lacandonatrk %>% filter(id=="46")
+J47=subset(Lacandona,id=='47')  ######## Lacandona
+J47trk<-Lacandonatrk %>% filter(id=="47")
+J48=subset(Lacandona,id=='48')  ######## Lacandona
+J48trk<-Lacandonatrk %>% filter(id=="48")
+J49=subset(MexEast,id=='49')  ######### MexEast
+J49trk<-MexEasttrk %>% filter(id=="49")
+J50=subset(Caatinga,id=='50')  ############### Caatinga
+J50trk<-Caatingatrk %>% filter(id=="50")
+J51=subset(Pantanal,id=='51') ########## Pantanal
+J51trk<-Pantanaltrk %>% filter(id=="51")
+J52=subset(Pantanal,id=='52') ########## Pantanal
+J52trk<-Pantanaltrk %>% filter(id=="52")
+J53=subset(Pantanal,id=='53') ########## Pantanal
+J53trk<-Pantanaltrk %>% filter(id=="53")
+J54=subset(Pantanal,id=='54') ########## Pantanal
+J54trk<-Pantanaltrk %>% filter(id=="54")
+J55=subset(Pantanal,id=='55') ########## Pantanal
+J55trk<-Pantanaltrk %>% filter(id=="55")
+J56=subset(Pantanal,id=='56') ########## Pantanal
+J56trk<-Pantanaltrk %>% filter(id=="56")
+J57=subset(Pantanal,id=='57') ########## Pantanal
+J57trk<-Pantanaltrk %>% filter(id=="57")
+J58=subset(AFW1,id=='58')   ###############  AFW1
+J58trk<-AFW1trk %>% filter(id=="58")
+J59=subset(Pantanal,id=='59') ########## Pantanal
+J59trk<-Pantanaltrk %>% filter(id=="59")
+J60=subset(Pantanal,id=='60') ########## Pantanal
+J60trk<-Pantanaltrk %>% filter(id=="60")
+J61=subset(Pantanal,id=='61') ########## Pantanal
+J61trk<-Pantanaltrk %>% filter(id=="61")
+J62=subset(AFW1,id=='62')   ###############  AFW1
+J62trk<-AFW1trk %>% filter(id=="62")
+J63=subset(AFW2,id=='63')   ###############  AFW2
+J63trk<-AFW2trk %>% filter(id=="63")
+J64=subset(Sonora,id=='64') ######## Sonora
+J64trk<-Sonoratrk %>% filter(id=="64")
+J65=subset(Cerrado1,id=='65')  ########## Cerrado1
+J65trk<-Cerrado1trk %>% filter(id=="65")
+J66=subset(Iguazu1,id=='66')  ########## Iguazu1
+J66trk<-Iguazu1trk %>% filter(id=="66")
+J67=subset(Cerrado1,id=='67')  ########## Cerrado1
+J67trk<-Cerrado1trk %>% filter(id=="67")
+J68=subset(Pantanal,id=='68') ########## Pantanal
+J68trk<-Pantanaltrk %>% filter(id=="68")
+J69=subset(Pantanal,id=='69') ########## Pantanal
+J69trk<-Pantanaltrk %>% filter(id=="69")
+J70=subset(Drych1,id=='70')  ######## Drych1
+J70trk<-Drych1trk %>% filter(id=="70")
+J71=subset(Drych2,id=='71') ####### Drych2
+J71trk<-Drych2trk %>% filter(id=="71")
+J72=subset(Drych2,id=='72') ####### Drych2
+J72trk<-Drych2trk %>% filter(id=="72")
+J73=subset(Drych2,id=='73') ####### Drych2
+J73trk<-Drych2trk %>% filter(id=="73")
+J74=subset(Pantanal,id=='74')  ########## Pantanal
+J74trk<-Pantanaltrk %>% filter(id=="74")
+J75=subset(Pantanal,id=='75')  ########## Pantanal
+J75trk<-Pantanaltrk %>% filter(id=="75")
+J76=subset(Drych1,id=='76') ####### Drych1
+J76trk<-Drych1trk %>% filter(id=="76")
+J77=subset(Drych1,id=='77') ####### Drych1
+J77trk<-Drych1trk %>% filter(id=="77")
+J78=subset(FPy,id=='78')  ####### FPy
+J78trk<-FPytrk %>% filter(id=="78")
+J79=subset(Pantanal,id=='79') ########## Pantanal
+J79trk<-Pantanaltrk %>% filter(id=="79")
+J80=subset(Iguazu1,id=='80') ######## Iguazu1
+J80trk<-Iguazu1trk %>% filter(id=="80")
+J81=subset(Pantanal,id=='81') ########## Pantanal
+J81trk<-Pantanaltrk %>% filter(id=="81")
+J82=subset(Cerrado1,id=='82')  ########## Cerrado1
+J82trk<-Cerrado1trk %>% filter(id=="82")
+J83=subset(Iguazu2,id=='83')  ########## Iguazu2
+J83trk<-Iguazu2trk %>% filter(id=="83")
+J84=subset(Pantanal,id=='84')  ########## Pantanal
+J84trk<-Pantanaltrk %>% filter(id=="84")
+J85=subset(Cerrado1,id=='85')  ########## Cerrado1
+J85trk<-Cerrado1trk %>% filter(id=="85")
+J86=subset(Pantanal,id=='86') ########## Pantanal
+J86trk<-Pantanaltrk %>% filter(id=="86")
+J87=subset(Pantanal,id=='87') ########## Pantanal
+J87trk<-Pantanaltrk %>% filter(id=="87")
+J88=subset(Pantanal,id=='88') ########## Pantanal
+J88trk<-Pantanaltrk %>% filter(id=="88")
+J89=subset(Cerrado2,id=='89') ######### Cerrado2
+J89trk<-Cerrado2trk %>% filter(id=="89")
+J90=subset(Iguazu1,id=='90') ######### Iguazu1
+J90trk<-Iguazu1trk %>% filter(id=="90")
+J91=subset(Pantanal,id=='91') ########## Pantanal
+J91trk<-Pantanaltrk %>% filter(id=="91")
+J92=subset(Pantanal,id=='92') ########## Pantanal
+J92trk<-Pantanaltrk %>% filter(id=="92")
+J93=subset(Mamiraua,id=='93') ######### Mamiraua
+J93trk<-Mamirauatrk %>% filter(id=="93")
+J94=subset(Mamiraua,id=='94') ######### Mamiraua
+J94trk<-Mamirauatrk %>% filter(id=="94")
+J95=subset(Mamiraua,id=='95') ######### Mamiraua
+J95trk<-Mamirauatrk %>% filter(id=="95")
+J96=subset(Mamiraua,id=='96') ######### Mamiraua
+J96trk<-Mamirauatrk %>% filter(id=="96")
+J97=subset(Mamiraua,id=='97') ######### Mamiraua
+J97trk<-Mamirauatrk %>% filter(id=="97")
+J98=subset(Mamiraua,id=='98') ######### Mamiraua
+J98trk<-Mamirauatrk %>% filter(id=="98")
+J99=subset(Mamiraua,id=='99') ######### Mamiraua
+J99trk<-Mamirauatrk %>% filter(id=="99")
+J100=subset(Mamiraua,id=='100')######### Mamiraua
+J100trk<-Mamirauatrk %>% filter(id=="100")
+J101=subset(Pantanal,id=='101') ########## Pantanal
+J101trk<-Pantanaltrk %>% filter(id=="101")
+J102=subset(Pantanal,id=='102') ########## Pantanal
+J102trk<-Pantanaltrk %>% filter(id=="102")
+J103=subset(Pantanal,id=='103') ########## Pantanal
+J103trk<-Pantanaltrk %>% filter(id=="103")
+J104=subset(Pantanal,id=='104') ########## Pantanal
+J104trk<-Pantanaltrk %>% filter(id=="104")
+J105=subset(Pantanal,id=='105') ########## Pantanal
+J105trk<-Pantanaltrk %>% filter(id=="105")
+J106=subset(Pantanal,id=='106') ########## Pantanal
+J106trk<-Pantanaltrk %>% filter(id=="106")
+J107=subset(Pantanal,id=='107')########## Pantanal
+J107trk<-Pantanaltrk %>% filter(id=="107")
+J108=subset(Pantanal,id=='108')########## Pantanal
+J108trk<-Pantanaltrk %>% filter(id=="108")
+J109=subset(Pantanal,id=='109')########## Pantanal
+J109trk<-Pantanaltrk %>% filter(id=="109")
+J110=subset(Pantanal,id=='110')########## Pantanal
+J110trk<-Pantanaltrk %>% filter(id=="110")
+J111=subset(Pantanal,id=='111')########## Pantanal
+J111trk<-Pantanaltrk %>% filter(id=="111")
+J112=subset(Pantanal,id=='112')########## Pantanal
+J112trk<-Pantanaltrk %>% filter(id=="112")
+J113=subset(Pantanal,id=='113')########## Pantanal
+J113trk<-Pantanaltrk %>% filter(id=="113")
+J114=subset(Pantanal,id=='114')########## Pantanal
+J114trk<-Pantanaltrk %>% filter(id=="114")
+J115=subset(Pantanal,id=='115')########## Pantanal
+J115trk<-Pantanaltrk %>% filter(id=="115")
+J116=subset(Pantanal,id=='116')########## Pantanal
+J116trk<-Pantanaltrk %>% filter(id=="116")
+J117=subset(Pantanal,id=='117')########## Pantanal
+J117trk<-Pantanaltrk %>% filter(id=="117")
 ```
 
 
 
-Dataframe for each individual with adjusted timezones (to run if we need any specic individual)
 
 
 ```r
-X1=subset(Hch,id=='1')   ####### Hch
-X2=subset(FPy,id=='2')   ######### FPy
-X3=subset(Hch,id=='3')   ####### Hch
-X4=subset(Hch,id=='4')   ####### Hch
-X5=subset(Hch,id=='5')   ####### Hch
-X6=subset(Hch,id=='6')   ####### Hch
-X7=subset(Hch,id=='7')   ####### Hch
-X8=subset(FPy,id=='8')   ######### FPy
-X9=subset(Hch,id=='9')   ####### Hch
-X10=subset(Hch,id=='10') ####### Hch
-X11=subset(Hch,id=='11') ####### Hch
-X12=subset(Pantanal,id=='12') ########## Pantanal
-X13=subset(Pantanal,id=='13') ########## Pantanal
-X14=subset(Pantanal,id=='14') ########## Pantanal
-X15=subset(Pantanal,id=='15') ########## Pantanal
-X16=subset(Drych1,id=='16') ######### Drych1
-X17=subset(Cerrado1,id=='17') ############### Cerrado1
-X18=subset(Pantanal,id=='18') ########## Pantanal
-X19=subset(Pantanal,id=='19') ########## Pantanal
-X20=subset(Caatinga,id=='20') ################# Caatinga 
-X21=subset(FPy,id=='21')  ######### FPy
-X22=subset(Pantanal,id=='22') ########## Pantanal
-X23=subset(Pantanal,id=='23') ########## Pantanal
-X24=subset(iopPA,id=='24') ###### iopPA
-X25=subset(Pantanal,id=='25') ########## Pantanal
-X26=subset(CRica,id=='26')  ######### CRica
-X27=subset(Pantanal,id=='27') ########## Pantanal
-X28=subset(Pantanal,id=='28') ########## Pantanal
-X29=subset(Pantanal,id=='29') ########## Pantanal
-X30=subset(Pantanal,id=='30') ########## Pantanal
-X31=subset(Pantanal,id=='31') ########## Pantanal
-X32=subset(Pantanal,id=='32') ########## Pantanal
-X33=subset(Pantanal,id=='33') ########## Pantanal
-X34=subset(AFW1,id=='34')   ############### AFW1
-X35=subset(AFW1,id=='35')   ############### AFW1
-X36=subset(AFW1,id=='36')   ############### AFW1
-X37=subset(AFW1,id=='37')   ############### AFW1
-X38=subset(AFW1,id=='38')   ############### AFW1
-X39=subset(AFW2,id=='39')   ###############  AFW2
-X40=subset(AFW2,id=='40')   ###############  AFW2
-X41=subset(Pantanal,id=='41') ########## Pantanal
-X42=subset(Iguazu1,id=='42') ######## Iguazu1
-X43=subset(Sonora,id=='43') ######## Sonora
-X44=subset(Lacandona,id=='44') ######## Lacandona
-X45=subset(Lacandona,id=='45') ######## Lacandona
-X46=subset(Lacandona,id=='46')  ######## Lacandona
-X47=subset(Lacandona,id=='47')  ######## Lacandona
-X48=subset(Lacandona,id=='48')  ######## Lacandona
-X49=subset(MexEast,id=='49')  ######### MexEast
-X50=subset(Caatinga,id=='50')  ############### Caatinga
-X51=subset(Pantanal,id=='51') ########## Pantanal
-X52=subset(Pantanal,id=='52') ########## Pantanal
-X53=subset(Pantanal,id=='53') ########## Pantanal
-X54=subset(Pantanal,id=='54') ########## Pantanal
-X55=subset(Pantanal,id=='55') ########## Pantanal
-X56=subset(Pantanal,id=='56') ########## Pantanal
-X57=subset(Pantanal,id=='57') ########## Pantanal
-X58=subset(AFW1,id=='58')   ###############  AFW1
-X59=subset(Pantanal,id=='59') ########## Pantanal
-X60=subset(Pantanal,id=='60') ########## Pantanal
-X61=subset(Pantanal,id=='61') ########## Pantanal
-X62=subset(AFW1,id=='62')   ###############  AFW1
-X63=subset(AFW2,id=='63')   ###############  AFW2
-X64=subset(Sonora,id=='64') ######## Sonora
-X65=subset(Cerrado1,id=='65')  ########## Cerrado1
-X66=subset(Iguazu1,id=='66')  ########## Iguazu1
-X67=subset(Cerrado1,id=='67')  ########## Cerrado1
-X68=subset(Pantanal,id=='68') ########## Pantanal
-X69=subset(Pantanal,id=='69') ########## Pantanal
-X70=subset(Drych1,id=='70')  ######## Drych1
-X71=subset(Drych2,id=='71') ####### Drych2
-X72=subset(Drych2,id=='72') ####### Drych2
-X73=subset(Drych2,id=='73') ####### Drych2
-X74=subset(Pantanal,id=='74')  ########## Pantanal
-X75=subset(Pantanal,id=='75')  ########## Pantanal
-X76=subset(Drych1,id=='76') ####### Drych1
-X77=subset(Drych1,id=='77') ####### Drych1
-X78=subset(FPy,id=='78')  ####### FPy
-X79=subset(Pantanal,id=='79') ########## Pantanal
-X80=subset(Iguazu1,id=='80') ######## Iguazu1
-X81=subset(Pantanal,id=='81') ########## Pantanal
-X82=subset(Cerrado1,id=='82')  ########## Cerrado1
-X83=subset(Iguazu2,id=='83')  ########## Iguazu2
-X84=subset(Pantanal,id=='84')  ########## Pantanal
-X85=subset(Cerrado1,id=='85')  ########## Cerrado1
-X86=subset(Pantanal,id=='86') ########## Pantanal
-X87=subset(Pantanal,id=='87') ########## Pantanal
-X88=subset(Pantanal,id=='88') ########## Pantanal
-X89=subset(Cerrado2,id=='89') ######### Cerrado2
-X90=subset(Iguazu1,id=='90') ######### Iguazu1
-X91=subset(Pantanal,id=='91') ########## Pantanal
-X92=subset(Pantanal,id=='92') ########## Pantanal
-X93=subset(Mamiraua,id=='93') ######### Mamiraua
-X94=subset(Mamiraua,id=='94') ######### Mamiraua
-X95=subset(Mamiraua,id=='95') ######### Mamiraua
-X96=subset(Mamiraua,id=='96') ######### Mamiraua
-X97=subset(Mamiraua,id=='97') ######### Mamiraua
-X98=subset(Mamiraua,id=='98') ######### Mamiraua
-X99=subset(Mamiraua,id=='99') ######### Mamiraua
-X100=subset(Mamiraua,id=='100')######### Mamiraua
-X101=subset(Pantanal,id=='101') ########## Pantanal
-X102=subset(Pantanal,id=='102') ########## Pantanal
-X103=subset(Pantanal,id=='103') ########## Pantanal
-X104=subset(Pantanal,id=='104') ########## Pantanal
-X105=subset(Pantanal,id=='105') ########## Pantanal
-X106=subset(Pantanal,id=='106') ########## Pantanal
-X107=subset(Pantanal,id=='107')########## Pantanal
-X108=subset(Pantanal,id=='108')########## Pantanal
-X109=subset(Pantanal,id=='109')########## Pantanal
-X110=subset(Pantanal,id=='110')########## Pantanal
-X111=subset(Pantanal,id=='111')########## Pantanal
-X112=subset(Pantanal,id=='112')########## Pantanal
-X113=subset(Pantanal,id=='113')########## Pantanal
-X114=subset(Pantanal,id=='114')########## Pantanal
-X115=subset(Pantanal,id=='115')########## Pantanal
-X116=subset(Pantanal,id=='116')########## Pantanal
-X117=subset(Pantanal,id=='117')########## Pantanal
+#    ALL  JAGUARS  =>  jaguartrk  #This apparently would assign only the first timezone appearing for all
+# All Project regions trk
+# jaguartrk=bind_rows(AFW1trk,AFW2trk,Caatingatrk,Cerrado1trk,Cerrado2trk,CRicatrk,Drychtrk, Hchtrk,FPytrk,
+# Iguazutrk,Mamirauatrk,iopPAtrk,Lacandonatrk, MexEasttrk, Sonoratrk,Oncafaritrk,Paraguaytrk,Panthera1trk,
+# Panthera2trk,RioNegrotrk,SaoBentotrk,Taiamatrk) 
+# to get it ordered
+# jaguartrk<-arrange(jaguartrk,id,t_)
 ```
 
-
-#### Produce an Rmd and html outputs using ezknitr
+   ALL  JAGUARS  => jaguarlist 
 
 
 ```r
-ezspin(file = "JaguarDataPrep.R", out_dir = "reports",
-       params = list("DATASET_NAME" = "jaguar.dat"), 
-       keep_html = TRUE, keep_rmd = TRUE)
-```
-
-```
-## ezspin output in
-## D:\Documents\GitHub\jaguar-codes\R\reports
-```
-
-```r
-open_output_dir()
-```
-
-```
-## Opening D:\Documents\GitHub\jaguar-codes\R\reports
+# To put individuals together while keeping respective UTMs and Timezones, just in case we need it
+jaguarlist = list(J1trk,J2trk,J3trk,J4trk,J5trk,J6trk,J7trk,J8trk,J9trk,J10trk,
+                  J11trk,J12trk,J13trk,J14trk,J15trk,J16trk,J17trk,J18trk,J19trk,J20trk,
+                  J21trk,J22trk,J23trk,J24trk,J25trk,J26trk,J27trk,J28trk,J29trk,J30trk,
+                  J31trk,J32trk,J33trk,J34trk,J35trk,J36trk,J37trk,J38trk,J39trk,J40trk,
+                  J41trk,J42trk,J43trk,J44trk,J45trk,J46trk,J47trk,J48trk,J49trk,J50trk,
+                  J51trk,J52trk,J53trk,J54trk,J55trk,J56trk,J57trk,J58trk,J59trk,J60trk,
+                  J61trk,J62trk,J63trk,J64trk,J65trk,J66trk,J67trk,J68trk,J69trk,J70trk,
+                  J71trk,J72trk,J73trk,J74trk,J75trk,J76trk,J77trk,J78trk,J79trk,J80trk,
+                  J81trk,J82trk,J83trk,J84trk,J85trk,J86trk,J87trk,J88trk,J89trk,J90trk,
+                  J91trk,J92trk,J93trk,J94trk,J95trk,J96trk,J97trk,J98trk,J99trk,J100trk,
+              J101trk,J102trk,J103trk,J104trk,J105trk,J106trk,J107trk,J108trk,J109trk,J110trk,
+              J111trk,J112trk,J113trk,J114trk,J115trk,J116trk,J117trk)
 ```
 
 Other info
@@ -1430,39 +1543,41 @@ sessionInfo()
 ## [31] install.load_1.2.1 
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] httr_1.4.0              maps_3.3.0             
-##  [3] tidyr_0.8.2             jsonlite_1.5           
-##  [5] splines_3.5.2           R.utils_2.7.0          
-##  [7] shiny_1.2.0             assertthat_0.2.0       
-##  [9] highr_0.7               yaml_2.2.0             
-## [11] pillar_1.3.0            glue_1.3.0             
-## [13] digest_0.6.18           manipulateWidget_0.10.0
-## [15] promises_1.0.1          R.oo_1.22.0            
-## [17] htmltools_0.3.6         httpuv_1.4.5           
-## [19] Matrix_1.2-15           plyr_1.8.4             
-## [21] pkgconfig_2.0.2         mvtnorm_1.0-8          
-## [23] purrr_0.2.5             xtable_1.8-3           
-## [25] webshot_0.5.1           scales_1.0.0           
-## [27] jpeg_0.1-8              later_0.7.5            
-## [29] withr_2.1.2             lazyeval_0.2.1         
-## [31] proto_1.0.0             survival_2.43-3        
-## [33] magrittr_1.5            crayon_1.3.4           
-## [35] mime_0.6                evaluate_0.12          
-## [37] memoise_1.1.0           R.methodsS3_1.7.1      
-## [39] xml2_1.2.0              foreign_0.8-71         
-## [41] tools_3.5.2             hms_0.4.2              
-## [43] RgoogleMaps_1.4.3       stringr_1.3.1          
-## [45] munsell_0.5.0           compiler_3.5.2         
-## [47] rlang_0.3.0.1           grid_3.5.2             
-## [49] rstudioapi_0.8          rjson_0.2.20           
-## [51] htmlwidgets_1.3         miniUI_0.1.1.1         
-## [53] crosstalk_1.0.0         gtable_0.2.0           
-## [55] codetools_0.2-15        markdown_0.8           
-## [57] reshape2_1.4.3          R6_2.3.0               
-## [59] bindr_0.1.1             stringi_1.2.4          
-## [61] parallel_3.5.2          Rcpp_1.0.0             
-## [63] mapproj_1.2.6           png_0.1-7              
-## [65] tidyselect_0.2.5        xfun_0.4
+##  [1] webshot_0.5.1           httr_1.4.0             
+##  [3] tools_3.5.2             utf8_1.1.4             
+##  [5] R6_2.3.0                lazyeval_0.2.1         
+##  [7] manipulateWidget_0.10.0 withr_2.1.2            
+##  [9] tidyselect_0.2.5        compiler_3.5.2         
+## [11] cli_1.0.1               xml2_1.2.0             
+## [13] scales_1.0.0            mvtnorm_1.0-8          
+## [15] stringr_1.3.1           digest_0.6.18          
+## [17] foreign_0.8-71          R.utils_2.7.0          
+## [19] jpeg_0.1-8              pkgconfig_2.0.2        
+## [21] htmltools_0.3.6         highr_0.7              
+## [23] maps_3.3.0              htmlwidgets_1.3        
+## [25] rlang_0.3.0.1           rstudioapi_0.8         
+## [27] shiny_1.2.0             bindr_0.1.1            
+## [29] jsonlite_1.5            crosstalk_1.0.0        
+## [31] R.oo_1.22.0             magrittr_1.5           
+## [33] Matrix_1.2-15           Rcpp_1.0.0             
+## [35] munsell_0.5.0           fansi_0.4.0            
+## [37] proto_1.0.0             R.methodsS3_1.7.1      
+## [39] stringi_1.2.4           yaml_2.2.0             
+## [41] plyr_1.8.4              grid_3.5.2             
+## [43] parallel_3.5.2          promises_1.0.1         
+## [45] crayon_1.3.4            miniUI_0.1.1.1         
+## [47] splines_3.5.2           mapproj_1.2.6          
+## [49] hms_0.4.2               pillar_1.3.0           
+## [51] rjson_0.2.20            markdown_0.8           
+## [53] reshape2_1.4.3          codetools_0.2-15       
+## [55] glue_1.3.0              evaluate_0.12          
+## [57] png_0.1-7               httpuv_1.4.5           
+## [59] RgoogleMaps_1.4.3       gtable_0.2.0           
+## [61] purrr_0.2.5             tidyr_0.8.2            
+## [63] assertthat_0.2.0        xfun_0.4               
+## [65] mime_0.6                xtable_1.8-3           
+## [67] later_0.7.5             survival_2.43-3        
+## [69] memoise_1.1.0
 ```
 
 ```r
@@ -1471,6 +1586,6 @@ proc.time()
 
 ```
 ##    user  system elapsed 
-## 1034.54   38.00 1134.90
+##  346.53    6.98 1348.01
 ```
 
