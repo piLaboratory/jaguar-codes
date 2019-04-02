@@ -221,7 +221,7 @@ hr {
 <pre><code class="r">if(!require(install.load)) install.packages(&#39;install.load&#39;); library(install.load)
 install.load::install_load(&quot;move&quot;, &quot;adehabitatLT&quot;, &quot;amt&quot;) # Movement packages
 install.load::install_load(&quot;maptools&quot;, &quot;raster&quot;, &quot;rgdal&quot;,&quot;sp&quot;) # Spatial packages
-install.load::install_load(&quot;colorspace&quot;,&quot;ggmap&quot;, &quot;rgl&quot;, &quot;lattice&quot;, &quot;leaflet&quot;) # Visualization packages
+install.load::install_load(&quot;colorspace&quot;, &quot;rgl&quot;, &quot;lattice&quot;, &quot;leaflet&quot;,&quot;ggplot2&quot;) # Visualization packages
 install.load::install_load(&quot;RCurl&quot;, &quot;dplyr&quot;, &quot;readr&quot;, &quot;lubridate&quot;, &quot;tibble&quot;) # Aux packages
 install.load::install_load(&quot;circular&quot;, &quot;caTools&quot;) # Stats packages
 install.load::install_load(&quot;knitr&quot;, &quot;ezknitr&quot;) # To render documents 
@@ -281,8 +281,7 @@ get.year(time.stamp = mov.data.org$timestamp[10000])</p>
 
 <p>Date/Time as POSIXct object</p>
 
-<pre><code class="r">mov.data.org$timestamp.posix &lt;- as.POSIXct(date.time, 
-                                           format = &quot;%m/%d/%Y %H:%M&quot;, tz = &#39;UTC&#39;)
+<pre><code class="r">mov.data.org$timestamp.posix &lt;- as.POSIXct(date.time,format = &quot;%m/%d/%Y %H:%M&quot;, tz = &#39;UTC&#39;)
 mov.data.org$GMTtime &lt;- mov.data.org$timestamp.posix
 </code></pre>
 
@@ -300,38 +299,25 @@ mov.data.org$timestamp.posix &lt;- mov.data.org$local_time
 
 <h3>Adjusting for Movement Packages</h3>
 
-<h3>adehabitatLT</h3>
+<h4>Creating a track in amt (with lat long for now)</h4>
 
-<p>Transforms in ltraj object</p>
-
-<pre><code class="r">coords &lt;- data.frame(mov.data.org$location.long, mov.data.org$location.lat)
-mov.traj &lt;- as.ltraj(xy = coords, date=mov.data.org$timestamp.posix, 
-                     id=mov.data.org$individual.local.identifier..ID., 
-                     burst=mov.data.org$individual.local.identifier..ID., 
-                     infolocs = mov.data.org[,-c(3:6, ncol(mov.data.org))])
-mov.traj.df &lt;- ld(mov.traj)
+<pre><code class="r">trk1 &lt;- mk_track(mov.data.org,.x=location.long, .y=location.lat, .t=timestamp.posix,
+                id=individual.local.identifier..ID.,sex=sex,age=age, weight=weight, 
+                status=status,model=model,project_region=project_region, project_bioveg=project_bioveg,
+                country=country,GMTtime=GMTtime,local_time=local_time,crs = CRS(&quot;+init=epsg:4326&quot;))
 </code></pre>
 
-<h3>move</h3>
-
-<p>Organize data as a move package format</p>
-
-<pre><code class="r">move.data &lt;- move(x = mov.traj.df$x, y = mov.traj.df$y, 
-                  time = mov.traj.df$date, 
-                  proj = CRS(&#39;+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs&#39;),
-                  data = mov.traj.df, animal = mov.traj.df$id, sensor = &#39;GPS&#39;)
+<pre><code>## .t found, creating `track_xyt`.
 </code></pre>
 
-<p>move.data  (moveStack)
-Separate individual animals&#39; trajectories and convert move object to a dataframe</p>
-
-<pre><code class="r"># unstacked &lt;- split(move.data)
-jaguar_df &lt;- as(move.data, &quot;data.frame&quot;)
+<pre><code class="r">trk1 &lt;- trk1 %&gt;% arrange(id)
+jaguar_df &lt;- as.data.frame(trk1)
 </code></pre>
 
 <p>Reclassifying variables</p>
 
-<pre><code class="r">age &lt;- as.numeric(levels(jaguar_df$age))[jaguar_df$age]
+<pre><code class="r">jaguar_df$idf &lt;- as.factor(jaguar_df$id)
+age &lt;- as.numeric(levels(jaguar_df$age))[jaguar_df$age]
 </code></pre>
 
 <pre><code>## Warning: NAs introduced by coercion
@@ -343,71 +329,11 @@ jaguar_df &lt;- as(move.data, &quot;data.frame&quot;)
 <pre><code>## Warning: NAs introduced by coercion
 </code></pre>
 
-<pre><code class="r">jaguar_df$id &lt;- as.factor(jaguar_df$individual.local.identifier..ID.)  
-jaguar_df$age &lt;- age   
+<pre><code class="r">jaguar_df$age &lt;- age   
 jaguar_df$weight &lt;- weight  
-</code></pre>
-
-<p>Cleaning up columns which will be in excess due to repetition of analysis </p>
-
-<pre><code class="r">jaguar_df$dx &lt;- NULL
-jaguar_df$dy &lt;- NULL
-jaguar_df$dist &lt;- NULL
-jaguar_df$R2n &lt;- NULL
-jaguar_df$abs.angle &lt;- NULL
-jaguar_df$rel.angle  &lt;- NULL
-jaguar_df$location.lat &lt;- NULL
-jaguar_df$timestamps  &lt;- NULL
-jaguar_df$sensor &lt;- NULL
-jaguar_df$burst &lt;- NULL
-jaguar_df$optional &lt;- NULL
-jaguar_df$coords.x1 &lt;- NULL
-jaguar_df$coords.x2 &lt;- NULL
-jaguar_df$trackId &lt;- NULL
-jaguar_df$individual.local.identifier..ID.&lt;- NULL
-jaguar_df$study.name &lt;- NULL
-jaguar_df$collar_type &lt;- NULL  
-jaguar_df$brand &lt;- NULL
-jaguar_df$local_time &lt;- NULL
-jaguar_df$Event_ID  &lt;- NULL
-#jaguar_df$timezone &lt;- NULL
-# jaguar_df$dt &lt;- NULL
-</code></pre>
-
-<p>Create columns for different time periods</p>
-
-<pre><code class="r">jaguar_df$week &lt;- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format=&quot;%W&quot;))
-jaguar_df$day &lt;- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format=&quot;%j&quot;))
-jaguar_df$year &lt;- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format=&quot;%Y&quot;))
-jaguar_df$hour &lt;- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format=&quot;%H&quot;))
-jaguar_df$min &lt;- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format=&quot;%M&quot;))
-jaguar_df$time &lt;- jaguar_df$hour + (jaguar_df$min)/60
-</code></pre>
-
-<p>Day, Night and riseset (Sunrise or Sunset)</p>
-
-<pre><code class="r"># day  7 to 16  and  night 19 to 4 and  sun riseset 5,6,17,18
-#jaguar_df$month=as.numeric(substr(jaguar_df$date,6,7))
-jaguar_df$period=ifelse(jaguar_df$hour==7,&quot;day&quot;,
-                        ifelse(jaguar_df$hour==8,&quot;day&quot;,
-                        ifelse(jaguar_df$hour==9,&quot;day&quot;, 
-                        ifelse(jaguar_df$hour==10,&quot;day&quot;, 
-                        ifelse(jaguar_df$hour==11,&quot;day&quot;, 
-                        ifelse(jaguar_df$hour==12,&quot;day&quot;, 
-                        ifelse(jaguar_df$hour==13,&quot;day&quot;, 
-                        ifelse(jaguar_df$hour==14,&quot;day&quot;,
-                        ifelse(jaguar_df$hour==15,&quot;day&quot;,
-                        ifelse(jaguar_df$hour==16,&quot;day&quot;,
-                        ifelse(jaguar_df$hour==19,&quot;night&quot;,
-                        ifelse(jaguar_df$hour==20,&quot;night&quot;,
-                        ifelse(jaguar_df$hour==21,&quot;night&quot;,
-                        ifelse(jaguar_df$hour==22,&quot;night&quot;, 
-                        ifelse(jaguar_df$hour==23,&quot;night&quot;,
-                        ifelse(jaguar_df$hour==0,&quot;night&quot;,
-                        ifelse(jaguar_df$hour==1,&quot;night&quot;,
-                        ifelse(jaguar_df$hour==2,&quot;night&quot;,
-                        ifelse(jaguar_df$hour==3,&quot;night&quot;,
-                        ifelse(jaguar_df$hour==4,&quot;night&quot;,&quot;riseset&quot;))))))))))))))))))))
+jaguar_df&lt;-rename(jaguar_df, x = x_)
+jaguar_df&lt;-rename(jaguar_df, y = y_)
+jaguar_df&lt;-rename(jaguar_df, date = t_)
 </code></pre>
 
 <h3>More Data checking and cleaning</h3>
@@ -429,7 +355,7 @@ all.equal(jaguar_df,jaguar_ord)
 <p>Check for duplicated observations (ones with same lat, long, timestamp,
  and individual identifier). No duplicate observations in this data set</p>
 
-<pre><code class="r">ind2&lt;-jaguar_df %&gt;% select(&quot;date&quot;,&quot;x&quot;,&quot;y&quot;,&quot;id&quot;) %&gt;% duplicated
+<pre><code class="r">ind2&lt;-duplicated(jaguar_df[,c(&quot;date&quot;,&quot;x&quot;,&quot;y&quot;,&quot;id&quot;)])
 </code></pre>
 
 <p>sum(ind2) # no duplicates</p>
@@ -439,15 +365,27 @@ all.equal(jaguar_df,jaguar_ord)
 
 <p>Clean suspectly close points!!!  Above 1200 secs or 20 min minimal interval </p>
 
-<pre><code class="r">excludes &lt;- filter(jaguar_df, dt &lt; 1200)
+<pre><code class="r">#  Lets add on the time difference to each obs to select and exclude them after
+jaguar_df&lt;-jaguar_df %&gt;% group_by(id) %&gt;% mutate(dt = date - lag(date, default = NA))
+excludes &lt;- filter(jaguar_df, dt &lt; 1200)
 removed&lt;- anti_join(jaguar_df, excludes)
 </code></pre>
 
-<pre><code>## Joining, by = c(&quot;x&quot;, &quot;y&quot;, &quot;date&quot;, &quot;dt&quot;, &quot;timestamp.posix&quot;, &quot;GMTtime&quot;, &quot;id&quot;, &quot;country&quot;, &quot;status&quot;, &quot;model&quot;, &quot;sex&quot;, &quot;age&quot;, &quot;weight&quot;, &quot;schedule&quot;, &quot;project_region&quot;, &quot;project_bioveg&quot;, &quot;timezone&quot;, &quot;week&quot;, &quot;day&quot;, &quot;year&quot;, &quot;hour&quot;, &quot;min&quot;, &quot;time&quot;, &quot;period&quot;)
+<pre><code>## Joining, by = c(&quot;x&quot;, &quot;y&quot;, &quot;date&quot;, &quot;id&quot;, &quot;sex&quot;, &quot;age&quot;, &quot;weight&quot;, &quot;status&quot;, &quot;model&quot;, &quot;project_region&quot;, &quot;project_bioveg&quot;, &quot;country&quot;, &quot;GMTtime&quot;, &quot;local_time&quot;, &quot;idf&quot;, &quot;dt&quot;)
 </code></pre>
 
-<pre><code class="r">jaguar_df &lt;- removed 
+<pre><code class="r">jaguar_df &lt;- removed
+jaguar_df &lt;- as.data.frame(jaguar_df)
 </code></pre>
+
+<p>Create a new Event_ID</p>
+
+<pre><code class="r">jaguar_ord &lt;- jaguar_df[order(jaguar_df$id,jaguar_df$date),]
+jaguar_df &lt;- jaguar_ord
+jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
+</code></pre>
+
+<h4><strong>Need still add some individual cleaning of outliers (based on ctmm and large timelags)!!!</strong></h4>
 
 <h3>Add UTMs and POSIX timezone</h3>
 
@@ -535,19 +473,19 @@ CRica$date &lt;- as.POSIXct(CRica$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, t
 <p>Transforming coordinate to UTM # ids: 16,70 =&gt; (most 20K), ids: 76,77 =&gt; (20 K); ids: 71,72,73 =&gt; (21 K) </p>
 
 <pre><code class="r">Drych=subset(jaguar_df,project_region==&#39;Dry chaco&#39;)
-X16=subset(Drych,id==&#39;16&#39;)
-X70=subset(Drych,id==&#39;70&#39;)
-X71=subset(Drych,id==&#39;71&#39;)
-X72=subset(Drych,id==&#39;72&#39;)
-X73=subset(Drych,id==&#39;73&#39;)
-X76=subset(Drych,id==&#39;76&#39;)
-X77=subset(Drych,id==&#39;77&#39;)
+J16=subset(Drych,id==&#39;16&#39;)
+J70=subset(Drych,id==&#39;70&#39;)
+J71=subset(Drych,id==&#39;71&#39;)
+J72=subset(Drych,id==&#39;72&#39;)
+J73=subset(Drych,id==&#39;73&#39;)
+J76=subset(Drych,id==&#39;76&#39;)
+J77=subset(Drych,id==&#39;77&#39;)
 </code></pre>
 
 <p>Drych1 and Drych2</p>
 
-<pre><code class="r">Drych1=rbind(X16,X70,X76,X77)
-Drych2=rbind(X71,X72,X73)
+<pre><code class="r">Drych1=rbind(J16,J70,J76,J77)
+Drych2=rbind(J71,J72,J73)
 </code></pre>
 
 <p>7) Drych1    </p>
@@ -602,17 +540,17 @@ FPy$date &lt;- as.POSIXct(FPy$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = 
 
 <pre><code class="r">Iguazu=subset(jaguar_df,project_region==&#39;Iguazu&#39;)
 # Transforming coordinate to UTM   # 42,66,80,90 =&gt; (21 J);      83 =&gt; (22 J) 
-X42=subset(Iguazu,id==&#39;42&#39;)
-X66=subset(Iguazu,id==&#39;66&#39;)
-X80=subset(Iguazu,id==&#39;80&#39;)
-X90=subset(Iguazu,id==&#39;90&#39;)
-X83=subset(Iguazu,id==&#39;83&#39;)
+J42=subset(Iguazu,id==&#39;42&#39;)
+J66=subset(Iguazu,id==&#39;66&#39;)
+J80=subset(Iguazu,id==&#39;80&#39;)
+J90=subset(Iguazu,id==&#39;90&#39;)
+J83=subset(Iguazu,id==&#39;83&#39;)
 </code></pre>
 
 <p>Iguazu1 and Iguazu2</p>
 
-<pre><code class="r">Iguazu1=rbind(X42,X66,X80,X90)
-Iguazu2=(X83)
+<pre><code class="r">Iguazu1=rbind(J42,J66,J80,J90)
+Iguazu2=(J83)
 </code></pre>
 
 <p>11) Iguazu1    </p>
@@ -717,27 +655,24 @@ Pantanal$date &lt;- as.POSIXct(Pantanal$date, format =&quot;%Y-%m-%d %H:%M:%S&qu
 
 <h3>Jaguar Dataframe with UTMs</h3>
 
-<p>head(AFW1);head(AFW2);head(Caatinga);head(Cerrado1);head(Cerrado2);head(CRica);head(Pantanal);head(Drych1);str(Drych)
-head(Hch);head(FPy);head(Iguazu1);head(Iguazu2);head(Mamiraua);head(iopPA);head(Lacandona);head(MexEast);head(Sonora)</p>
-
-<h4><em>Important Note: A single dataframe canot hold multiple POSIX</em></h4>
+<h4><em>Important Note: A single dataframe can NOT hold multiple POSIX tzs</em></h4>
 
 <p>This will assign the POSIXct of the first region (AFW in this case). 
 Hence it is required to store the regional POSIXct in multiple dataframes (or within a tibble for example)</p>
 
-<pre><code class="r">jaguar_df=rbind(AFW1,AFW2,Caatinga,Cerrado1,Cerrado2,CRica,Pantanal,Drych1,Drych2,Hch,FPy,Iguazu1,Iguazu2,Mamiraua,iopPA,Lacandona,MexEast,Sonora)
+<pre><code class="r">jaguar_df=rbind(AFW1,AFW2,Caatinga,Cerrado1,Cerrado2,CRica,Pantanal,
+          Drych1,Drych2,Hch,FPy,Iguazu1,Iguazu2,Mamiraua,iopPA,Lacandona,MexEast,Sonora)
 </code></pre>
 
-<p>Need re-order the data again and create a new Event_ID</p>
+<p>Need re-order the data again</p>
 
 <pre><code class="r">jaguar_ord &lt;- jaguar_df[order(jaguar_df$id,jaguar_df$date),]
 jaguar_df &lt;- jaguar_ord
-jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
 </code></pre>
 
 <p>We assign UTC again just to store a full dataframe with UTMS but bellow we use regional POSIXct to create trks (amt package).</p>
 
-<pre><code class="r">jaguar_df$date &lt;- jaguar_df$timestamp.posix
+<pre><code class="r">jaguar_df$date &lt;- jaguar_df$local_time
 </code></pre>
 
 <p>In case we want save and read it as txt</p>
@@ -759,12 +694,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                       .y=utm_y,
                       .t=date,
                       id=id,
+                      dt=dt,
                       project_region=project_region,
                       sex=sex,
                       age=age,
                       weight=weight, 
                       status=status,
-                      period=period,
                       long_x=long_x,
                       lat_y=lat_y,
                       crs = CRS(&quot;+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -788,12 +723,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                       .y=utm_y,
                       .t=date,
                       id=id,
+                      dt=dt,
                       project_region=project_region,
                       sex=sex,
                       age=age,
                       weight=weight, 
                       status=status,
-                      period=period,
                       long_x=long_x,
                       lat_y=lat_y,
                       crs = CRS(&quot;+proj=utm +zone=23L +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -811,12 +746,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                            .y=utm_y,
                            .t=date,
                            id=id,
+                           dt=dt,
                            project_region=project_region,
                            sex=sex,
                            age=age,
                            weight=weight, 
                            status=status,
-                           period=period,
                            long_x=long_x,
                            lat_y=lat_y,
                            crs = CRS(&quot;+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -832,12 +767,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                            .y=utm_y,
                            .t=date,
                            id=id,
+                           dt=dt,
                            project_region=project_region,
                            sex=sex,
                            age=age,
                            weight=weight, 
                            status=status,
-                           period=period,
                            long_x=long_x,
                            lat_y=lat_y,
                            crs = CRS(&quot;+proj=utm +zone=22L +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -859,12 +794,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                           .y=utm_y,
                           .t=date,
                           id=id,
+                          dt=dt,
                           project_region=project_region,
                           sex=sex,
                           age=age,
                           weight=weight, 
                           status=status,
-                          period=period,
                           long_x=long_x,
                           lat_y=lat_y,
                           crs = CRS(&quot;+proj=utm +zone=16P +north +datum=WGS84 +units=m +no_defs&quot;))
@@ -882,12 +817,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                         .y=utm_y,
                         .t=date,
                         id=id,
+                        dt=dt,
                         project_region=project_region,
                         sex=sex,
                         age=age,
                         weight=weight, 
                         status=status,
-                        period=period,
                         long_x=long_x,
                         lat_y=lat_y,
                         crs = CRS(&quot;+proj=utm +zone=20K +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -903,12 +838,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                          .y=utm_y,
                          .t=date,
                          id=id,
+                         dt=dt,
                          project_region=project_region,
                          sex=sex,
                          age=age,
                          weight=weight, 
                          status=status,
-                         period=period,
                          long_x=long_x,
                          lat_y=lat_y,
                          crs = CRS(&quot;+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -930,12 +865,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                          .y=utm_y,
                          .t=date,
                          id=id,
+                         dt=dt,
                          project_region=project_region,
                          sex=sex,
                          age=age,
                          weight=weight, 
                          status=status,
-                         period=period,
                          long_x=long_x,
                          lat_y=lat_y,
                          crs = CRS(&quot;+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -953,12 +888,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                       .y=utm_y,
                       .t=date,
                       id=id,
+                      dt=dt,
                       project_region=project_region,
                       sex=sex,
                       age=age,
                       weight=weight, 
                       status=status,
-                      period=period,
                       long_x=long_x,
                       lat_y=lat_y,
                       crs = CRS(&quot;+proj=utm +zone=21J +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -976,12 +911,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                       .y=utm_y,
                       .t=date,
                       id=id,
+                      dt=dt,
                       project_region=project_region,
                       sex=sex,
                       age=age,
                       weight=weight, 
                       status=status,
-                      period=period,
                       long_x=long_x,
                       lat_y=lat_y,
                       crs = CRS(&quot;+proj=utm +zone=21J +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -997,12 +932,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                           .y=utm_y,
                           .t=date,
                           id=id,
+                          dt=dt,
                           project_region=project_region,
                           sex=sex,
                           age=age,
                           weight=weight, 
                           status=status,
-                          period=period,
                           long_x=long_x,
                           lat_y=lat_y,
                           crs = CRS(&quot;+proj=utm +zone=22J +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -1024,12 +959,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                           .y=utm_y,
                           .t=date,
                           id=id,
+                          dt=dt,
                           project_region=project_region,
                           sex=sex,
                           age=age,
                           weight=weight, 
                           status=status,
-                          period=period,
                           long_x=long_x,
                           lat_y=lat_y,
                           crs = CRS(&quot;+proj=utm +zone=20M +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -1045,12 +980,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                            .y=utm_y,
                            .t=date,
                            id=id,
+                           dt=dt,
                            project_region=project_region,
                            sex=sex,
                            age=age,
                            weight=weight, 
                            status=status,
-                           period=period,
                            long_x=long_x,
                            lat_y=lat_y,
                            crs = CRS(&quot;+proj=utm +zone=22M +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -1069,12 +1004,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                         .y=utm_y,
                         .t=date,
                         id=id,
+                        dt=dt,
                         project_region=project_region,
                         sex=sex,
                         age=age,
                         weight=weight, 
                         status=status,
-                        period=period,
                         long_x=long_x,
                         lat_y=lat_y,
                         crs = CRS(&quot;+proj=utm +zone=15Q +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -1090,12 +1025,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                             .y=utm_y,
                             .t=date,
                             id=id,
+                            dt=dt,
                             project_region=project_region,
                             sex=sex,
                             age=age,
                             weight=weight, 
                             status=status,
-                            period=period,
                             long_x=long_x,
                             lat_y=lat_y,
                             crs = CRS(&quot;+proj=utm +zone=16Q +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -1111,12 +1046,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                           .y=utm_y,
                           .t=date,
                           id=id,
+                          dt=dt,
                           project_region=project_region,
                           sex=sex,
                           age=age,
                           weight=weight, 
                           status=status,
-                          period=period,
                           long_x=long_x,
                           lat_y=lat_y,
                           crs = CRS(&quot;+proj=utm +zone=12R +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -1134,12 +1069,12 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
                          .y=utm_y,
                          .t=date,
                          id=id,
+                         dt=dt,
                          project_region=project_region,
                          sex=sex,
                          age=age,
                          weight=weight, 
                          status=status,
-                         period=period,
                          long_x=long_x,
                          lat_y=lat_y,
                          crs = CRS(&quot;+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs&quot;))
@@ -1148,252 +1083,259 @@ jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
 <pre><code>## .t found, creating `track_xyt`.
 </code></pre>
 
-<p>Objects for Pantanal project regions</p>
+<p>Objects for Pantanal project regions (trk and dataframes)</p>
 
 <pre><code class="r"> Oncafaritrk=Pantanaltrk %&gt;% filter(project_region == &quot;Oncafari&quot;)
+ Oncafari=Pantanal %&gt;% filter(project_region == &quot;Oncafari&quot;)
  Paraguaytrk=Pantanaltrk %&gt;% filter(project_region == &quot;Pantanal Paraguay&quot;)
+ Paraguay=Pantanal %&gt;% filter(project_region == &quot;Pantanal Paraguay&quot;)
  Panthera1trk=Pantanaltrk %&gt;% filter(project_region == &quot;Panthera1&quot;)
+ Panthera1=Pantanal %&gt;% filter(project_region == &quot;Panthera1&quot;)
  Panthera2trk=Pantanaltrk %&gt;% filter(project_region == &quot;Panthera2&quot;)
+ Panthera2=Pantanal %&gt;% filter(project_region == &quot;Panthera2&quot;)
  RioNegrotrk=Pantanaltrk %&gt;% filter(project_region == &quot;Rio Negro&quot;)
+ RioNegro=Pantanal %&gt;% filter(project_region == &quot;Rio Negro&quot;)
  SaoBentotrk=Pantanaltrk %&gt;% filter(project_region == &quot;Sao Bento&quot;)
+ SaoBento=Pantanal %&gt;% filter(project_region == &quot;Sao Bento&quot;)
  Taiamatrk=Pantanaltrk %&gt;% filter(project_region == &quot;Taiama&quot;)
+ Taiama=Pantanal %&gt;% filter(project_region == &quot;Taiama&quot;)
 </code></pre>
 
 <p>Dataframe and trk for each individual with adjusted timezones (to run if we need any specic individual)</p>
 
-<pre><code class="r">J1=subset(Hch,id==&#39;1&#39;)   ####### Hch
+<pre><code class="r">J1=subset(Hch,id==&#39;1&#39;);J1$idloc &lt;- seq.int(nrow(J1)) ####### Hch
 J1trk&lt;-Hchtrk %&gt;% filter(id==&quot;1&quot;)
-J2=subset(FPy,id==&#39;2&#39;)   ######### FPy
+J2=subset(FPy,id==&#39;2&#39;);J2$idloc &lt;- seq.int(nrow(J2)) ######### FPy
 J2trk&lt;-FPytrk %&gt;% filter(id==&quot;2&quot;)
-J3=subset(Hch,id==&#39;3&#39;)   ####### Hch
+J3=subset(Hch,id==&#39;3&#39;);J3$idloc &lt;- seq.int(nrow(J3)) ####### Hch
 J3trk&lt;-Hchtrk %&gt;% filter(id==&quot;3&quot;)
-J4=subset(Hch,id==&#39;4&#39;)   ####### Hch
+J4=subset(Hch,id==&#39;4&#39;);J4$idloc &lt;- seq.int(nrow(J4))   ####### Hch
 J4trk&lt;-Hchtrk %&gt;% filter(id==&quot;4&quot;)
-J5=subset(Hch,id==&#39;5&#39;)   ####### Hch
+J5=subset(Hch,id==&#39;5&#39;);J5$idloc &lt;- seq.int(nrow(J5))   ####### Hch
 J5trk&lt;-Hchtrk %&gt;% filter(id==&quot;5&quot;)
-J6=subset(Hch,id==&#39;6&#39;)   ####### Hch
+J6=subset(Hch,id==&#39;6&#39;);J6$idloc &lt;- seq.int(nrow(J6))   ####### Hch
 J6trk&lt;-Hchtrk %&gt;% filter(id==&quot;6&quot;)
-J7=subset(Hch,id==&#39;7&#39;)   ####### Hch
+J7=subset(Hch,id==&#39;7&#39;);J7$idloc &lt;- seq.int(nrow(J7))   ####### Hch
 J7trk&lt;-Hchtrk %&gt;% filter(id==&quot;7&quot;)
-J8=subset(FPy,id==&#39;8&#39;)   ######### FPy
+J8=subset(FPy,id==&#39;8&#39;);J8$idloc &lt;- seq.int(nrow(J8))   ######### FPy
 J8trk&lt;-FPytrk %&gt;% filter(id==&quot;8&quot;)
-J9=subset(Hch,id==&#39;9&#39;)   ####### Hch
+J9=subset(Hch,id==&#39;9&#39;);J9$idloc &lt;- seq.int(nrow(J9))   ####### Hch
 J9trk&lt;-Hchtrk %&gt;% filter(id==&quot;9&quot;)
-J10=subset(Hch,id==&#39;10&#39;) ####### Hch
+J10=subset(Hch,id==&#39;10&#39;);J10$idloc &lt;- seq.int(nrow(J10)) ####### Hch
 J10trk&lt;-Hchtrk %&gt;% filter(id==&quot;10&quot;)
-J11=subset(Hch,id==&#39;11&#39;) ####### Hch
+J11=subset(Hch,id==&#39;11&#39;);J11$idloc &lt;- seq.int(nrow(J11)) ####### Hch
 J11trk&lt;-Hchtrk %&gt;% filter(id==&quot;11&quot;)
-J12=subset(Pantanal,id==&#39;12&#39;) ########## Pantanal
+J12=subset(Pantanal,id==&#39;12&#39;);J12$idloc &lt;- seq.int(nrow(J12)) ########## Pantanal
 J12trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;12&quot;)
-J13=subset(Pantanal,id==&#39;13&#39;) ########## Pantanal
+J13=subset(Pantanal,id==&#39;13&#39;);J13$idloc &lt;- seq.int(nrow(J13)) ########## Pantanal
 J13trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;13&quot;)
-J14=subset(Pantanal,id==&#39;14&#39;) ########## Pantanal
+J14=subset(Pantanal,id==&#39;14&#39;);J14$idloc &lt;- seq.int(nrow(J14)) ########## Pantanal
 J14trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;14&quot;)
-J15=subset(Pantanal,id==&#39;15&#39;) ########## Pantanal
+J15=subset(Pantanal,id==&#39;15&#39;);J15$idloc &lt;- seq.int(nrow(J15)) ########## Pantanal
 J15trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;15&quot;)
-J16=subset(Drych1,id==&#39;16&#39;) ######### Drych1
+J16=subset(Drych1,id==&#39;16&#39;);J16$idloc &lt;- seq.int(nrow(J16)) ######### Drych1
 J16trk&lt;-Drych1trk %&gt;% filter(id==&quot;16&quot;)
-J17=subset(Cerrado1,id==&#39;17&#39;) ############### Cerrado1
+J17=subset(Cerrado1,id==&#39;17&#39;);J17$idloc &lt;- seq.int(nrow(J17)) ############### Cerrado1
 J17trk&lt;-Cerrado1trk %&gt;% filter(id==&quot;17&quot;)
-J18=subset(Pantanal,id==&#39;18&#39;) ########## Pantanal
+J18=subset(Pantanal,id==&#39;18&#39;);J18$idloc &lt;- seq.int(nrow(J18)) ########## Pantanal
 J18trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;18&quot;)
-J19=subset(Pantanal,id==&#39;19&#39;) ########## Pantanal
+J19=subset(Pantanal,id==&#39;19&#39;);J19$idloc &lt;- seq.int(nrow(J19)) ########## Pantanal
 J19trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;19&quot;)
-J20=subset(Caatinga,id==&#39;20&#39;) ################# Caatinga 
+J20=subset(Caatinga,id==&#39;20&#39;);J20$idloc &lt;- seq.int(nrow(J20)) ################# Caatinga 
 J20trk&lt;-Caatingatrk %&gt;% filter(id==&quot;20&quot;)
-J21=subset(FPy,id==&#39;21&#39;)  ######### FPy
+J21=subset(FPy,id==&#39;21&#39;);J21$idloc &lt;- seq.int(nrow(J21))  ######### FPy
 J21trk&lt;-FPytrk %&gt;% filter(id==&quot;21&quot;)
-J22=subset(Pantanal,id==&#39;22&#39;) ########## Pantanal
+J22=subset(Pantanal,id==&#39;22&#39;);J22$idloc &lt;- seq.int(nrow(J22)) ########## Pantanal
 J22trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;22&quot;)
-J23=subset(Pantanal,id==&#39;23&#39;) ########## Pantanal
+J23=subset(Pantanal,id==&#39;23&#39;);J23$idloc &lt;- seq.int(nrow(J23)) ########## Pantanal
 J23trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;23&quot;)
-J24=subset(iopPA,id==&#39;24&#39;) ###### iopPA
+J24=subset(iopPA,id==&#39;24&#39;);J24$idloc &lt;- seq.int(nrow(J24)) ###### iopPA
 J24trk&lt;-iopPAtrk %&gt;% filter(id==&quot;24&quot;)
-J25=subset(Pantanal,id==&#39;25&#39;) ########## Pantanal
+J25=subset(Pantanal,id==&#39;25&#39;);J25$idloc &lt;- seq.int(nrow(J25)) ########## Pantanal
 J25trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;25&quot;)
-J26=subset(CRica,id==&#39;26&#39;)  ######### CRica
+J26=subset(CRica,id==&#39;26&#39;);J26$idloc &lt;- seq.int(nrow(J26))  ######### CRica
 J26trk&lt;-CRicatrk %&gt;% filter(id==&quot;26&quot;)
-J27=subset(Pantanal,id==&#39;27&#39;) ########## Pantanal
+J27=subset(Pantanal,id==&#39;27&#39;);J27$idloc &lt;- seq.int(nrow(J27)) ########## Pantanal
 J27trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;27&quot;)
-J28=subset(Pantanal,id==&#39;28&#39;) ########## Pantanal
+J28=subset(Pantanal,id==&#39;28&#39;);J28$idloc &lt;- seq.int(nrow(J28)) ########## Pantanal
 J28trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;28&quot;)
-J29=subset(Pantanal,id==&#39;29&#39;) ########## Pantanal
+J29=subset(Pantanal,id==&#39;29&#39;);J29$idloc &lt;- seq.int(nrow(J29)) ########## Pantanal
 J29trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;29&quot;)
-J30=subset(Pantanal,id==&#39;30&#39;) ########## Pantanal
+J30=subset(Pantanal,id==&#39;30&#39;);J30$idloc &lt;- seq.int(nrow(J30)) ########## Pantanal
 J30trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;30&quot;)
-J31=subset(Pantanal,id==&#39;31&#39;) ########## Pantanal
+J31=subset(Pantanal,id==&#39;31&#39;);J31$idloc &lt;- seq.int(nrow(J31)) ########## Pantanal
 J31trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;31&quot;)
-J32=subset(Pantanal,id==&#39;32&#39;) ########## Pantanal
+J32=subset(Pantanal,id==&#39;32&#39;);J32$idloc &lt;- seq.int(nrow(J32)) ########## Pantanal
 J32trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;32&quot;)
-J33=subset(Pantanal,id==&#39;33&#39;) ########## Pantanal
+J33=subset(Pantanal,id==&#39;33&#39;);J33$idloc &lt;- seq.int(nrow(J33)) ########## Pantanal
 J33trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;33&quot;)
-J34=subset(AFW1,id==&#39;34&#39;)   ############### AFW1
+J34=subset(AFW1,id==&#39;34&#39;);J34$idloc &lt;- seq.int(nrow(J34))   ############### AFW1
 J34trk&lt;-AFW1trk %&gt;% filter(id==&quot;34&quot;)
-J35=subset(AFW1,id==&#39;35&#39;)   ############### AFW1
+J35=subset(AFW1,id==&#39;35&#39;);J35$idloc &lt;- seq.int(nrow(J35))   ############### AFW1
 J35trk&lt;-AFW1trk %&gt;% filter(id==&quot;35&quot;)
-J36=subset(AFW1,id==&#39;36&#39;)   ############### AFW1
+J36=subset(AFW1,id==&#39;36&#39;);J36$idloc &lt;- seq.int(nrow(J36))   ############### AFW1
 J36trk&lt;-AFW1trk %&gt;% filter(id==&quot;36&quot;)
-J37=subset(AFW1,id==&#39;37&#39;)   ############### AFW1
+J37=subset(AFW1,id==&#39;37&#39;);J37$idloc &lt;- seq.int(nrow(J37))   ############### AFW1
 J37trk&lt;-AFW1trk %&gt;% filter(id==&quot;37&quot;)
-J38=subset(AFW1,id==&#39;38&#39;)   ############### AFW1
+J38=subset(AFW1,id==&#39;38&#39;);J38$idloc &lt;- seq.int(nrow(J38))   ############### AFW1
 J38trk&lt;-AFW1trk %&gt;% filter(id==&quot;38&quot;)
-J39=subset(AFW2,id==&#39;39&#39;)   ###############  AFW2
+J39=subset(AFW2,id==&#39;39&#39;);J39$idloc &lt;- seq.int(nrow(J39))   ###############  AFW2
 J39trk&lt;-AFW2trk %&gt;% filter(id==&quot;39&quot;)
-J40=subset(AFW2,id==&#39;40&#39;)   ###############  AFW2
+J40=subset(AFW2,id==&#39;40&#39;);J40$idloc &lt;- seq.int(nrow(J40))   ###############  AFW2
 J40trk&lt;-AFW2trk %&gt;% filter(id==&quot;40&quot;)
-J41=subset(Pantanal,id==&#39;41&#39;) ########## Pantanal
+J41=subset(Pantanal,id==&#39;41&#39;);J41$idloc &lt;- seq.int(nrow(J41)) ########## Pantanal
 J41trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;41&quot;)
-J42=subset(Iguazu1,id==&#39;42&#39;) ######## Iguazu1
+J42=subset(Iguazu1,id==&#39;42&#39;);J42$idloc &lt;- seq.int(nrow(J42)) ######## Iguazu1
 J42trk&lt;-Iguazu1trk %&gt;% filter(id==&quot;42&quot;)
-J43=subset(Sonora,id==&#39;43&#39;) ######## Sonora
+J43=subset(Sonora,id==&#39;43&#39;);J43$idloc &lt;- seq.int(nrow(J43)) ######## Sonora
 J43trk&lt;-Sonoratrk %&gt;% filter(id==&quot;43&quot;)
-J44=subset(Lacandona,id==&#39;44&#39;) ######## Lacandona
+J44=subset(Lacandona,id==&#39;44&#39;);J44$idloc &lt;- seq.int(nrow(J44)) ######## Lacandona
 J44trk&lt;-Lacandonatrk %&gt;% filter(id==&quot;44&quot;)
-J45=subset(Lacandona,id==&#39;45&#39;) ######## Lacandona
+J45=subset(Lacandona,id==&#39;45&#39;);J45$idloc &lt;- seq.int(nrow(J45)) ######## Lacandona
 J45trk&lt;-Lacandonatrk %&gt;% filter(id==&quot;45&quot;)
-J46=subset(Lacandona,id==&#39;46&#39;)  ######## Lacandona
+J46=subset(Lacandona,id==&#39;46&#39;);J46$idloc &lt;- seq.int(nrow(J46))  ######## Lacandona
 J46trk&lt;-Lacandonatrk %&gt;% filter(id==&quot;46&quot;)
-J47=subset(Lacandona,id==&#39;47&#39;)  ######## Lacandona
+J47=subset(Lacandona,id==&#39;47&#39;);J47$idloc &lt;- seq.int(nrow(J47))  ######## Lacandona
 J47trk&lt;-Lacandonatrk %&gt;% filter(id==&quot;47&quot;)
-J48=subset(Lacandona,id==&#39;48&#39;)  ######## Lacandona
+J48=subset(Lacandona,id==&#39;48&#39;);J48$idloc &lt;- seq.int(nrow(J48))  ######## Lacandona
 J48trk&lt;-Lacandonatrk %&gt;% filter(id==&quot;48&quot;)
-J49=subset(MexEast,id==&#39;49&#39;)  ######### MexEast
+J49=subset(MexEast,id==&#39;49&#39;);J49$idloc &lt;- seq.int(nrow(J49))  ######### MexEast
 J49trk&lt;-MexEasttrk %&gt;% filter(id==&quot;49&quot;)
-J50=subset(Caatinga,id==&#39;50&#39;)  ############### Caatinga
+J50=subset(Caatinga,id==&#39;50&#39;);J50$idloc &lt;- seq.int(nrow(J50))  ############### Caatinga
 J50trk&lt;-Caatingatrk %&gt;% filter(id==&quot;50&quot;)
-J51=subset(Pantanal,id==&#39;51&#39;) ########## Pantanal
+J51=subset(Pantanal,id==&#39;51&#39;);J51$idloc &lt;- seq.int(nrow(J51)) ########## Pantanal
 J51trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;51&quot;)
-J52=subset(Pantanal,id==&#39;52&#39;) ########## Pantanal
+J52=subset(Pantanal,id==&#39;52&#39;);J52$idloc &lt;- seq.int(nrow(J52)) ########## Pantanal
 J52trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;52&quot;)
-J53=subset(Pantanal,id==&#39;53&#39;) ########## Pantanal
+J53=subset(Pantanal,id==&#39;53&#39;);J53$idloc &lt;- seq.int(nrow(J53)) ########## Pantanal
 J53trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;53&quot;)
-J54=subset(Pantanal,id==&#39;54&#39;) ########## Pantanal
+J54=subset(Pantanal,id==&#39;54&#39;);J54$idloc &lt;- seq.int(nrow(J54)) ########## Pantanal
 J54trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;54&quot;)
-J55=subset(Pantanal,id==&#39;55&#39;) ########## Pantanal
+J55=subset(Pantanal,id==&#39;55&#39;);J55$idloc &lt;- seq.int(nrow(J55)) ########## Pantanal
 J55trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;55&quot;)
-J56=subset(Pantanal,id==&#39;56&#39;) ########## Pantanal
+J56=subset(Pantanal,id==&#39;56&#39;);J56$idloc &lt;- seq.int(nrow(J56)) ########## Pantanal
 J56trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;56&quot;)
-J57=subset(Pantanal,id==&#39;57&#39;) ########## Pantanal
+J57=subset(Pantanal,id==&#39;57&#39;);J57$idloc &lt;- seq.int(nrow(J57)) ########## Pantanal
 J57trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;57&quot;)
-J58=subset(AFW1,id==&#39;58&#39;)   ###############  AFW1
+J58=subset(AFW1,id==&#39;58&#39;);J58$idloc &lt;- seq.int(nrow(J58))   ###############  AFW1
 J58trk&lt;-AFW1trk %&gt;% filter(id==&quot;58&quot;)
-J59=subset(Pantanal,id==&#39;59&#39;) ########## Pantanal
+J59=subset(Pantanal,id==&#39;59&#39;);J59$idloc &lt;- seq.int(nrow(J59)) ########## Pantanal
 J59trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;59&quot;)
-J60=subset(Pantanal,id==&#39;60&#39;) ########## Pantanal
+J60=subset(Pantanal,id==&#39;60&#39;);J60$idloc &lt;- seq.int(nrow(J60)) ########## Pantanal
 J60trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;60&quot;)
-J61=subset(Pantanal,id==&#39;61&#39;) ########## Pantanal
+J61=subset(Pantanal,id==&#39;61&#39;);J61$idloc &lt;- seq.int(nrow(J61)) ########## Pantanal
 J61trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;61&quot;)
-J62=subset(AFW1,id==&#39;62&#39;)   ###############  AFW1
+J62=subset(AFW1,id==&#39;62&#39;);J62$idloc &lt;- seq.int(nrow(J62))   ###############  AFW1
 J62trk&lt;-AFW1trk %&gt;% filter(id==&quot;62&quot;)
-J63=subset(AFW2,id==&#39;63&#39;)   ###############  AFW2
+J63=subset(AFW2,id==&#39;63&#39;);J63$idloc &lt;- seq.int(nrow(J63))   ###############  AFW2
 J63trk&lt;-AFW2trk %&gt;% filter(id==&quot;63&quot;)
-J64=subset(Sonora,id==&#39;64&#39;) ######## Sonora
+J64=subset(Sonora,id==&#39;64&#39;);J64$idloc &lt;- seq.int(nrow(J64)) ######## Sonora
 J64trk&lt;-Sonoratrk %&gt;% filter(id==&quot;64&quot;)
-J65=subset(Cerrado1,id==&#39;65&#39;)  ########## Cerrado1
+J65=subset(Cerrado1,id==&#39;65&#39;);J65$idloc &lt;- seq.int(nrow(J65))  ########## Cerrado1
 J65trk&lt;-Cerrado1trk %&gt;% filter(id==&quot;65&quot;)
-J66=subset(Iguazu1,id==&#39;66&#39;)  ########## Iguazu1
+J66=subset(Iguazu1,id==&#39;66&#39;);J66$idloc &lt;- seq.int(nrow(J66))  ########## Iguazu1
 J66trk&lt;-Iguazu1trk %&gt;% filter(id==&quot;66&quot;)
-J67=subset(Cerrado1,id==&#39;67&#39;)  ########## Cerrado1
+J67=subset(Cerrado1,id==&#39;67&#39;);J67$idloc &lt;- seq.int(nrow(J67))  ########## Cerrado1
 J67trk&lt;-Cerrado1trk %&gt;% filter(id==&quot;67&quot;)
-J68=subset(Pantanal,id==&#39;68&#39;) ########## Pantanal
+J68=subset(Pantanal,id==&#39;68&#39;);J68$idloc &lt;- seq.int(nrow(J68)) ########## Pantanal
 J68trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;68&quot;)
-J69=subset(Pantanal,id==&#39;69&#39;) ########## Pantanal
+J69=subset(Pantanal,id==&#39;69&#39;);J69$idloc &lt;- seq.int(nrow(J69)) ########## Pantanal
 J69trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;69&quot;)
-J70=subset(Drych1,id==&#39;70&#39;)  ######## Drych1
+J70=subset(Drych1,id==&#39;70&#39;);J70$idloc &lt;- seq.int(nrow(J70))  ######## Drych1
 J70trk&lt;-Drych1trk %&gt;% filter(id==&quot;70&quot;)
-J71=subset(Drych2,id==&#39;71&#39;) ####### Drych2
+J71=subset(Drych2,id==&#39;71&#39;);J71$idloc &lt;- seq.int(nrow(J71))  ####### Drych2
 J71trk&lt;-Drych2trk %&gt;% filter(id==&quot;71&quot;)
-J72=subset(Drych2,id==&#39;72&#39;) ####### Drych2
+J72=subset(Drych2,id==&#39;72&#39;);J72$idloc &lt;- seq.int(nrow(J72))  ####### Drych2
 J72trk&lt;-Drych2trk %&gt;% filter(id==&quot;72&quot;)
-J73=subset(Drych2,id==&#39;73&#39;) ####### Drych2
+J73=subset(Drych2,id==&#39;73&#39;);J73$idloc &lt;- seq.int(nrow(J73))  ####### Drych2
 J73trk&lt;-Drych2trk %&gt;% filter(id==&quot;73&quot;)
-J74=subset(Pantanal,id==&#39;74&#39;)  ########## Pantanal
+J74=subset(Pantanal,id==&#39;74&#39;);J74$idloc &lt;- seq.int(nrow(J74))   ########## Pantanal
 J74trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;74&quot;)
-J75=subset(Pantanal,id==&#39;75&#39;)  ########## Pantanal
+J75=subset(Pantanal,id==&#39;75&#39;);J75$idloc &lt;- seq.int(nrow(J75))   ########## Pantanal
 J75trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;75&quot;)
-J76=subset(Drych1,id==&#39;76&#39;) ####### Drych1
+J76=subset(Drych1,id==&#39;76&#39;);J76$idloc &lt;- seq.int(nrow(J76))  ####### Drych1
 J76trk&lt;-Drych1trk %&gt;% filter(id==&quot;76&quot;)
-J77=subset(Drych1,id==&#39;77&#39;) ####### Drych1
+J77=subset(Drych1,id==&#39;77&#39;);J77$idloc &lt;- seq.int(nrow(J77))  ####### Drych1
 J77trk&lt;-Drych1trk %&gt;% filter(id==&quot;77&quot;)
-J78=subset(FPy,id==&#39;78&#39;)  ####### FPy
+J78=subset(FPy,id==&#39;78&#39;);J78$idloc &lt;- seq.int(nrow(J78))   ####### FPy
 J78trk&lt;-FPytrk %&gt;% filter(id==&quot;78&quot;)
-J79=subset(Pantanal,id==&#39;79&#39;) ########## Pantanal
+J79=subset(Pantanal,id==&#39;79&#39;);J79$idloc &lt;- seq.int(nrow(J79)) ########## Pantanal
 J79trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;79&quot;)
-J80=subset(Iguazu1,id==&#39;80&#39;) ######## Iguazu1
+J80=subset(Iguazu1,id==&#39;80&#39;);J80$idloc &lt;- seq.int(nrow(J80)) ######## Iguazu1
 J80trk&lt;-Iguazu1trk %&gt;% filter(id==&quot;80&quot;)
-J81=subset(Pantanal,id==&#39;81&#39;) ########## Pantanal
+J81=subset(Pantanal,id==&#39;81&#39;);J81$idloc &lt;- seq.int(nrow(J81)) ########## Pantanal
 J81trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;81&quot;)
-J82=subset(Cerrado1,id==&#39;82&#39;)  ########## Cerrado1
+J82=subset(Cerrado1,id==&#39;82&#39;);J82$idloc &lt;- seq.int(nrow(J82))  ########## Cerrado1
 J82trk&lt;-Cerrado1trk %&gt;% filter(id==&quot;82&quot;)
-J83=subset(Iguazu2,id==&#39;83&#39;)  ########## Iguazu2
+J83=subset(Iguazu2,id==&#39;83&#39;);J83$idloc &lt;- seq.int(nrow(J83))  ########## Iguazu2
 J83trk&lt;-Iguazu2trk %&gt;% filter(id==&quot;83&quot;)
-J84=subset(Pantanal,id==&#39;84&#39;)  ########## Pantanal
+J84=subset(Pantanal,id==&#39;84&#39;);J84$idloc &lt;- seq.int(nrow(J84))  ########## Pantanal
 J84trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;84&quot;)
-J85=subset(Cerrado1,id==&#39;85&#39;)  ########## Cerrado1
+J85=subset(Cerrado1,id==&#39;85&#39;);J85$idloc &lt;- seq.int(nrow(J85))  ########## Cerrado1
 J85trk&lt;-Cerrado1trk %&gt;% filter(id==&quot;85&quot;)
-J86=subset(Pantanal,id==&#39;86&#39;) ########## Pantanal
+J86=subset(Pantanal,id==&#39;86&#39;);J86$idloc &lt;- seq.int(nrow(J86)) ########## Pantanal
 J86trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;86&quot;)
-J87=subset(Pantanal,id==&#39;87&#39;) ########## Pantanal
+J87=subset(Pantanal,id==&#39;87&#39;);J87$idloc &lt;- seq.int(nrow(J87)) ########## Pantanal
 J87trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;87&quot;)
-J88=subset(Pantanal,id==&#39;88&#39;) ########## Pantanal
+J88=subset(Pantanal,id==&#39;88&#39;);J88$idloc &lt;- seq.int(nrow(J88)) ########## Pantanal
 J88trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;88&quot;)
-J89=subset(Cerrado2,id==&#39;89&#39;) ######### Cerrado2
+J89=subset(Cerrado2,id==&#39;89&#39;);J89$idloc &lt;- seq.int(nrow(J89)) ######### Cerrado2
 J89trk&lt;-Cerrado2trk %&gt;% filter(id==&quot;89&quot;)
-J90=subset(Iguazu1,id==&#39;90&#39;) ######### Iguazu1
+J90=subset(Iguazu1,id==&#39;90&#39;);J90$idloc &lt;- seq.int(nrow(J90)) ######### Iguazu1
 J90trk&lt;-Iguazu1trk %&gt;% filter(id==&quot;90&quot;)
-J91=subset(Pantanal,id==&#39;91&#39;) ########## Pantanal
+J91=subset(Pantanal,id==&#39;91&#39;);J91$idloc &lt;- seq.int(nrow(J91)) ########## Pantanal
 J91trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;91&quot;)
-J92=subset(Pantanal,id==&#39;92&#39;) ########## Pantanal
+J92=subset(Pantanal,id==&#39;92&#39;);J92$idloc &lt;- seq.int(nrow(J92)) ########## Pantanal
 J92trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;92&quot;)
-J93=subset(Mamiraua,id==&#39;93&#39;) ######### Mamiraua
+J93=subset(Mamiraua,id==&#39;93&#39;);J93$idloc &lt;- seq.int(nrow(J93)) ######### Mamiraua
 J93trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;93&quot;)
-J94=subset(Mamiraua,id==&#39;94&#39;) ######### Mamiraua
+J94=subset(Mamiraua,id==&#39;94&#39;);J94$idloc &lt;- seq.int(nrow(J94)) ######### Mamiraua
 J94trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;94&quot;)
-J95=subset(Mamiraua,id==&#39;95&#39;) ######### Mamiraua
+J95=subset(Mamiraua,id==&#39;95&#39;);J95$idloc &lt;- seq.int(nrow(J95)) ######### Mamiraua
 J95trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;95&quot;)
-J96=subset(Mamiraua,id==&#39;96&#39;) ######### Mamiraua
+J96=subset(Mamiraua,id==&#39;96&#39;);J96$idloc &lt;- seq.int(nrow(J96)) ######### Mamiraua
 J96trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;96&quot;)
-J97=subset(Mamiraua,id==&#39;97&#39;) ######### Mamiraua
+J97=subset(Mamiraua,id==&#39;97&#39;);J97$idloc &lt;- seq.int(nrow(J97)) ######### Mamiraua
 J97trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;97&quot;)
-J98=subset(Mamiraua,id==&#39;98&#39;) ######### Mamiraua
+J98=subset(Mamiraua,id==&#39;98&#39;);J98$idloc &lt;- seq.int(nrow(J98)) ######### Mamiraua
 J98trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;98&quot;)
-J99=subset(Mamiraua,id==&#39;99&#39;) ######### Mamiraua
+J99=subset(Mamiraua,id==&#39;99&#39;);J99$idloc &lt;- seq.int(nrow(J99)) ######### Mamiraua
 J99trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;99&quot;)
-J100=subset(Mamiraua,id==&#39;100&#39;)######### Mamiraua
+J100=subset(Mamiraua,id==&#39;100&#39;);J100$idloc &lt;- seq.int(nrow(J100))######### Mamiraua
 J100trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;100&quot;)
-J101=subset(Pantanal,id==&#39;101&#39;) ########## Pantanal
+J101=subset(Pantanal,id==&#39;101&#39;);J101$idloc &lt;- seq.int(nrow(J101)) ########## Pantanal
 J101trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;101&quot;)
-J102=subset(Pantanal,id==&#39;102&#39;) ########## Pantanal
+J102=subset(Pantanal,id==&#39;102&#39;);J102$idloc &lt;- seq.int(nrow(J102)) ########## Pantanal
 J102trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;102&quot;)
-J103=subset(Pantanal,id==&#39;103&#39;) ########## Pantanal
+J103=subset(Pantanal,id==&#39;103&#39;);J103$idloc &lt;- seq.int(nrow(J103)) ########## Pantanal
 J103trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;103&quot;)
-J104=subset(Pantanal,id==&#39;104&#39;) ########## Pantanal
+J104=subset(Pantanal,id==&#39;104&#39;);J104$idloc &lt;- seq.int(nrow(J104)) ########## Pantanal
 J104trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;104&quot;)
-J105=subset(Pantanal,id==&#39;105&#39;) ########## Pantanal
+J105=subset(Pantanal,id==&#39;105&#39;);J105$idloc &lt;- seq.int(nrow(J105)) ########## Pantanal
 J105trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;105&quot;)
-J106=subset(Pantanal,id==&#39;106&#39;) ########## Pantanal
+J106=subset(Pantanal,id==&#39;106&#39;);J106$idloc &lt;- seq.int(nrow(J106)) ########## Pantanal
 J106trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;106&quot;)
-J107=subset(Pantanal,id==&#39;107&#39;)########## Pantanal
+J107=subset(Pantanal,id==&#39;107&#39;);J107$idloc &lt;- seq.int(nrow(J107))########## Pantanal
 J107trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;107&quot;)
-J108=subset(Pantanal,id==&#39;108&#39;)########## Pantanal
+J108=subset(Pantanal,id==&#39;108&#39;);J108$idloc &lt;- seq.int(nrow(J108))########## Pantanal
 J108trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;108&quot;)
-J109=subset(Pantanal,id==&#39;109&#39;)########## Pantanal
+J109=subset(Pantanal,id==&#39;109&#39;);J109$idloc &lt;- seq.int(nrow(J109))########## Pantanal
 J109trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;109&quot;)
-J110=subset(Pantanal,id==&#39;110&#39;)########## Pantanal
+J110=subset(Pantanal,id==&#39;110&#39;);J110$idloc &lt;- seq.int(nrow(J110))########## Pantanal
 J110trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;110&quot;)
-J111=subset(Pantanal,id==&#39;111&#39;)########## Pantanal
+J111=subset(Pantanal,id==&#39;111&#39;);J111$idloc &lt;- seq.int(nrow(J111))########## Pantanal
 J111trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;111&quot;)
-J112=subset(Pantanal,id==&#39;112&#39;)########## Pantanal
+J112=subset(Pantanal,id==&#39;112&#39;);J112$idloc &lt;- seq.int(nrow(J112))########## Pantanal
 J112trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;112&quot;)
-J113=subset(Pantanal,id==&#39;113&#39;)########## Pantanal
+J113=subset(Pantanal,id==&#39;113&#39;);J113$idloc &lt;- seq.int(nrow(J113))########## Pantanal
 J113trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;113&quot;)
-J114=subset(Pantanal,id==&#39;114&#39;)########## Pantanal
+J114=subset(Pantanal,id==&#39;114&#39;);J114$idloc &lt;- seq.int(nrow(J114))########## Pantanal
 J114trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;114&quot;)
-J115=subset(Pantanal,id==&#39;115&#39;)########## Pantanal
+J115=subset(Pantanal,id==&#39;115&#39;);J115$idloc &lt;- seq.int(nrow(J115))########## Pantanal
 J115trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;115&quot;)
-J116=subset(Pantanal,id==&#39;116&#39;)########## Pantanal
+J116=subset(Pantanal,id==&#39;116&#39;);J116$idloc &lt;- seq.int(nrow(J116))########## Pantanal
 J116trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;116&quot;)
-J117=subset(Pantanal,id==&#39;117&#39;)########## Pantanal
+J117=subset(Pantanal,id==&#39;117&#39;);J117$idloc &lt;- seq.int(nrow(J117))########## Pantanal
 J117trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;117&quot;)
 </code></pre>
 
@@ -1428,9 +1370,9 @@ jaguarlist = list(J1trk,J2trk,J3trk,J4trk,J5trk,J6trk,J7trk,J8trk,J9trk,J10trk,
 <pre><code class="r">sessionInfo()     
 </code></pre>
 
-<pre><code>## R version 3.5.2 (2018-12-20)
+<pre><code>## R version 3.5.3 (2019-03-11)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows &gt;= 8 x64 (build 9200)
+## Running under: Windows 10 x64 (build 17134)
 ## 
 ## Matrix products: default
 ## 
@@ -1445,61 +1387,63 @@ jaguarlist = list(J1trk,J2trk,J3trk,J4trk,J5trk,J6trk,J7trk,J8trk,J9trk,J10trk,
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] bindrcpp_0.2.2      ezknitr_0.6         knitr_1.21         
-##  [4] caTools_1.17.1.1    circular_0.4-93     tibble_1.4.2       
-##  [7] lubridate_1.7.4     readr_1.2.1         dplyr_0.7.8        
-## [10] RCurl_1.95-4.11     bitops_1.0-6        leaflet_2.0.2      
-## [13] lattice_0.20-38     rgl_0.99.16         ggmap_2.6.1        
-## [16] ggplot2_3.1.0       colorspace_1.4-0    maptools_0.9-4     
-## [19] amt_0.0.5.0         adehabitatLT_0.3.23 CircStats_0.2-6    
-## [22] boot_1.3-20         MASS_7.3-51.1       adehabitatMA_0.3.12
-## [25] ade4_1.7-13         move_3.1.0          rgdal_1.3-6        
-## [28] raster_2.8-4        sp_1.3-1            geosphere_1.5-7    
-## [31] install.load_1.2.1 
+##  [1] installr_0.21.0     spatialEco_1.1-1    vegan_2.5-4        
+##  [4] permute_0.9-4       stringr_1.4.0       rvest_0.3.2        
+##  [7] xml2_1.2.0          rts_1.0-49          xts_0.11-2         
+## [10] zoo_1.8-4           bindrcpp_0.2.2      ezknitr_0.6        
+## [13] knitr_1.21          caTools_1.17.1.1    circular_0.4-93    
+## [16] tibble_1.4.2        lubridate_1.7.4     readr_1.2.1        
+## [19] dplyr_0.7.8         RCurl_1.95-4.12     bitops_1.0-6       
+## [22] ggplot2_3.1.0       leaflet_2.0.2       lattice_0.20-38    
+## [25] rgl_0.100.19        colorspace_1.4-0    maptools_0.9-5     
+## [28] amt_0.0.5.0         adehabitatLT_0.3.23 CircStats_0.2-6    
+## [31] boot_1.3-20         MASS_7.3-51.1       adehabitatMA_0.3.12
+## [34] ade4_1.7-13         move_3.1.0          rgdal_1.4-3        
+## [37] raster_2.8-19       sp_1.3-1            geosphere_1.5-7    
+## [40] install.load_1.2.1 
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] webshot_0.5.1           httr_1.4.0             
-##  [3] tools_3.5.2             utf8_1.1.4             
-##  [5] R6_2.3.0                lazyeval_0.2.1         
-##  [7] manipulateWidget_0.10.0 withr_2.1.2            
-##  [9] tidyselect_0.2.5        compiler_3.5.2         
-## [11] cli_1.0.1               xml2_1.2.0             
-## [13] scales_1.0.0            mvtnorm_1.0-8          
-## [15] stringr_1.3.1           digest_0.6.18          
-## [17] foreign_0.8-71          R.utils_2.7.0          
-## [19] jpeg_0.1-8              pkgconfig_2.0.2        
-## [21] htmltools_0.3.6         highr_0.7              
-## [23] maps_3.3.0              htmlwidgets_1.3        
-## [25] rlang_0.3.0.1           rstudioapi_0.8         
-## [27] shiny_1.2.0             bindr_0.1.1            
-## [29] jsonlite_1.5            crosstalk_1.0.0        
-## [31] R.oo_1.22.0             magrittr_1.5           
-## [33] Matrix_1.2-15           Rcpp_1.0.0             
-## [35] munsell_0.5.0           fansi_0.4.0            
-## [37] proto_1.0.0             R.methodsS3_1.7.1      
-## [39] stringi_1.2.4           yaml_2.2.0             
-## [41] plyr_1.8.4              grid_3.5.2             
-## [43] parallel_3.5.2          promises_1.0.1         
-## [45] crayon_1.3.4            miniUI_0.1.1.1         
-## [47] splines_3.5.2           mapproj_1.2.6          
-## [49] hms_0.4.2               pillar_1.3.0           
-## [51] rjson_0.2.20            markdown_0.8           
-## [53] reshape2_1.4.3          codetools_0.2-15       
-## [55] glue_1.3.0              evaluate_0.12          
-## [57] png_0.1-7               httpuv_1.4.5           
-## [59] RgoogleMaps_1.4.3       gtable_0.2.0           
-## [61] purrr_0.2.5             tidyr_0.8.2            
-## [63] assertthat_0.2.0        xfun_0.4               
-## [65] mime_0.6                xtable_1.8-3           
-## [67] later_0.7.5             survival_2.43-3        
-## [69] memoise_1.1.0
+##  [1] nlme_3.1-137            sf_0.7-1               
+##  [3] webshot_0.5.1           httr_1.4.0             
+##  [5] tools_3.5.3             utf8_1.1.4             
+##  [7] R6_2.3.0                spData_0.2.9.6         
+##  [9] DBI_1.0.0               lazyeval_0.2.1         
+## [11] mgcv_1.8-27             manipulateWidget_0.10.0
+## [13] withr_2.1.2             tidyselect_0.2.5       
+## [15] compiler_3.5.3          cli_1.0.1              
+## [17] scales_1.0.0            classInt_0.2-3         
+## [19] mvtnorm_1.0-8           digest_0.6.18          
+## [21] foreign_0.8-71          R.utils_2.7.0          
+## [23] pkgconfig_2.0.2         htmltools_0.3.6        
+## [25] highr_0.7               htmlwidgets_1.3        
+## [27] rlang_0.3.0.1           shiny_1.2.0            
+## [29] bindr_0.1.1             jsonlite_1.5           
+## [31] crosstalk_1.0.0         R.oo_1.22.0            
+## [33] magrittr_1.5            Matrix_1.2-15          
+## [35] fansi_0.4.0             Rcpp_1.0.0             
+## [37] munsell_0.5.0           R.methodsS3_1.7.1      
+## [39] stringi_1.2.4           plyr_1.8.4             
+## [41] grid_3.5.3              parallel_3.5.3         
+## [43] promises_1.0.1          crayon_1.3.4           
+## [45] miniUI_0.1.1.1          splines_3.5.3          
+## [47] hms_0.4.2               pillar_1.3.0           
+## [49] markdown_0.8            codetools_0.2-16       
+## [51] glue_1.3.0              evaluate_0.12          
+## [53] httpuv_1.4.5            gtable_0.2.0           
+## [55] purrr_0.2.5             tidyr_0.8.2            
+## [57] assertthat_0.2.0        xfun_0.4               
+## [59] mime_0.6                xtable_1.8-3           
+## [61] e1071_1.7-0             later_0.7.5            
+## [63] class_7.3-15            survival_2.43-3        
+## [65] memoise_1.1.0           units_0.6-2            
+## [67] cluster_2.0.7-1
 </code></pre>
 
 <pre><code class="r">proc.time()
 </code></pre>
 
-<pre><code>##    user  system elapsed 
-##  346.53    6.98 1348.01
+<pre><code>##      user    system   elapsed 
+##  65070.82  18234.65 143143.51
 </code></pre>
 
 </body>

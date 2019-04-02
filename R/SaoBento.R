@@ -89,7 +89,7 @@ RSFannotateSaoBento<-read.csv("c:/RWorkDir/jaguardatapaper/RSFannotateSaoBento.c
 #############################################################################################################
   #################      GIS LAYERS ###  RSF  ####################################################### 
 #############################################################################################################
-#rm(list= ls())                           
+rm(list= ls())                           
 #unloadNamespace("amt"); unloadNamespace("tidyverse"); unloadNamespace("modelr"); unloadNamespace("broom"); unloadNamespace("tidyr")
 
 ## Load packages a few more packages                      

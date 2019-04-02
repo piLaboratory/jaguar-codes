@@ -7,7 +7,6 @@
 #'
 #'
 #' 
-#' 
 #' #### *Preamble*
 #' For a fresh start, clean everything in working memory
 rm(list= ls())                                                 
@@ -16,7 +15,7 @@ rm(list= ls())
 if(!require(install.load)) install.packages('install.load'); library(install.load)
 install.load::install_load("move", "adehabitatLT", "amt") # Movement packages
 install.load::install_load("maptools", "raster", "rgdal","sp") # Spatial packages
-install.load::install_load("colorspace","ggmap", "rgl", "lattice", "leaflet") # Visualization packages
+install.load::install_load("colorspace", "rgl", "lattice", "leaflet","ggplot2") # Visualization packages
 install.load::install_load("RCurl", "dplyr", "readr", "lubridate", "tibble") # Aux packages
 install.load::install_load("circular", "caTools") # Stats packages
 install.load::install_load("knitr", "ezknitr") # To render documents 
@@ -53,8 +52,7 @@ set.year(time.stamp = as.character(mov.data.org$timestamp[10000]), year = '2013'
 date.time <- as.character(mapply(set.year, as.character(mov.data.org$timestamp),
                                  new.year))
 #' Date/Time as POSIXct object
-mov.data.org$timestamp.posix <- as.POSIXct(date.time, 
-                                           format = "%m/%d/%Y %H:%M", tz = 'UTC')
+mov.data.org$timestamp.posix <- as.POSIXct(date.time,format = "%m/%d/%Y %H:%M", tz = 'UTC')
 mov.data.org$GMTtime <- mov.data.org$timestamp.posix
 #'
 #'
@@ -68,90 +66,24 @@ mov.data.org$timestamp.posix <- mov.data.org$local_time
 #' 
 #' 
 #' ### Adjusting for Movement Packages
-#' ### adehabitatLT
-#'
-#' Transforms in ltraj object
-coords <- data.frame(mov.data.org$location.long, mov.data.org$location.lat)
-mov.traj <- as.ltraj(xy = coords, date=mov.data.org$timestamp.posix, 
-                     id=mov.data.org$individual.local.identifier..ID., 
-                     burst=mov.data.org$individual.local.identifier..ID., 
-                     infolocs = mov.data.org[,-c(3:6, ncol(mov.data.org))])
-mov.traj.df <- ld(mov.traj)
-#'
-#'
-#' ### move
-#' Organize data as a move package format
-move.data <- move(x = mov.traj.df$x, y = mov.traj.df$y, 
-                  time = mov.traj.df$date, 
-                  proj = CRS('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'),
-                  data = mov.traj.df, animal = mov.traj.df$id, sensor = 'GPS')
-#' move.data  (moveStack)
-#' Separate individual animals' trajectories and convert move object to a dataframe
-# unstacked <- split(move.data)
-jaguar_df <- as(move.data, "data.frame")
-
+#' #### Creating a track in amt (with lat long for now)
+trk1 <- mk_track(mov.data.org,.x=location.long, .y=location.lat, .t=timestamp.posix,
+                id=individual.local.identifier..ID.,sex=sex,age=age, weight=weight, 
+                status=status,model=model,project_region=project_region, project_bioveg=project_bioveg,
+                country=country,GMTtime=GMTtime,local_time=local_time,crs = CRS("+init=epsg:4326"))
+trk1 <- trk1 %>% arrange(id)
+jaguar_df <- as.data.frame(trk1)
+#' 
 #' Reclassifying variables
+jaguar_df$idf <- as.factor(jaguar_df$id)
 age <- as.numeric(levels(jaguar_df$age))[jaguar_df$age]
 weight <- as.numeric(levels(jaguar_df$weight))[jaguar_df$weight]
-jaguar_df$id <- as.factor(jaguar_df$individual.local.identifier..ID.)  
 jaguar_df$age <- age   
 jaguar_df$weight <- weight  
+jaguar_df<-rename(jaguar_df, x = x_)
+jaguar_df<-rename(jaguar_df, y = y_)
+jaguar_df<-rename(jaguar_df, date = t_)
 #'
-#' Cleaning up columns which will be in excess due to repetition of analysis 
-jaguar_df$dx <- NULL
-jaguar_df$dy <- NULL
-jaguar_df$dist <- NULL
-jaguar_df$R2n <- NULL
-jaguar_df$abs.angle <- NULL
-jaguar_df$rel.angle  <- NULL
-jaguar_df$location.lat <- NULL
-jaguar_df$timestamps  <- NULL
-jaguar_df$sensor <- NULL
-jaguar_df$burst <- NULL
-jaguar_df$optional <- NULL
-jaguar_df$coords.x1 <- NULL
-jaguar_df$coords.x2 <- NULL
-jaguar_df$trackId <- NULL
-jaguar_df$individual.local.identifier..ID.<- NULL
-jaguar_df$study.name <- NULL
-jaguar_df$collar_type <- NULL  
-jaguar_df$brand <- NULL
-jaguar_df$local_time <- NULL
-jaguar_df$Event_ID  <- NULL
-#jaguar_df$timezone <- NULL
-# jaguar_df$dt <- NULL
-#'
-#' Create columns for different time periods
-jaguar_df$week <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format="%W"))
-jaguar_df$day <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format="%j"))
-jaguar_df$year <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format="%Y"))
-jaguar_df$hour <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format="%H"))
-jaguar_df$min <- as.numeric(strftime(as.POSIXlt(jaguar_df$timestamp.posix),format="%M"))
-jaguar_df$time <- jaguar_df$hour + (jaguar_df$min)/60
-#' Day, Night and riseset (Sunrise or Sunset)
-# day  7 to 16  and  night 19 to 4 and  sun riseset 5,6,17,18
-#jaguar_df$month=as.numeric(substr(jaguar_df$date,6,7))
-jaguar_df$period=ifelse(jaguar_df$hour==7,"day",
-                        ifelse(jaguar_df$hour==8,"day",
-                        ifelse(jaguar_df$hour==9,"day", 
-                        ifelse(jaguar_df$hour==10,"day", 
-                        ifelse(jaguar_df$hour==11,"day", 
-                        ifelse(jaguar_df$hour==12,"day", 
-                        ifelse(jaguar_df$hour==13,"day", 
-                        ifelse(jaguar_df$hour==14,"day",
-                        ifelse(jaguar_df$hour==15,"day",
-                        ifelse(jaguar_df$hour==16,"day",
-                        ifelse(jaguar_df$hour==19,"night",
-                        ifelse(jaguar_df$hour==20,"night",
-                        ifelse(jaguar_df$hour==21,"night",
-                        ifelse(jaguar_df$hour==22,"night", 
-                        ifelse(jaguar_df$hour==23,"night",
-                        ifelse(jaguar_df$hour==0,"night",
-                        ifelse(jaguar_df$hour==1,"night",
-                        ifelse(jaguar_df$hour==2,"night",
-                        ifelse(jaguar_df$hour==3,"night",
-                        ifelse(jaguar_df$hour==4,"night","riseset"))))))))))))))))))))
-
 #'
 #' ### More Data checking and cleaning 
 #'
@@ -165,16 +97,25 @@ all.equal(jaguar_df,jaguar_ord)
 #'
 #' Check for duplicated observations (ones with same lat, long, timestamp,
 #'  and individual identifier). No duplicate observations in this data set
-ind2<-jaguar_df %>% select("date","x","y","id") %>% duplicated
+ind2<-duplicated(jaguar_df[,c("date","x","y","id")])
 #' sum(ind2) # no duplicates
 jaguar_df<-jaguar_df[ind2!=TRUE,]
+
 #'
 #' Clean suspectly close points!!!  Above 1200 secs or 20 min minimal interval 
+#  Lets add on the time difference to each obs to select and exclude them after
+jaguar_df<-jaguar_df %>% group_by(id) %>% mutate(dt = date - lag(date, default = NA))
 excludes <- filter(jaguar_df, dt < 1200)
 removed<- anti_join(jaguar_df, excludes)
-jaguar_df <- removed 
+jaguar_df <- removed
+jaguar_df <- as.data.frame(jaguar_df)
+#' Create a new Event_ID
+jaguar_ord <- jaguar_df[order(jaguar_df$id,jaguar_df$date),]
+jaguar_df <- jaguar_ord
+jaguar_df$Event_ID <- seq.int(nrow(jaguar_df))
 #'
 #'
+#' #### **Need still add some individual cleaning of outliers (based on ctmm and large timelags)!!!**
 #'
 #'
 #' ### Add UTMs and POSIX timezone
@@ -191,6 +132,7 @@ AFW1 <- crs.convert(data = subset(jaguar_df,project_region=='Atlantic Forest W1'
                     point.names = c("utm_x", "utm_y", "long_x", "lat_y"))
 AFW1$date <- as.character(AFW1$date)
 AFW1$date <- as.POSIXct(AFW1$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+3") 
+
 #'
 #' 2) Atlantic Forest W2
 AFW2 <- crs.convert(data =subset(jaguar_df,project_region=='Atlantic Forest W2'),
@@ -262,16 +204,16 @@ CRica$date <- as.POSIXct(CRica$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+
 #' Transforming coordinate to UTM # ids: 16,70 => (most 20K), ids: 76,77 => (20 K); ids: 71,72,73 => (21 K) 
 #' 
 Drych=subset(jaguar_df,project_region=='Dry chaco')
-X16=subset(Drych,id=='16')
-X70=subset(Drych,id=='70')
-X71=subset(Drych,id=='71')
-X72=subset(Drych,id=='72')
-X73=subset(Drych,id=='73')
-X76=subset(Drych,id=='76')
-X77=subset(Drych,id=='77')
+J16=subset(Drych,id=='16')
+J70=subset(Drych,id=='70')
+J71=subset(Drych,id=='71')
+J72=subset(Drych,id=='72')
+J73=subset(Drych,id=='73')
+J76=subset(Drych,id=='76')
+J77=subset(Drych,id=='77')
 #'  Drych1 and Drych2
-Drych1=rbind(X16,X70,X76,X77)
-Drych2=rbind(X71,X72,X73)
+Drych1=rbind(J16,J70,J76,J77)
+Drych2=rbind(J71,J72,J73)
 #'
 #' 7) Drych1    
 # 76,77  Zone 20 K; 16 & 70 (most is in Zone 20 K too, but a little bit in 21K)
@@ -329,14 +271,14 @@ FPy$date <- as.POSIXct(FPy$date, format ="%Y-%m-%d %H:%M:%S", tz = "Etc/GMT+4")
 #'
 Iguazu=subset(jaguar_df,project_region=='Iguazu')
 # Transforming coordinate to UTM   # 42,66,80,90 => (21 J);      83 => (22 J) 
-X42=subset(Iguazu,id=='42')
-X66=subset(Iguazu,id=='66')
-X80=subset(Iguazu,id=='80')
-X90=subset(Iguazu,id=='90')
-X83=subset(Iguazu,id=='83')
+J42=subset(Iguazu,id=='42')
+J66=subset(Iguazu,id=='66')
+J80=subset(Iguazu,id=='80')
+J90=subset(Iguazu,id=='90')
+J83=subset(Iguazu,id=='83')
 #'  Iguazu1 and Iguazu2
-Iguazu1=rbind(X42,X66,X80,X90)
-Iguazu2=(X83)
+Iguazu1=rbind(J42,J66,J80,J90)
+Iguazu2=(J83)
 #'
 #' 11) Iguazu1    
 # 42,66,80,90 => ( Zone 21 J)
@@ -436,20 +378,17 @@ Pantanal$date <- as.POSIXct(Pantanal$date, format ="%Y-%m-%d %H:%M:%S", tz = "Et
 #'
 #'
 #' ###  Jaguar Dataframe with UTMs  
-#' head(AFW1);head(AFW2);head(Caatinga);head(Cerrado1);head(Cerrado2);head(CRica);head(Pantanal);head(Drych1);str(Drych)
-#' head(Hch);head(FPy);head(Iguazu1);head(Iguazu2);head(Mamiraua);head(iopPA);head(Lacandona);head(MexEast);head(Sonora)
 #'
-#' #### *Important Note: A single dataframe canot hold multiple POSIX*
+#' #### *Important Note: A single dataframe can NOT hold multiple POSIX tzs*
 #' This will assign the POSIXct of the first region (AFW in this case). 
 #' Hence it is required to store the regional POSIXct in multiple dataframes (or within a tibble for example)
-jaguar_df=rbind(AFW1,AFW2,Caatinga,Cerrado1,Cerrado2,CRica,Pantanal,Drych1,Drych2,Hch,FPy,Iguazu1,Iguazu2,Mamiraua,iopPA,Lacandona,MexEast,Sonora)
-#' Need re-order the data again and create a new Event_ID
+jaguar_df=rbind(AFW1,AFW2,Caatinga,Cerrado1,Cerrado2,CRica,Pantanal,
+          Drych1,Drych2,Hch,FPy,Iguazu1,Iguazu2,Mamiraua,iopPA,Lacandona,MexEast,Sonora)
+#' Need re-order the data again
 jaguar_ord <- jaguar_df[order(jaguar_df$id,jaguar_df$date),]
 jaguar_df <- jaguar_ord
-jaguar_df$Event_ID <- seq.int(nrow(jaguar_df))
 #' We assign UTC again just to store a full dataframe with UTMS but bellow we use regional POSIXct to create trks (amt package).
-jaguar_df$date <- jaguar_df$timestamp.posix
-
+jaguar_df$date <- jaguar_df$local_time
 #' In case we want save and read it as txt
 # write.table(jaguar_df,file="../data/jaguar_df.txt",row.names = F,quote=F,col.names=T,sep="\t")
 # jaguar <- read.delim(file="../data/jaguar_df.txt")
@@ -469,12 +408,12 @@ AFWtrk <- trk.convert(data = AFW,
                       .y=utm_y,
                       .t=date,
                       id=id,
+                      dt=dt,
                       project_region=project_region,
                       sex=sex,
                       age=age,
                       weight=weight, 
                       status=status,
-                      period=period,
                       long_x=long_x,
                       lat_y=lat_y,
                       crs = CRS("+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs"))
@@ -490,12 +429,12 @@ Caatingatrk <- trk.convert(data = Caatinga,
                       .y=utm_y,
                       .t=date,
                       id=id,
+                      dt=dt,
                       project_region=project_region,
                       sex=sex,
                       age=age,
                       weight=weight, 
                       status=status,
-                      period=period,
                       long_x=long_x,
                       lat_y=lat_y,
                       crs = CRS("+proj=utm +zone=23L +south +datum=WGS84 +units=m +no_defs"))
@@ -510,12 +449,12 @@ Cerrado1trk <- trk.convert(data = Cerrado1,
                            .y=utm_y,
                            .t=date,
                            id=id,
+                           dt=dt,
                            project_region=project_region,
                            sex=sex,
                            age=age,
                            weight=weight, 
                            status=status,
-                           period=period,
                            long_x=long_x,
                            lat_y=lat_y,
                            crs = CRS("+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs"))
@@ -526,12 +465,12 @@ Cerrado2trk <- trk.convert(data = Cerrado2,
                            .y=utm_y,
                            .t=date,
                            id=id,
+                           dt=dt,
                            project_region=project_region,
                            sex=sex,
                            age=age,
                            weight=weight, 
                            status=status,
-                           period=period,
                            long_x=long_x,
                            lat_y=lat_y,
                            crs = CRS("+proj=utm +zone=22L +south +datum=WGS84 +units=m +no_defs"))
@@ -550,12 +489,12 @@ CRicatrk <- trk.convert(data = CRica,
                           .y=utm_y,
                           .t=date,
                           id=id,
+                          dt=dt,
                           project_region=project_region,
                           sex=sex,
                           age=age,
                           weight=weight, 
                           status=status,
-                          period=period,
                           long_x=long_x,
                           lat_y=lat_y,
                           crs = CRS("+proj=utm +zone=16P +north +datum=WGS84 +units=m +no_defs"))
@@ -568,12 +507,12 @@ Drych1trk <- trk.convert(data = Drych1,
                         .y=utm_y,
                         .t=date,
                         id=id,
+                        dt=dt,
                         project_region=project_region,
                         sex=sex,
                         age=age,
                         weight=weight, 
                         status=status,
-                        period=period,
                         long_x=long_x,
                         lat_y=lat_y,
                         crs = CRS("+proj=utm +zone=20K +south +datum=WGS84 +units=m +no_defs"))
@@ -583,12 +522,12 @@ Drych2trk <- trk.convert(data = Drych2,
                          .y=utm_y,
                          .t=date,
                          id=id,
+                         dt=dt,
                          project_region=project_region,
                          sex=sex,
                          age=age,
                          weight=weight, 
                          status=status,
-                         period=period,
                          long_x=long_x,
                          lat_y=lat_y,
                          crs = CRS("+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs"))
@@ -606,12 +545,12 @@ Hchtrk <- trk.convert(data = Hch,
                          .y=utm_y,
                          .t=date,
                          id=id,
+                         dt=dt,
                          project_region=project_region,
                          sex=sex,
                          age=age,
                          weight=weight, 
                          status=status,
-                         period=period,
                          long_x=long_x,
                          lat_y=lat_y,
                          crs = CRS("+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs"))
@@ -626,12 +565,12 @@ FPytrk <- trk.convert(data = FPy,
                       .y=utm_y,
                       .t=date,
                       id=id,
+                      dt=dt,
                       project_region=project_region,
                       sex=sex,
                       age=age,
                       weight=weight, 
                       status=status,
-                      period=period,
                       long_x=long_x,
                       lat_y=lat_y,
                       crs = CRS("+proj=utm +zone=21J +south +datum=WGS84 +units=m +no_defs"))
@@ -647,12 +586,12 @@ Iguazu1trk <- trk.convert(data = Iguazu1,
                       .y=utm_y,
                       .t=date,
                       id=id,
+                      dt=dt,
                       project_region=project_region,
                       sex=sex,
                       age=age,
                       weight=weight, 
                       status=status,
-                      period=period,
                       long_x=long_x,
                       lat_y=lat_y,
                       crs = CRS("+proj=utm +zone=21J +south +datum=WGS84 +units=m +no_defs"))
@@ -664,12 +603,12 @@ Iguazu2trk <- trk.convert(data = Iguazu2,
                           .y=utm_y,
                           .t=date,
                           id=id,
+                          dt=dt,
                           project_region=project_region,
                           sex=sex,
                           age=age,
                           weight=weight, 
                           status=status,
-                          period=period,
                           long_x=long_x,
                           lat_y=lat_y,
                           crs = CRS("+proj=utm +zone=22J +south +datum=WGS84 +units=m +no_defs"))
@@ -686,12 +625,12 @@ Mamirauatrk <- trk.convert(data = Mamiraua,
                           .y=utm_y,
                           .t=date,
                           id=id,
+                          dt=dt,
                           project_region=project_region,
                           sex=sex,
                           age=age,
                           weight=weight, 
                           status=status,
-                          period=period,
                           long_x=long_x,
                           lat_y=lat_y,
                           crs = CRS("+proj=utm +zone=20M +south +datum=WGS84 +units=m +no_defs"))
@@ -705,12 +644,12 @@ iopPAtrk <- trk.convert(data = iopPA,
                            .y=utm_y,
                            .t=date,
                            id=id,
+                           dt=dt,
                            project_region=project_region,
                            sex=sex,
                            age=age,
                            weight=weight, 
                            status=status,
-                           period=period,
                            long_x=long_x,
                            lat_y=lat_y,
                            crs = CRS("+proj=utm +zone=22M +south +datum=WGS84 +units=m +no_defs"))
@@ -726,12 +665,12 @@ Lacandonatrk <- trk.convert(data = Lacandona,
                         .y=utm_y,
                         .t=date,
                         id=id,
+                        dt=dt,
                         project_region=project_region,
                         sex=sex,
                         age=age,
                         weight=weight, 
                         status=status,
-                        period=period,
                         long_x=long_x,
                         lat_y=lat_y,
                         crs = CRS("+proj=utm +zone=15Q +south +datum=WGS84 +units=m +no_defs"))
@@ -744,12 +683,12 @@ MexEasttrk <- trk.convert(data = MexEast,
                             .y=utm_y,
                             .t=date,
                             id=id,
+                            dt=dt,
                             project_region=project_region,
                             sex=sex,
                             age=age,
                             weight=weight, 
                             status=status,
-                            period=period,
                             long_x=long_x,
                             lat_y=lat_y,
                             crs = CRS("+proj=utm +zone=16Q +south +datum=WGS84 +units=m +no_defs"))
@@ -762,12 +701,12 @@ Sonoratrk <- trk.convert(data = Sonora,
                           .y=utm_y,
                           .t=date,
                           id=id,
+                          dt=dt,
                           project_region=project_region,
                           sex=sex,
                           age=age,
                           weight=weight, 
                           status=status,
-                          period=period,
                           long_x=long_x,
                           lat_y=lat_y,
                           crs = CRS("+proj=utm +zone=12R +south +datum=WGS84 +units=m +no_defs"))
@@ -782,262 +721,270 @@ Pantanaltrk <- trk.convert(data = Pantanal,
                          .y=utm_y,
                          .t=date,
                          id=id,
+                         dt=dt,
                          project_region=project_region,
                          sex=sex,
                          age=age,
                          weight=weight, 
                          status=status,
-                         period=period,
                          long_x=long_x,
                          lat_y=lat_y,
                          crs = CRS("+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs"))
 #'  
-#' Objects for Pantanal project regions
+#' Objects for Pantanal project regions (trk and dataframes)
  Oncafaritrk=Pantanaltrk %>% filter(project_region == "Oncafari")
+ Oncafari=Pantanal %>% filter(project_region == "Oncafari")
  Paraguaytrk=Pantanaltrk %>% filter(project_region == "Pantanal Paraguay")
+ Paraguay=Pantanal %>% filter(project_region == "Pantanal Paraguay")
  Panthera1trk=Pantanaltrk %>% filter(project_region == "Panthera1")
+ Panthera1=Pantanal %>% filter(project_region == "Panthera1")
  Panthera2trk=Pantanaltrk %>% filter(project_region == "Panthera2")
+ Panthera2=Pantanal %>% filter(project_region == "Panthera2")
  RioNegrotrk=Pantanaltrk %>% filter(project_region == "Rio Negro")
+ RioNegro=Pantanal %>% filter(project_region == "Rio Negro")
  SaoBentotrk=Pantanaltrk %>% filter(project_region == "Sao Bento")
+ SaoBento=Pantanal %>% filter(project_region == "Sao Bento")
  Taiamatrk=Pantanaltrk %>% filter(project_region == "Taiama")
+ Taiama=Pantanal %>% filter(project_region == "Taiama")
+ 
  
 #'
 #' 
 #'
 #' Dataframe and trk for each individual with adjusted timezones (to run if we need any specic individual)
-J1=subset(Hch,id=='1')   ####### Hch
+J1=subset(Hch,id=='1');J1$idloc <- seq.int(nrow(J1)) ####### Hch
 J1trk<-Hchtrk %>% filter(id=="1")
-J2=subset(FPy,id=='2')   ######### FPy
+J2=subset(FPy,id=='2');J2$idloc <- seq.int(nrow(J2)) ######### FPy
 J2trk<-FPytrk %>% filter(id=="2")
-J3=subset(Hch,id=='3')   ####### Hch
+J3=subset(Hch,id=='3');J3$idloc <- seq.int(nrow(J3)) ####### Hch
 J3trk<-Hchtrk %>% filter(id=="3")
-J4=subset(Hch,id=='4')   ####### Hch
+J4=subset(Hch,id=='4');J4$idloc <- seq.int(nrow(J4))   ####### Hch
 J4trk<-Hchtrk %>% filter(id=="4")
-J5=subset(Hch,id=='5')   ####### Hch
+J5=subset(Hch,id=='5');J5$idloc <- seq.int(nrow(J5))   ####### Hch
 J5trk<-Hchtrk %>% filter(id=="5")
-J6=subset(Hch,id=='6')   ####### Hch
+J6=subset(Hch,id=='6');J6$idloc <- seq.int(nrow(J6))   ####### Hch
 J6trk<-Hchtrk %>% filter(id=="6")
-J7=subset(Hch,id=='7')   ####### Hch
+J7=subset(Hch,id=='7');J7$idloc <- seq.int(nrow(J7))   ####### Hch
 J7trk<-Hchtrk %>% filter(id=="7")
-J8=subset(FPy,id=='8')   ######### FPy
+J8=subset(FPy,id=='8');J8$idloc <- seq.int(nrow(J8))   ######### FPy
 J8trk<-FPytrk %>% filter(id=="8")
-J9=subset(Hch,id=='9')   ####### Hch
+J9=subset(Hch,id=='9');J9$idloc <- seq.int(nrow(J9))   ####### Hch
 J9trk<-Hchtrk %>% filter(id=="9")
-J10=subset(Hch,id=='10') ####### Hch
+J10=subset(Hch,id=='10');J10$idloc <- seq.int(nrow(J10)) ####### Hch
 J10trk<-Hchtrk %>% filter(id=="10")
-J11=subset(Hch,id=='11') ####### Hch
+J11=subset(Hch,id=='11');J11$idloc <- seq.int(nrow(J11)) ####### Hch
 J11trk<-Hchtrk %>% filter(id=="11")
-J12=subset(Pantanal,id=='12') ########## Pantanal
+J12=subset(Pantanal,id=='12');J12$idloc <- seq.int(nrow(J12)) ########## Pantanal
 J12trk<-Pantanaltrk %>% filter(id=="12")
-J13=subset(Pantanal,id=='13') ########## Pantanal
+J13=subset(Pantanal,id=='13');J13$idloc <- seq.int(nrow(J13)) ########## Pantanal
 J13trk<-Pantanaltrk %>% filter(id=="13")
-J14=subset(Pantanal,id=='14') ########## Pantanal
+J14=subset(Pantanal,id=='14');J14$idloc <- seq.int(nrow(J14)) ########## Pantanal
 J14trk<-Pantanaltrk %>% filter(id=="14")
-J15=subset(Pantanal,id=='15') ########## Pantanal
+J15=subset(Pantanal,id=='15');J15$idloc <- seq.int(nrow(J15)) ########## Pantanal
 J15trk<-Pantanaltrk %>% filter(id=="15")
-J16=subset(Drych1,id=='16') ######### Drych1
+J16=subset(Drych1,id=='16');J16$idloc <- seq.int(nrow(J16)) ######### Drych1
 J16trk<-Drych1trk %>% filter(id=="16")
-J17=subset(Cerrado1,id=='17') ############### Cerrado1
+J17=subset(Cerrado1,id=='17');J17$idloc <- seq.int(nrow(J17)) ############### Cerrado1
 J17trk<-Cerrado1trk %>% filter(id=="17")
-J18=subset(Pantanal,id=='18') ########## Pantanal
+J18=subset(Pantanal,id=='18');J18$idloc <- seq.int(nrow(J18)) ########## Pantanal
 J18trk<-Pantanaltrk %>% filter(id=="18")
-J19=subset(Pantanal,id=='19') ########## Pantanal
+J19=subset(Pantanal,id=='19');J19$idloc <- seq.int(nrow(J19)) ########## Pantanal
 J19trk<-Pantanaltrk %>% filter(id=="19")
-J20=subset(Caatinga,id=='20') ################# Caatinga 
+J20=subset(Caatinga,id=='20');J20$idloc <- seq.int(nrow(J20)) ################# Caatinga 
 J20trk<-Caatingatrk %>% filter(id=="20")
-J21=subset(FPy,id=='21')  ######### FPy
+J21=subset(FPy,id=='21');J21$idloc <- seq.int(nrow(J21))  ######### FPy
 J21trk<-FPytrk %>% filter(id=="21")
-J22=subset(Pantanal,id=='22') ########## Pantanal
+J22=subset(Pantanal,id=='22');J22$idloc <- seq.int(nrow(J22)) ########## Pantanal
 J22trk<-Pantanaltrk %>% filter(id=="22")
-J23=subset(Pantanal,id=='23') ########## Pantanal
+J23=subset(Pantanal,id=='23');J23$idloc <- seq.int(nrow(J23)) ########## Pantanal
 J23trk<-Pantanaltrk %>% filter(id=="23")
-J24=subset(iopPA,id=='24') ###### iopPA
+J24=subset(iopPA,id=='24');J24$idloc <- seq.int(nrow(J24)) ###### iopPA
 J24trk<-iopPAtrk %>% filter(id=="24")
-J25=subset(Pantanal,id=='25') ########## Pantanal
+J25=subset(Pantanal,id=='25');J25$idloc <- seq.int(nrow(J25)) ########## Pantanal
 J25trk<-Pantanaltrk %>% filter(id=="25")
-J26=subset(CRica,id=='26')  ######### CRica
+J26=subset(CRica,id=='26');J26$idloc <- seq.int(nrow(J26))  ######### CRica
 J26trk<-CRicatrk %>% filter(id=="26")
-J27=subset(Pantanal,id=='27') ########## Pantanal
+J27=subset(Pantanal,id=='27');J27$idloc <- seq.int(nrow(J27)) ########## Pantanal
 J27trk<-Pantanaltrk %>% filter(id=="27")
-J28=subset(Pantanal,id=='28') ########## Pantanal
+J28=subset(Pantanal,id=='28');J28$idloc <- seq.int(nrow(J28)) ########## Pantanal
 J28trk<-Pantanaltrk %>% filter(id=="28")
-J29=subset(Pantanal,id=='29') ########## Pantanal
+J29=subset(Pantanal,id=='29');J29$idloc <- seq.int(nrow(J29)) ########## Pantanal
 J29trk<-Pantanaltrk %>% filter(id=="29")
-J30=subset(Pantanal,id=='30') ########## Pantanal
+J30=subset(Pantanal,id=='30');J30$idloc <- seq.int(nrow(J30)) ########## Pantanal
 J30trk<-Pantanaltrk %>% filter(id=="30")
-J31=subset(Pantanal,id=='31') ########## Pantanal
+J31=subset(Pantanal,id=='31');J31$idloc <- seq.int(nrow(J31)) ########## Pantanal
 J31trk<-Pantanaltrk %>% filter(id=="31")
-J32=subset(Pantanal,id=='32') ########## Pantanal
+J32=subset(Pantanal,id=='32');J32$idloc <- seq.int(nrow(J32)) ########## Pantanal
 J32trk<-Pantanaltrk %>% filter(id=="32")
-J33=subset(Pantanal,id=='33') ########## Pantanal
+J33=subset(Pantanal,id=='33');J33$idloc <- seq.int(nrow(J33)) ########## Pantanal
 J33trk<-Pantanaltrk %>% filter(id=="33")
-J34=subset(AFW1,id=='34')   ############### AFW1
+J34=subset(AFW1,id=='34');J34$idloc <- seq.int(nrow(J34))   ############### AFW1
 J34trk<-AFW1trk %>% filter(id=="34")
-J35=subset(AFW1,id=='35')   ############### AFW1
+J35=subset(AFW1,id=='35');J35$idloc <- seq.int(nrow(J35))   ############### AFW1
 J35trk<-AFW1trk %>% filter(id=="35")
-J36=subset(AFW1,id=='36')   ############### AFW1
+J36=subset(AFW1,id=='36');J36$idloc <- seq.int(nrow(J36))   ############### AFW1
 J36trk<-AFW1trk %>% filter(id=="36")
-J37=subset(AFW1,id=='37')   ############### AFW1
+J37=subset(AFW1,id=='37');J37$idloc <- seq.int(nrow(J37))   ############### AFW1
 J37trk<-AFW1trk %>% filter(id=="37")
-J38=subset(AFW1,id=='38')   ############### AFW1
+J38=subset(AFW1,id=='38');J38$idloc <- seq.int(nrow(J38))   ############### AFW1
 J38trk<-AFW1trk %>% filter(id=="38")
-J39=subset(AFW2,id=='39')   ###############  AFW2
+J39=subset(AFW2,id=='39');J39$idloc <- seq.int(nrow(J39))   ###############  AFW2
 J39trk<-AFW2trk %>% filter(id=="39")
-J40=subset(AFW2,id=='40')   ###############  AFW2
+J40=subset(AFW2,id=='40');J40$idloc <- seq.int(nrow(J40))   ###############  AFW2
 J40trk<-AFW2trk %>% filter(id=="40")
-J41=subset(Pantanal,id=='41') ########## Pantanal
+J41=subset(Pantanal,id=='41');J41$idloc <- seq.int(nrow(J41)) ########## Pantanal
 J41trk<-Pantanaltrk %>% filter(id=="41")
-J42=subset(Iguazu1,id=='42') ######## Iguazu1
+J42=subset(Iguazu1,id=='42');J42$idloc <- seq.int(nrow(J42)) ######## Iguazu1
 J42trk<-Iguazu1trk %>% filter(id=="42")
-J43=subset(Sonora,id=='43') ######## Sonora
+J43=subset(Sonora,id=='43');J43$idloc <- seq.int(nrow(J43)) ######## Sonora
 J43trk<-Sonoratrk %>% filter(id=="43")
-J44=subset(Lacandona,id=='44') ######## Lacandona
+J44=subset(Lacandona,id=='44');J44$idloc <- seq.int(nrow(J44)) ######## Lacandona
 J44trk<-Lacandonatrk %>% filter(id=="44")
-J45=subset(Lacandona,id=='45') ######## Lacandona
+J45=subset(Lacandona,id=='45');J45$idloc <- seq.int(nrow(J45)) ######## Lacandona
 J45trk<-Lacandonatrk %>% filter(id=="45")
-J46=subset(Lacandona,id=='46')  ######## Lacandona
+J46=subset(Lacandona,id=='46');J46$idloc <- seq.int(nrow(J46))  ######## Lacandona
 J46trk<-Lacandonatrk %>% filter(id=="46")
-J47=subset(Lacandona,id=='47')  ######## Lacandona
+J47=subset(Lacandona,id=='47');J47$idloc <- seq.int(nrow(J47))  ######## Lacandona
 J47trk<-Lacandonatrk %>% filter(id=="47")
-J48=subset(Lacandona,id=='48')  ######## Lacandona
+J48=subset(Lacandona,id=='48');J48$idloc <- seq.int(nrow(J48))  ######## Lacandona
 J48trk<-Lacandonatrk %>% filter(id=="48")
-J49=subset(MexEast,id=='49')  ######### MexEast
+J49=subset(MexEast,id=='49');J49$idloc <- seq.int(nrow(J49))  ######### MexEast
 J49trk<-MexEasttrk %>% filter(id=="49")
-J50=subset(Caatinga,id=='50')  ############### Caatinga
+J50=subset(Caatinga,id=='50');J50$idloc <- seq.int(nrow(J50))  ############### Caatinga
 J50trk<-Caatingatrk %>% filter(id=="50")
-J51=subset(Pantanal,id=='51') ########## Pantanal
+J51=subset(Pantanal,id=='51');J51$idloc <- seq.int(nrow(J51)) ########## Pantanal
 J51trk<-Pantanaltrk %>% filter(id=="51")
-J52=subset(Pantanal,id=='52') ########## Pantanal
+J52=subset(Pantanal,id=='52');J52$idloc <- seq.int(nrow(J52)) ########## Pantanal
 J52trk<-Pantanaltrk %>% filter(id=="52")
-J53=subset(Pantanal,id=='53') ########## Pantanal
+J53=subset(Pantanal,id=='53');J53$idloc <- seq.int(nrow(J53)) ########## Pantanal
 J53trk<-Pantanaltrk %>% filter(id=="53")
-J54=subset(Pantanal,id=='54') ########## Pantanal
+J54=subset(Pantanal,id=='54');J54$idloc <- seq.int(nrow(J54)) ########## Pantanal
 J54trk<-Pantanaltrk %>% filter(id=="54")
-J55=subset(Pantanal,id=='55') ########## Pantanal
+J55=subset(Pantanal,id=='55');J55$idloc <- seq.int(nrow(J55)) ########## Pantanal
 J55trk<-Pantanaltrk %>% filter(id=="55")
-J56=subset(Pantanal,id=='56') ########## Pantanal
+J56=subset(Pantanal,id=='56');J56$idloc <- seq.int(nrow(J56)) ########## Pantanal
 J56trk<-Pantanaltrk %>% filter(id=="56")
-J57=subset(Pantanal,id=='57') ########## Pantanal
+J57=subset(Pantanal,id=='57');J57$idloc <- seq.int(nrow(J57)) ########## Pantanal
 J57trk<-Pantanaltrk %>% filter(id=="57")
-J58=subset(AFW1,id=='58')   ###############  AFW1
+J58=subset(AFW1,id=='58');J58$idloc <- seq.int(nrow(J58))   ###############  AFW1
 J58trk<-AFW1trk %>% filter(id=="58")
-J59=subset(Pantanal,id=='59') ########## Pantanal
+J59=subset(Pantanal,id=='59');J59$idloc <- seq.int(nrow(J59)) ########## Pantanal
 J59trk<-Pantanaltrk %>% filter(id=="59")
-J60=subset(Pantanal,id=='60') ########## Pantanal
+J60=subset(Pantanal,id=='60');J60$idloc <- seq.int(nrow(J60)) ########## Pantanal
 J60trk<-Pantanaltrk %>% filter(id=="60")
-J61=subset(Pantanal,id=='61') ########## Pantanal
+J61=subset(Pantanal,id=='61');J61$idloc <- seq.int(nrow(J61)) ########## Pantanal
 J61trk<-Pantanaltrk %>% filter(id=="61")
-J62=subset(AFW1,id=='62')   ###############  AFW1
+J62=subset(AFW1,id=='62');J62$idloc <- seq.int(nrow(J62))   ###############  AFW1
 J62trk<-AFW1trk %>% filter(id=="62")
-J63=subset(AFW2,id=='63')   ###############  AFW2
+J63=subset(AFW2,id=='63');J63$idloc <- seq.int(nrow(J63))   ###############  AFW2
 J63trk<-AFW2trk %>% filter(id=="63")
-J64=subset(Sonora,id=='64') ######## Sonora
+J64=subset(Sonora,id=='64');J64$idloc <- seq.int(nrow(J64)) ######## Sonora
 J64trk<-Sonoratrk %>% filter(id=="64")
-J65=subset(Cerrado1,id=='65')  ########## Cerrado1
+J65=subset(Cerrado1,id=='65');J65$idloc <- seq.int(nrow(J65))  ########## Cerrado1
 J65trk<-Cerrado1trk %>% filter(id=="65")
-J66=subset(Iguazu1,id=='66')  ########## Iguazu1
+J66=subset(Iguazu1,id=='66');J66$idloc <- seq.int(nrow(J66))  ########## Iguazu1
 J66trk<-Iguazu1trk %>% filter(id=="66")
-J67=subset(Cerrado1,id=='67')  ########## Cerrado1
+J67=subset(Cerrado1,id=='67');J67$idloc <- seq.int(nrow(J67))  ########## Cerrado1
 J67trk<-Cerrado1trk %>% filter(id=="67")
-J68=subset(Pantanal,id=='68') ########## Pantanal
+J68=subset(Pantanal,id=='68');J68$idloc <- seq.int(nrow(J68)) ########## Pantanal
 J68trk<-Pantanaltrk %>% filter(id=="68")
-J69=subset(Pantanal,id=='69') ########## Pantanal
+J69=subset(Pantanal,id=='69');J69$idloc <- seq.int(nrow(J69)) ########## Pantanal
 J69trk<-Pantanaltrk %>% filter(id=="69")
-J70=subset(Drych1,id=='70')  ######## Drych1
+J70=subset(Drych1,id=='70');J70$idloc <- seq.int(nrow(J70))  ######## Drych1
 J70trk<-Drych1trk %>% filter(id=="70")
-J71=subset(Drych2,id=='71') ####### Drych2
+J71=subset(Drych2,id=='71');J71$idloc <- seq.int(nrow(J71))  ####### Drych2
 J71trk<-Drych2trk %>% filter(id=="71")
-J72=subset(Drych2,id=='72') ####### Drych2
+J72=subset(Drych2,id=='72');J72$idloc <- seq.int(nrow(J72))  ####### Drych2
 J72trk<-Drych2trk %>% filter(id=="72")
-J73=subset(Drych2,id=='73') ####### Drych2
+J73=subset(Drych2,id=='73');J73$idloc <- seq.int(nrow(J73))  ####### Drych2
 J73trk<-Drych2trk %>% filter(id=="73")
-J74=subset(Pantanal,id=='74')  ########## Pantanal
+J74=subset(Pantanal,id=='74');J74$idloc <- seq.int(nrow(J74))   ########## Pantanal
 J74trk<-Pantanaltrk %>% filter(id=="74")
-J75=subset(Pantanal,id=='75')  ########## Pantanal
+J75=subset(Pantanal,id=='75');J75$idloc <- seq.int(nrow(J75))   ########## Pantanal
 J75trk<-Pantanaltrk %>% filter(id=="75")
-J76=subset(Drych1,id=='76') ####### Drych1
+J76=subset(Drych1,id=='76');J76$idloc <- seq.int(nrow(J76))  ####### Drych1
 J76trk<-Drych1trk %>% filter(id=="76")
-J77=subset(Drych1,id=='77') ####### Drych1
+J77=subset(Drych1,id=='77');J77$idloc <- seq.int(nrow(J77))  ####### Drych1
 J77trk<-Drych1trk %>% filter(id=="77")
-J78=subset(FPy,id=='78')  ####### FPy
+J78=subset(FPy,id=='78');J78$idloc <- seq.int(nrow(J78))   ####### FPy
 J78trk<-FPytrk %>% filter(id=="78")
-J79=subset(Pantanal,id=='79') ########## Pantanal
+J79=subset(Pantanal,id=='79');J79$idloc <- seq.int(nrow(J79)) ########## Pantanal
 J79trk<-Pantanaltrk %>% filter(id=="79")
-J80=subset(Iguazu1,id=='80') ######## Iguazu1
+J80=subset(Iguazu1,id=='80');J80$idloc <- seq.int(nrow(J80)) ######## Iguazu1
 J80trk<-Iguazu1trk %>% filter(id=="80")
-J81=subset(Pantanal,id=='81') ########## Pantanal
+J81=subset(Pantanal,id=='81');J81$idloc <- seq.int(nrow(J81)) ########## Pantanal
 J81trk<-Pantanaltrk %>% filter(id=="81")
-J82=subset(Cerrado1,id=='82')  ########## Cerrado1
+J82=subset(Cerrado1,id=='82');J82$idloc <- seq.int(nrow(J82))  ########## Cerrado1
 J82trk<-Cerrado1trk %>% filter(id=="82")
-J83=subset(Iguazu2,id=='83')  ########## Iguazu2
+J83=subset(Iguazu2,id=='83');J83$idloc <- seq.int(nrow(J83))  ########## Iguazu2
 J83trk<-Iguazu2trk %>% filter(id=="83")
-J84=subset(Pantanal,id=='84')  ########## Pantanal
+J84=subset(Pantanal,id=='84');J84$idloc <- seq.int(nrow(J84))  ########## Pantanal
 J84trk<-Pantanaltrk %>% filter(id=="84")
-J85=subset(Cerrado1,id=='85')  ########## Cerrado1
+J85=subset(Cerrado1,id=='85');J85$idloc <- seq.int(nrow(J85))  ########## Cerrado1
 J85trk<-Cerrado1trk %>% filter(id=="85")
-J86=subset(Pantanal,id=='86') ########## Pantanal
+J86=subset(Pantanal,id=='86');J86$idloc <- seq.int(nrow(J86)) ########## Pantanal
 J86trk<-Pantanaltrk %>% filter(id=="86")
-J87=subset(Pantanal,id=='87') ########## Pantanal
+J87=subset(Pantanal,id=='87');J87$idloc <- seq.int(nrow(J87)) ########## Pantanal
 J87trk<-Pantanaltrk %>% filter(id=="87")
-J88=subset(Pantanal,id=='88') ########## Pantanal
+J88=subset(Pantanal,id=='88');J88$idloc <- seq.int(nrow(J88)) ########## Pantanal
 J88trk<-Pantanaltrk %>% filter(id=="88")
-J89=subset(Cerrado2,id=='89') ######### Cerrado2
+J89=subset(Cerrado2,id=='89');J89$idloc <- seq.int(nrow(J89)) ######### Cerrado2
 J89trk<-Cerrado2trk %>% filter(id=="89")
-J90=subset(Iguazu1,id=='90') ######### Iguazu1
+J90=subset(Iguazu1,id=='90');J90$idloc <- seq.int(nrow(J90)) ######### Iguazu1
 J90trk<-Iguazu1trk %>% filter(id=="90")
-J91=subset(Pantanal,id=='91') ########## Pantanal
+J91=subset(Pantanal,id=='91');J91$idloc <- seq.int(nrow(J91)) ########## Pantanal
 J91trk<-Pantanaltrk %>% filter(id=="91")
-J92=subset(Pantanal,id=='92') ########## Pantanal
+J92=subset(Pantanal,id=='92');J92$idloc <- seq.int(nrow(J92)) ########## Pantanal
 J92trk<-Pantanaltrk %>% filter(id=="92")
-J93=subset(Mamiraua,id=='93') ######### Mamiraua
+J93=subset(Mamiraua,id=='93');J93$idloc <- seq.int(nrow(J93)) ######### Mamiraua
 J93trk<-Mamirauatrk %>% filter(id=="93")
-J94=subset(Mamiraua,id=='94') ######### Mamiraua
+J94=subset(Mamiraua,id=='94');J94$idloc <- seq.int(nrow(J94)) ######### Mamiraua
 J94trk<-Mamirauatrk %>% filter(id=="94")
-J95=subset(Mamiraua,id=='95') ######### Mamiraua
+J95=subset(Mamiraua,id=='95');J95$idloc <- seq.int(nrow(J95)) ######### Mamiraua
 J95trk<-Mamirauatrk %>% filter(id=="95")
-J96=subset(Mamiraua,id=='96') ######### Mamiraua
+J96=subset(Mamiraua,id=='96');J96$idloc <- seq.int(nrow(J96)) ######### Mamiraua
 J96trk<-Mamirauatrk %>% filter(id=="96")
-J97=subset(Mamiraua,id=='97') ######### Mamiraua
+J97=subset(Mamiraua,id=='97');J97$idloc <- seq.int(nrow(J97)) ######### Mamiraua
 J97trk<-Mamirauatrk %>% filter(id=="97")
-J98=subset(Mamiraua,id=='98') ######### Mamiraua
+J98=subset(Mamiraua,id=='98');J98$idloc <- seq.int(nrow(J98)) ######### Mamiraua
 J98trk<-Mamirauatrk %>% filter(id=="98")
-J99=subset(Mamiraua,id=='99') ######### Mamiraua
+J99=subset(Mamiraua,id=='99');J99$idloc <- seq.int(nrow(J99)) ######### Mamiraua
 J99trk<-Mamirauatrk %>% filter(id=="99")
-J100=subset(Mamiraua,id=='100')######### Mamiraua
+J100=subset(Mamiraua,id=='100');J100$idloc <- seq.int(nrow(J100))######### Mamiraua
 J100trk<-Mamirauatrk %>% filter(id=="100")
-J101=subset(Pantanal,id=='101') ########## Pantanal
+J101=subset(Pantanal,id=='101');J101$idloc <- seq.int(nrow(J101)) ########## Pantanal
 J101trk<-Pantanaltrk %>% filter(id=="101")
-J102=subset(Pantanal,id=='102') ########## Pantanal
+J102=subset(Pantanal,id=='102');J102$idloc <- seq.int(nrow(J102)) ########## Pantanal
 J102trk<-Pantanaltrk %>% filter(id=="102")
-J103=subset(Pantanal,id=='103') ########## Pantanal
+J103=subset(Pantanal,id=='103');J103$idloc <- seq.int(nrow(J103)) ########## Pantanal
 J103trk<-Pantanaltrk %>% filter(id=="103")
-J104=subset(Pantanal,id=='104') ########## Pantanal
+J104=subset(Pantanal,id=='104');J104$idloc <- seq.int(nrow(J104)) ########## Pantanal
 J104trk<-Pantanaltrk %>% filter(id=="104")
-J105=subset(Pantanal,id=='105') ########## Pantanal
+J105=subset(Pantanal,id=='105');J105$idloc <- seq.int(nrow(J105)) ########## Pantanal
 J105trk<-Pantanaltrk %>% filter(id=="105")
-J106=subset(Pantanal,id=='106') ########## Pantanal
+J106=subset(Pantanal,id=='106');J106$idloc <- seq.int(nrow(J106)) ########## Pantanal
 J106trk<-Pantanaltrk %>% filter(id=="106")
-J107=subset(Pantanal,id=='107')########## Pantanal
+J107=subset(Pantanal,id=='107');J107$idloc <- seq.int(nrow(J107))########## Pantanal
 J107trk<-Pantanaltrk %>% filter(id=="107")
-J108=subset(Pantanal,id=='108')########## Pantanal
+J108=subset(Pantanal,id=='108');J108$idloc <- seq.int(nrow(J108))########## Pantanal
 J108trk<-Pantanaltrk %>% filter(id=="108")
-J109=subset(Pantanal,id=='109')########## Pantanal
+J109=subset(Pantanal,id=='109');J109$idloc <- seq.int(nrow(J109))########## Pantanal
 J109trk<-Pantanaltrk %>% filter(id=="109")
-J110=subset(Pantanal,id=='110')########## Pantanal
+J110=subset(Pantanal,id=='110');J110$idloc <- seq.int(nrow(J110))########## Pantanal
 J110trk<-Pantanaltrk %>% filter(id=="110")
-J111=subset(Pantanal,id=='111')########## Pantanal
+J111=subset(Pantanal,id=='111');J111$idloc <- seq.int(nrow(J111))########## Pantanal
 J111trk<-Pantanaltrk %>% filter(id=="111")
-J112=subset(Pantanal,id=='112')########## Pantanal
+J112=subset(Pantanal,id=='112');J112$idloc <- seq.int(nrow(J112))########## Pantanal
 J112trk<-Pantanaltrk %>% filter(id=="112")
-J113=subset(Pantanal,id=='113')########## Pantanal
+J113=subset(Pantanal,id=='113');J113$idloc <- seq.int(nrow(J113))########## Pantanal
 J113trk<-Pantanaltrk %>% filter(id=="113")
-J114=subset(Pantanal,id=='114')########## Pantanal
+J114=subset(Pantanal,id=='114');J114$idloc <- seq.int(nrow(J114))########## Pantanal
 J114trk<-Pantanaltrk %>% filter(id=="114")
-J115=subset(Pantanal,id=='115')########## Pantanal
+J115=subset(Pantanal,id=='115');J115$idloc <- seq.int(nrow(J115))########## Pantanal
 J115trk<-Pantanaltrk %>% filter(id=="115")
-J116=subset(Pantanal,id=='116')########## Pantanal
+J116=subset(Pantanal,id=='116');J116$idloc <- seq.int(nrow(J116))########## Pantanal
 J116trk<-Pantanaltrk %>% filter(id=="116")
-J117=subset(Pantanal,id=='117')########## Pantanal
+J117=subset(Pantanal,id=='117');J117$idloc <- seq.int(nrow(J117))########## Pantanal
 J117trk<-Pantanaltrk %>% filter(id=="117")
 
 #' 
