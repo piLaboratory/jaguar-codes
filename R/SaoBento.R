@@ -1,13 +1,22 @@
-#########################################################################################################################################               
-                ###   JAGUAR DATASET - PANTANAL  (Sao  Bento) ### 
-###########################################################################################################
-### Preliminary tests for RSF & SSF 
-###########################################################################################################
- 
-    ### RUN JAGUAR DATA PREPARATION FIRST !!!   NEED THE trk files!!!	
-
+#'
+#' #  **JAGUAR DATASET - PANTANAL  (Sao  Bento)**
+#' 
+#' #### *Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima,Claudia Kanda, Milton Ribeiro, Ronaldo Morato,Paulo Prado*
+#' date: "April, 04 2019"
+#' ##### Scripts adapted from Johannes Signer and John John Fieberg's lectures.
+#' 
+#' #### Run JaguarDataPrep first !!! 
+#'
+#' ### Preliminary tests for RSF & SSF using data from Sao Bento, Pantanal 
    SaoBentotrk -> trk	
-################################################################################################################
+#' ### Visualize all data with leaflet
+pal <- colorFactor(palette = 'Dark2',domain = jaguar_df$id)
+leaflet(jaguar_df)%>%addTiles()%>%addCircles(jaguar_df$x,jaguar_df$y,color=~pal(id))%>% addProviderTiles(providers$Esri.WorldImagery)
+xyplot(id~date, data = jaguar_df, groups = project_region, auto.key=list(columns = 3))
+options(max.print=1000000)
+   
+   
+#
 #' ## RSF prep
 #' 
 #' Generate random points within MCPs for a single individual using amt functions.

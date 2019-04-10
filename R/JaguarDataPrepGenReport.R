@@ -19,3 +19,11 @@ ezspin(file = "JaguarDataPrep.R", out_dir = "reports",
 
 open_output_dir()
 
+#' #### Produce an Rmd and html outputs using ezknitr
+install.load::install_load("knitr", "ezknitr") # To render documents 
+ezspin(file = "SaoBentoSSF.R", out_dir = "reports",
+       params = list("DATASET_NAME" = "jaguar.dat"), 
+       keep_html = TRUE, keep_rmd = TRUE)
+
+open_output_dir()
+

@@ -16,7 +16,7 @@ if(!require(install.load)) install.packages('install.load'); library(install.loa
 install.load::install_load("move", "adehabitatLT", "amt") # Movement packages
 install.load::install_load("maptools", "raster", "rgdal","sp") # Spatial packages
 install.load::install_load("colorspace", "rgl", "lattice", "leaflet","ggplot2") # Visualization packages
-install.load::install_load("RCurl", "dplyr", "readr", "lubridate", "tibble") # Aux packages
+install.load::install_load("RCurl", "dplyr", "readr", "lubridate", "tibble","forcats") # Aux packages
 install.load::install_load("circular", "caTools") # Stats packages
 install.load::install_load("knitr", "ezknitr") # To render documents 
 #'
