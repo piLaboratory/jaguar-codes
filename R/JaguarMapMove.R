@@ -22,6 +22,8 @@ colSums(ifelse(table(jaguar_df$id,jaguar_df$project_bioveg)>0,1,0)) #table(dropl
 
 #'
 #' #### 1) Atlantic Forest W1
+pal <- colorFactor(palette = 'Dark2',domain = AFW1$id)
+#pal <- colorFactor(palette = 'Paired',domain = AFW1$id)
 leaflet(AFW1)%>%addTiles()%>%addCircles(AFW1$x, AFW1$y, color =~pal(id))%>% addProviderTiles(providers$Esri.WorldImagery)
 
 ft=ftable(AFW1$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
@@ -32,8 +34,15 @@ open3d()
 # To get a bigger window than the default
 par3d(windowRect = c(100, 100, 612, 612))
 Sys.sleep(0.1) # Allow sluggish window managers to catch up
-with(AFW1, plot3d(x,y,date, type="l", col=as.numeric(AFW1$weight)))
-(stcube<-with(AFW1, plot3d(x,y,date, type="l",col=as.numeric(cut(AFW1$weight,7)), alpha=0.4)))
+with(AFW1, plot3d(x,y,date, type="l", col=as.factor(AFW1$idf)))
+(stcube<-with(AFW1, plot3d(x,y,date, type="l",col=as.numeric(cut(AFW1$id,7)), alpha=0.4)))
+#' ##### 3D plot
+open3d()
+# To get a bigger window than the default
+par3d(windowRect = c(100, 100, 612, 612))
+Sys.sleep(0.1) # Allow sluggish window managers to catch up
+with(AFW1, plot3d(x,y,date, type="p", col=as.numeric(AFW1$weight)))
+(stcube<-with(AFW1, plot3d(x,y,date, type="p",col=as.numeric(cut(AFW1$weight,7)), alpha=0.4)))
 
 
 #' ##### Individuals basic counts
@@ -290,6 +299,14 @@ leaflet(Sonora)%>%addTiles()%>%addCircles(Sonora$x, Sonora$y)%>% addProviderTile
 #' 
 #' #### 18) PantanalTotal Brazil&Paraguay   -  7 Projects in total
 leaflet(Pantanal)%>%addTiles()%>%addCircles(Pantanal$x, Pantanal$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+ft=ftable(Pantanal$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+x11()
+xyplot(id~date, data = Pantanal, groups = id)
+xyplot(id~date, data = Pantanal, groups = id, auto.key=list(columns = 3))
+
+
+
 #' 
 leaflet(Oncafari)%>%addTiles()%>%addCircles(Oncafari$x, Oncafari$y)%>% addProviderTiles(providers$Esri.WorldImagery)
 leaflet(Paraguay)%>%addTiles()%>%addCircles(Paraguay$x, Paraguay$y)%>% addProviderTiles(providers$Esri.WorldImagery)

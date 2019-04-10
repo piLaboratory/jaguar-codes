@@ -52,6 +52,7 @@ trk.convert <- function(data, ...){
     ## We can add a columns to each nested column of data using purrr::map
     trk<-trk %>% nest(-id) %>% 
         mutate(sl = map(data, step_lengths),
+               speed=map(data, speed),
                nsd_=map(data, nsd),
                dir_abs = map(data, direction_abs,full_circle=TRUE, zero="N"), 
                dir_rel = map(data, direction_rel))%>%unnest()
@@ -67,7 +68,7 @@ trk.convert <- function(data, ...){
             hour = hour(t_)
         )
     trk <- trk %>%dplyr::select(x_,y_,t_,id,tod_, everything())
-    trk <- trk%>%dplyr::select(-sl,-project_region,-nsd_, -dir_abs,-dir_rel,
+    trk <- trk%>%dplyr::select(-sl,-speed,-project_region,-nsd_, -dir_abs,-dir_rel,
                                -week, -month, -year,-hour,-long_x,-lat_y, everything())
     ## Now, we need to again tell R that this is a track (rather than just a data frame)
     class(trk)<-trk.class

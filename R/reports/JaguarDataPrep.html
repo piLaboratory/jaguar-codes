@@ -1372,7 +1372,7 @@ jaguarlist = list(J1trk,J2trk,J3trk,J4trk,J5trk,J6trk,J7trk,J8trk,J9trk,J10trk,
 
 <pre><code>## R version 3.5.3 (2019-03-11)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 10 x64 (build 17134)
+## Running under: Windows &gt;= 8 x64 (build 9200)
 ## 
 ## Matrix products: default
 ## 
@@ -1387,63 +1387,59 @@ jaguarlist = list(J1trk,J2trk,J3trk,J4trk,J5trk,J6trk,J7trk,J8trk,J9trk,J10trk,
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] installr_0.21.0     spatialEco_1.1-1    vegan_2.5-4        
-##  [4] permute_0.9-4       stringr_1.4.0       rvest_0.3.2        
-##  [7] xml2_1.2.0          rts_1.0-49          xts_0.11-2         
-## [10] zoo_1.8-4           bindrcpp_0.2.2      ezknitr_0.6        
-## [13] knitr_1.21          caTools_1.17.1.1    circular_0.4-93    
-## [16] tibble_1.4.2        lubridate_1.7.4     readr_1.2.1        
-## [19] dplyr_0.7.8         RCurl_1.95-4.12     bitops_1.0-6       
-## [22] ggplot2_3.1.0       leaflet_2.0.2       lattice_0.20-38    
-## [25] rgl_0.100.19        colorspace_1.4-0    maptools_0.9-5     
-## [28] amt_0.0.5.0         adehabitatLT_0.3.23 CircStats_0.2-6    
-## [31] boot_1.3-20         MASS_7.3-51.1       adehabitatMA_0.3.12
-## [34] ade4_1.7-13         move_3.1.0          rgdal_1.4-3        
-## [37] raster_2.8-19       sp_1.3-1            geosphere_1.5-7    
-## [40] install.load_1.2.1 
+##  [1] bindrcpp_0.2.2      ezknitr_0.6         knitr_1.21         
+##  [4] caTools_1.17.1.1    circular_0.4-93     tibble_1.4.2       
+##  [7] lubridate_1.7.4     readr_1.2.1         dplyr_0.7.8        
+## [10] RCurl_1.95-4.12     bitops_1.0-6        ggplot2_3.1.0      
+## [13] leaflet_2.0.2       lattice_0.20-38     rgl_0.100.19       
+## [16] colorspace_1.4-0    maptools_0.9-5      amt_0.0.5.0        
+## [19] adehabitatLT_0.3.23 CircStats_0.2-6     boot_1.3-20        
+## [22] MASS_7.3-51.1       adehabitatMA_0.3.12 ade4_1.7-13        
+## [25] move_3.1.0          rgdal_1.4-3         raster_2.8-19      
+## [28] sp_1.3-1            geosphere_1.5-7     install.load_1.2.1 
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] nlme_3.1-137            sf_0.7-1               
-##  [3] webshot_0.5.1           httr_1.4.0             
+##  [1] nlme_3.1-137            webshot_0.5.1          
+##  [3] RColorBrewer_1.1-2      httr_1.4.0             
 ##  [5] tools_3.5.3             utf8_1.1.4             
-##  [7] R6_2.3.0                spData_0.2.9.6         
-##  [9] DBI_1.0.0               lazyeval_0.2.1         
-## [11] mgcv_1.8-27             manipulateWidget_0.10.0
+##  [7] R6_2.3.0                rgeos_0.4-2            
+##  [9] lazyeval_0.2.1          mgcv_1.8-27            
+## [11] manipulateWidget_0.10.0 npsurv_0.4-0           
 ## [13] withr_2.1.2             tidyselect_0.2.5       
 ## [15] compiler_3.5.3          cli_1.0.1              
-## [17] scales_1.0.0            classInt_0.2-3         
-## [19] mvtnorm_1.0-8           digest_0.6.18          
-## [21] foreign_0.8-71          R.utils_2.7.0          
-## [23] pkgconfig_2.0.2         htmltools_0.3.6        
-## [25] highr_0.7               htmlwidgets_1.3        
-## [27] rlang_0.3.0.1           shiny_1.2.0            
-## [29] bindr_0.1.1             jsonlite_1.5           
-## [31] crosstalk_1.0.0         R.oo_1.22.0            
-## [33] magrittr_1.5            Matrix_1.2-15          
-## [35] fansi_0.4.0             Rcpp_1.0.0             
-## [37] munsell_0.5.0           R.methodsS3_1.7.1      
-## [39] stringi_1.2.4           plyr_1.8.4             
-## [41] grid_3.5.3              parallel_3.5.3         
-## [43] promises_1.0.1          crayon_1.3.4           
-## [45] miniUI_0.1.1.1          splines_3.5.3          
-## [47] hms_0.4.2               pillar_1.3.0           
-## [49] markdown_0.8            codetools_0.2-16       
-## [51] glue_1.3.0              evaluate_0.12          
-## [53] httpuv_1.4.5            gtable_0.2.0           
-## [55] purrr_0.2.5             tidyr_0.8.2            
-## [57] assertthat_0.2.0        xfun_0.4               
-## [59] mime_0.6                xtable_1.8-3           
-## [61] e1071_1.7-0             later_0.7.5            
-## [63] class_7.3-15            survival_2.43-3        
-## [65] memoise_1.1.0           units_0.6-2            
-## [67] cluster_2.0.7-1
+## [17] xml2_1.2.0              labeling_0.3           
+## [19] scales_1.0.0            mvtnorm_1.0-8          
+## [21] stringr_1.4.0           digest_0.6.18          
+## [23] foreign_0.8-71          R.utils_2.7.0          
+## [25] pkgconfig_2.0.2         htmltools_0.3.6        
+## [27] highr_0.7               htmlwidgets_1.3        
+## [29] rlang_0.3.0.1           rstudioapi_0.8         
+## [31] shiny_1.2.0             bindr_0.1.1            
+## [33] jsonlite_1.5            crosstalk_1.0.0        
+## [35] R.oo_1.22.0             magrittr_1.5           
+## [37] Matrix_1.2-15           Rcpp_1.0.0             
+## [39] munsell_0.5.0           fansi_0.4.0            
+## [41] R.methodsS3_1.7.1       stringi_1.2.4          
+## [43] yaml_2.2.0              plyr_1.8.4             
+## [45] grid_3.5.3              parallel_3.5.3         
+## [47] promises_1.0.1          crayon_1.3.4           
+## [49] miniUI_0.1.1.1          splines_3.5.3          
+## [51] hms_0.4.2               pillar_1.3.0           
+## [53] codetools_0.2-16        glue_1.3.0             
+## [55] evaluate_0.12           lsei_1.2-0             
+## [57] httpuv_1.4.5            gtable_0.2.0           
+## [59] purrr_0.2.5             tidyr_0.8.2            
+## [61] assertthat_0.2.0        xfun_0.4               
+## [63] mime_0.6                xtable_1.8-3           
+## [65] later_0.7.5             survival_2.43-3        
+## [67] memoise_1.1.0           fitdistrplus_1.0-11
 </code></pre>
 
 <pre><code class="r">proc.time()
 </code></pre>
 
-<pre><code>##      user    system   elapsed 
-##  65070.82  18234.65 143143.51
+<pre><code>##    user  system elapsed 
+##  175.18  132.51 8191.76
 </code></pre>
 
 </body>
