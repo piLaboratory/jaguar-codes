@@ -5,7 +5,7 @@
 #' #### Run JaguarDataPrep first !!! 
 #'
 #' ### Visualize all data with leaflet
-pal <- colorFactor(palette = 'Dark2',domain = jaguar_df$id)
+pal <- colorFactor(palette = 'paired',domain = jaguar_df$id)
 leaflet(jaguar_df)%>%addTiles()%>%addCircles(jaguar_df$x,jaguar_df$y,color=~pal(id))%>% addProviderTiles(providers$Esri.WorldImagery)
 xyplot(id~date, data = jaguar_df, groups = project_region, auto.key=list(columns = 3))
 options(max.print=1000000)
@@ -26,8 +26,36 @@ pal <- colorFactor(palette = 'Dark2',domain = AFW1$id)
 #pal <- colorFactor(palette = 'Paired',domain = AFW1$id)
 leaflet(AFW1)%>%addTiles()%>%addCircles(AFW1$x, AFW1$y, color =~pal(id))%>% addProviderTiles(providers$Esri.WorldImagery)
 
-ft=ftable(AFW1$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+#ft=ftable(AFW1$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+table(AFW1$id)
 xyplot(id~date, data = AFW1, groups = id)
+#' ## Control for speed and timelag
+max(AFW1trk$speed,na.rm=TRUE) # m/s
+max(AFW1trk$speed,na.rm=TRUE)*3.6  # Km/h
+
+max(AFW1trk$dt,na.rm=TRUE)
+as.numeric(max(AFW1trk$dt,na.rm=TRUE))/60/60/24  # days
+max(J34trk$dt,na.rm=TRUE)
+as.numeric(max(J34trk$dt,na.rm=TRUE))/60/60/24  # days
+
+max(J35trk$dt,na.rm=TRUE)
+as.numeric(max(J35trk$dt,na.rm=TRUE))/60/60/24  # days
+print(J35trk, n = Inf, width=Inf); J35trk %>% select(dt, idloc) %>%  filter(dt == "16414500")
+
+max(J36trk$dt,na.rm=TRUE)
+as.numeric(max(J36trk$dt,na.rm=TRUE))/60/60/24  # days
+print(J36trk, n = Inf, width=Inf); J36trk %>% select(dt, idloc) %>%  filter(dt == "85975800 ")
+jaguar_df %>% select(dt,x,y, date, Event_ID) %>%  filter(dt == "85975800")
+
+
+max(J37trk$dt,na.rm=TRUE)
+as.numeric(max(J37trk$dt,na.rm=TRUE))/60/60/24  # days
+max(J38trk$dt,na.rm=TRUE)
+as.numeric(max(J38trk$dt,na.rm=TRUE))/60/60/24  # days
+max(J58trk$dt,na.rm=TRUE)
+as.numeric(max(J58trk$dt,na.rm=TRUE))/60/60/24  # days
+max(J62trk$dt,na.rm=TRUE)
+as.numeric(max(J62trk$dt,na.rm=TRUE))/60/60/24  # days
 
 #' ##### 3D plot
 open3d()
@@ -134,8 +162,21 @@ leaflet(J62 )%>%addTiles()%>%addCircles(J62 $x, J62 $y,color = "blue")%>% addPro
 
 #'
 #' #### 2) Atlantic Forest W2
-ft=ftable(AFW2$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+pal <- colorFactor(palette = 'Dark2',domain = AFW2$id)
 leaflet(AFW2)%>%addTiles()%>%addCircles(AFW2$x, AFW2$y, color =~pal(id))%>% addProviderTiles(providers$Esri.WorldImagery)
+
+table(AFW2$id)
+xyplot(id~date, data = AFW2, groups = id)
+
+max(AFW2trk$speed,na.rm=TRUE)*3.6  # Km/h
+as.numeric(max(AFW2trk$dt,na.rm=TRUE))/60/60/24  # days
+
+max(J39trk$dt,na.rm=TRUE); as.numeric(max(J39trk$dt,na.rm=TRUE))/60/60/24  # days
+max(J40trk$dt,na.rm=TRUE); as.numeric(max(J40trk$dt,na.rm=TRUE))/60/60/24  # days
+
+max(J63trk$dt,na.rm=TRUE);as.numeric(max(J63trk$dt,na.rm=TRUE))/60/60/24  # days
+
+print(J40trk, n = Inf)
 
 AFW2trk %>% dplyr::select(id,sl) %>% unnest %>% 
   ggplot(aes(sl, fill = factor(id))) + geom_density(alpha = 0.4)

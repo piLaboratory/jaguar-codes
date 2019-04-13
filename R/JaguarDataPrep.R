@@ -115,7 +115,13 @@ jaguar_df <- jaguar_ord
 jaguar_df$Event_ID <- seq.int(nrow(jaguar_df))
 #'
 #'
-#' #### **Need still add some individual cleaning of outliers (based on ctmm and large timelags)!!!**
+#' #### **Need still add some individual cleaning of outliers (based on ctmm, speed and large timelags)!!!**
+#' ## Control for speed and timelag
+# max(J1trk$speed,na.rm=TRUE)*3.6  # Km/h
+# as.numeric(max(J1trk$dt,na.rm=TRUE))/60/60/24  # days
+
+ 
+
 #'
 #'
 #' ### Add UTMs and POSIX timezone
@@ -392,8 +398,6 @@ jaguar_df$date <- jaguar_df$local_time
 #' In case we want save and read it as txt
 # write.table(jaguar_df,file="../data/jaguar_df.txt",row.names = F,quote=F,col.names=T,sep="\t")
 # jaguar <- read.delim(file="../data/jaguar_df.txt")
-#' 
-#' 
 #' 
 
 #' 
@@ -753,239 +757,239 @@ Pantanaltrk <- trk.convert(data = Pantanal,
 #'
 #' Dataframe and trk for each individual with adjusted timezones (to run if we need any specic individual)
 J1=subset(Hch,id=='1');J1$idloc <- seq.int(nrow(J1)) ####### Hch
-J1trk<-Hchtrk %>% filter(id=="1")
+J1trk<-Hchtrk %>% filter(id=="1");J1trk$idloc <- seq.int(nrow(J1trk))
 J2=subset(FPy,id=='2');J2$idloc <- seq.int(nrow(J2)) ######### FPy
-J2trk<-FPytrk %>% filter(id=="2")
+J2trk<-FPytrk %>% filter(id=="2");J2trk$idloc <- seq.int(nrow(J2trk))
 J3=subset(Hch,id=='3');J3$idloc <- seq.int(nrow(J3)) ####### Hch
-J3trk<-Hchtrk %>% filter(id=="3")
+J3trk<-Hchtrk %>% filter(id=="3");J3trk$idloc <- seq.int(nrow(J3trk))
 J4=subset(Hch,id=='4');J4$idloc <- seq.int(nrow(J4))   ####### Hch
-J4trk<-Hchtrk %>% filter(id=="4")
+J4trk<-Hchtrk %>% filter(id=="4");J4trk$idloc <- seq.int(nrow(J4trk))
 J5=subset(Hch,id=='5');J5$idloc <- seq.int(nrow(J5))   ####### Hch
-J5trk<-Hchtrk %>% filter(id=="5")
+J5trk<-Hchtrk %>% filter(id=="5");J5trk$idloc <- seq.int(nrow(J5trk))
 J6=subset(Hch,id=='6');J6$idloc <- seq.int(nrow(J6))   ####### Hch
-J6trk<-Hchtrk %>% filter(id=="6")
+J6trk<-Hchtrk %>% filter(id=="6");J6trk$idloc <- seq.int(nrow(J6trk))
 J7=subset(Hch,id=='7');J7$idloc <- seq.int(nrow(J7))   ####### Hch
-J7trk<-Hchtrk %>% filter(id=="7")
+J7trk<-Hchtrk %>% filter(id=="7");J7trk$idloc <- seq.int(nrow(J7trk))
 J8=subset(FPy,id=='8');J8$idloc <- seq.int(nrow(J8))   ######### FPy
-J8trk<-FPytrk %>% filter(id=="8")
+J8trk<-FPytrk %>% filter(id=="8");J8trk$idloc <- seq.int(nrow(J8trk))
 J9=subset(Hch,id=='9');J9$idloc <- seq.int(nrow(J9))   ####### Hch
-J9trk<-Hchtrk %>% filter(id=="9")
+J9trk<-Hchtrk %>% filter(id=="9");J9trk$idloc <- seq.int(nrow(J9trk))
 J10=subset(Hch,id=='10');J10$idloc <- seq.int(nrow(J10)) ####### Hch
-J10trk<-Hchtrk %>% filter(id=="10")
+J10trk<-Hchtrk %>% filter(id=="10");J10trk$idloc <- seq.int(nrow(J10trk))
 J11=subset(Hch,id=='11');J11$idloc <- seq.int(nrow(J11)) ####### Hch
-J11trk<-Hchtrk %>% filter(id=="11")
+J11trk<-Hchtrk %>% filter(id=="11");J11trk$idloc <- seq.int(nrow(J11trk))
 J12=subset(Pantanal,id=='12');J12$idloc <- seq.int(nrow(J12)) ########## Pantanal
-J12trk<-Pantanaltrk %>% filter(id=="12")
+J12trk<-Pantanaltrk %>% filter(id=="12");J12trk$idloc <- seq.int(nrow(J12trk))
 J13=subset(Pantanal,id=='13');J13$idloc <- seq.int(nrow(J13)) ########## Pantanal
-J13trk<-Pantanaltrk %>% filter(id=="13")
+J13trk<-Pantanaltrk %>% filter(id=="13");J13trk$idloc <- seq.int(nrow(J13trk))
 J14=subset(Pantanal,id=='14');J14$idloc <- seq.int(nrow(J14)) ########## Pantanal
-J14trk<-Pantanaltrk %>% filter(id=="14")
+J14trk<-Pantanaltrk %>% filter(id=="14");J14trk$idloc <- seq.int(nrow(J14trk))
 J15=subset(Pantanal,id=='15');J15$idloc <- seq.int(nrow(J15)) ########## Pantanal
-J15trk<-Pantanaltrk %>% filter(id=="15")
+J15trk<-Pantanaltrk %>% filter(id=="15");J15trk$idloc <- seq.int(nrow(J15trk))
 J16=subset(Drych1,id=='16');J16$idloc <- seq.int(nrow(J16)) ######### Drych1
-J16trk<-Drych1trk %>% filter(id=="16")
+J16trk<-Drych1trk %>% filter(id=="16");J16trk$idloc <- seq.int(nrow(J16trk))
 J17=subset(Cerrado1,id=='17');J17$idloc <- seq.int(nrow(J17)) ############### Cerrado1
-J17trk<-Cerrado1trk %>% filter(id=="17")
+J17trk<-Cerrado1trk %>% filter(id=="17");J17trk$idloc <- seq.int(nrow(J17trk))
 J18=subset(Pantanal,id=='18');J18$idloc <- seq.int(nrow(J18)) ########## Pantanal
-J18trk<-Pantanaltrk %>% filter(id=="18")
+J18trk<-Pantanaltrk %>% filter(id=="18");J18trk$idloc <- seq.int(nrow(J18trk))
 J19=subset(Pantanal,id=='19');J19$idloc <- seq.int(nrow(J19)) ########## Pantanal
-J19trk<-Pantanaltrk %>% filter(id=="19")
+J19trk<-Pantanaltrk %>% filter(id=="19");J19trk$idloc <- seq.int(nrow(J19trk))
 J20=subset(Caatinga,id=='20');J20$idloc <- seq.int(nrow(J20)) ################# Caatinga 
-J20trk<-Caatingatrk %>% filter(id=="20")
+J20trk<-Caatingatrk %>% filter(id=="20");J20trk$idloc <- seq.int(nrow(J20trk))
 J21=subset(FPy,id=='21');J21$idloc <- seq.int(nrow(J21))  ######### FPy
-J21trk<-FPytrk %>% filter(id=="21")
+J21trk<-FPytrk %>% filter(id=="21");J21trk$idloc <- seq.int(nrow(J21trk))
 J22=subset(Pantanal,id=='22');J22$idloc <- seq.int(nrow(J22)) ########## Pantanal
-J22trk<-Pantanaltrk %>% filter(id=="22")
+J22trk<-Pantanaltrk %>% filter(id=="22");J22trk$idloc <- seq.int(nrow(J22trk))
 J23=subset(Pantanal,id=='23');J23$idloc <- seq.int(nrow(J23)) ########## Pantanal
-J23trk<-Pantanaltrk %>% filter(id=="23")
+J23trk<-Pantanaltrk %>% filter(id=="23");J23trk$idloc <- seq.int(nrow(J23trk))
 J24=subset(iopPA,id=='24');J24$idloc <- seq.int(nrow(J24)) ###### iopPA
-J24trk<-iopPAtrk %>% filter(id=="24")
+J24trk<-iopPAtrk %>% filter(id=="24");J24trk$idloc <- seq.int(nrow(J24trk))
 J25=subset(Pantanal,id=='25');J25$idloc <- seq.int(nrow(J25)) ########## Pantanal
-J25trk<-Pantanaltrk %>% filter(id=="25")
+J25trk<-Pantanaltrk %>% filter(id=="25");J25trk$idloc <- seq.int(nrow(J25trk))
 J26=subset(CRica,id=='26');J26$idloc <- seq.int(nrow(J26))  ######### CRica
-J26trk<-CRicatrk %>% filter(id=="26")
+J26trk<-CRicatrk %>% filter(id=="26");J26trk$idloc <- seq.int(nrow(J26trk))
 J27=subset(Pantanal,id=='27');J27$idloc <- seq.int(nrow(J27)) ########## Pantanal
-J27trk<-Pantanaltrk %>% filter(id=="27")
+J27trk<-Pantanaltrk %>% filter(id=="27");J27trk$idloc <- seq.int(nrow(J27trk))
 J28=subset(Pantanal,id=='28');J28$idloc <- seq.int(nrow(J28)) ########## Pantanal
-J28trk<-Pantanaltrk %>% filter(id=="28")
+J28trk<-Pantanaltrk %>% filter(id=="28");J28trk$idloc <- seq.int(nrow(J28trk))
 J29=subset(Pantanal,id=='29');J29$idloc <- seq.int(nrow(J29)) ########## Pantanal
-J29trk<-Pantanaltrk %>% filter(id=="29")
+J29trk<-Pantanaltrk %>% filter(id=="29");J29trk$idloc <- seq.int(nrow(J29trk))
 J30=subset(Pantanal,id=='30');J30$idloc <- seq.int(nrow(J30)) ########## Pantanal
-J30trk<-Pantanaltrk %>% filter(id=="30")
+J30trk<-Pantanaltrk %>% filter(id=="30");J30trk$idloc <- seq.int(nrow(J30trk))
 J31=subset(Pantanal,id=='31');J31$idloc <- seq.int(nrow(J31)) ########## Pantanal
-J31trk<-Pantanaltrk %>% filter(id=="31")
+J31trk<-Pantanaltrk %>% filter(id=="31");J31trk$idloc <- seq.int(nrow(J31trk))
 J32=subset(Pantanal,id=='32');J32$idloc <- seq.int(nrow(J32)) ########## Pantanal
-J32trk<-Pantanaltrk %>% filter(id=="32")
+J32trk<-Pantanaltrk %>% filter(id=="32");J32trk$idloc <- seq.int(nrow(J32trk))
 J33=subset(Pantanal,id=='33');J33$idloc <- seq.int(nrow(J33)) ########## Pantanal
-J33trk<-Pantanaltrk %>% filter(id=="33")
+J33trk<-Pantanaltrk %>% filter(id=="33");J33trk$idloc <- seq.int(nrow(J33trk))
 J34=subset(AFW1,id=='34');J34$idloc <- seq.int(nrow(J34))   ############### AFW1
-J34trk<-AFW1trk %>% filter(id=="34")
+J34trk<-AFW1trk %>% filter(id=="34");J34trk$idloc <- seq.int(nrow(J34trk))
 J35=subset(AFW1,id=='35');J35$idloc <- seq.int(nrow(J35))   ############### AFW1
-J35trk<-AFW1trk %>% filter(id=="35")
+J35trk<-AFW1trk %>% filter(id=="35");J35trk$idloc <- seq.int(nrow(J35trk))
 J36=subset(AFW1,id=='36');J36$idloc <- seq.int(nrow(J36))   ############### AFW1
-J36trk<-AFW1trk %>% filter(id=="36")
+J36trk<-AFW1trk %>% filter(id=="36");J36trk$idloc <- seq.int(nrow(J36trk))
 J37=subset(AFW1,id=='37');J37$idloc <- seq.int(nrow(J37))   ############### AFW1
-J37trk<-AFW1trk %>% filter(id=="37")
+J37trk<-AFW1trk %>% filter(id=="37");J37trk$idloc <- seq.int(nrow(J37trk))
 J38=subset(AFW1,id=='38');J38$idloc <- seq.int(nrow(J38))   ############### AFW1
-J38trk<-AFW1trk %>% filter(id=="38")
+J38trk<-AFW1trk %>% filter(id=="38");J38trk$idloc <- seq.int(nrow(J38trk))
 J39=subset(AFW2,id=='39');J39$idloc <- seq.int(nrow(J39))   ###############  AFW2
-J39trk<-AFW2trk %>% filter(id=="39")
+J39trk<-AFW2trk %>% filter(id=="39");J39trk$idloc <- seq.int(nrow(J39trk))
 J40=subset(AFW2,id=='40');J40$idloc <- seq.int(nrow(J40))   ###############  AFW2
-J40trk<-AFW2trk %>% filter(id=="40")
+J40trk<-AFW2trk %>% filter(id=="40");J40trk$idloc <- seq.int(nrow(J40trk))
 J41=subset(Pantanal,id=='41');J41$idloc <- seq.int(nrow(J41)) ########## Pantanal
-J41trk<-Pantanaltrk %>% filter(id=="41")
+J41trk<-Pantanaltrk %>% filter(id=="41");J41trk$idloc <- seq.int(nrow(J41trk))
 J42=subset(Iguazu1,id=='42');J42$idloc <- seq.int(nrow(J42)) ######## Iguazu1
-J42trk<-Iguazu1trk %>% filter(id=="42")
+J42trk<-Iguazu1trk %>% filter(id=="42");J42trk$idloc <- seq.int(nrow(J42trk))
 J43=subset(Sonora,id=='43');J43$idloc <- seq.int(nrow(J43)) ######## Sonora
-J43trk<-Sonoratrk %>% filter(id=="43")
+J43trk<-Sonoratrk %>% filter(id=="43");J43trk$idloc <- seq.int(nrow(J43trk))
 J44=subset(Lacandona,id=='44');J44$idloc <- seq.int(nrow(J44)) ######## Lacandona
-J44trk<-Lacandonatrk %>% filter(id=="44")
+J44trk<-Lacandonatrk %>% filter(id=="44");J44trk$idloc <- seq.int(nrow(J44trk))
 J45=subset(Lacandona,id=='45');J45$idloc <- seq.int(nrow(J45)) ######## Lacandona
-J45trk<-Lacandonatrk %>% filter(id=="45")
+J45trk<-Lacandonatrk %>% filter(id=="45");J45trk$idloc <- seq.int(nrow(J45trk))
 J46=subset(Lacandona,id=='46');J46$idloc <- seq.int(nrow(J46))  ######## Lacandona
-J46trk<-Lacandonatrk %>% filter(id=="46")
+J46trk<-Lacandonatrk %>% filter(id=="46");J46trk$idloc <- seq.int(nrow(J46trk))
 J47=subset(Lacandona,id=='47');J47$idloc <- seq.int(nrow(J47))  ######## Lacandona
-J47trk<-Lacandonatrk %>% filter(id=="47")
+J47trk<-Lacandonatrk %>% filter(id=="47");J47trk$idloc <- seq.int(nrow(J47trk))
 J48=subset(Lacandona,id=='48');J48$idloc <- seq.int(nrow(J48))  ######## Lacandona
-J48trk<-Lacandonatrk %>% filter(id=="48")
+J48trk<-Lacandonatrk %>% filter(id=="48");J48trk$idloc <- seq.int(nrow(J48trk))
 J49=subset(MexEast,id=='49');J49$idloc <- seq.int(nrow(J49))  ######### MexEast
-J49trk<-MexEasttrk %>% filter(id=="49")
+J49trk<-MexEasttrk %>% filter(id=="49");J49trk$idloc <- seq.int(nrow(J49trk))
 J50=subset(Caatinga,id=='50');J50$idloc <- seq.int(nrow(J50))  ############### Caatinga
-J50trk<-Caatingatrk %>% filter(id=="50")
+J50trk<-Caatingatrk %>% filter(id=="50");J50trk$idloc <- seq.int(nrow(J50trk))
 J51=subset(Pantanal,id=='51');J51$idloc <- seq.int(nrow(J51)) ########## Pantanal
-J51trk<-Pantanaltrk %>% filter(id=="51")
+J51trk<-Pantanaltrk %>% filter(id=="51");J51trk$idloc <- seq.int(nrow(J51trk))
 J52=subset(Pantanal,id=='52');J52$idloc <- seq.int(nrow(J52)) ########## Pantanal
-J52trk<-Pantanaltrk %>% filter(id=="52")
+J52trk<-Pantanaltrk %>% filter(id=="52");J52trk$idloc <- seq.int(nrow(J52trk))
 J53=subset(Pantanal,id=='53');J53$idloc <- seq.int(nrow(J53)) ########## Pantanal
-J53trk<-Pantanaltrk %>% filter(id=="53")
+J53trk<-Pantanaltrk %>% filter(id=="53");J53trk$idloc <- seq.int(nrow(J53trk))
 J54=subset(Pantanal,id=='54');J54$idloc <- seq.int(nrow(J54)) ########## Pantanal
-J54trk<-Pantanaltrk %>% filter(id=="54")
+J54trk<-Pantanaltrk %>% filter(id=="54");J54trk$idloc <- seq.int(nrow(J54trk))
 J55=subset(Pantanal,id=='55');J55$idloc <- seq.int(nrow(J55)) ########## Pantanal
-J55trk<-Pantanaltrk %>% filter(id=="55")
+J55trk<-Pantanaltrk %>% filter(id=="55");J55trk$idloc <- seq.int(nrow(J55trk))
 J56=subset(Pantanal,id=='56');J56$idloc <- seq.int(nrow(J56)) ########## Pantanal
-J56trk<-Pantanaltrk %>% filter(id=="56")
+J56trk<-Pantanaltrk %>% filter(id=="56");J56trk$idloc <- seq.int(nrow(J56trk))
 J57=subset(Pantanal,id=='57');J57$idloc <- seq.int(nrow(J57)) ########## Pantanal
-J57trk<-Pantanaltrk %>% filter(id=="57")
+J57trk<-Pantanaltrk %>% filter(id=="57");J57trk$idloc <- seq.int(nrow(J57trk))
 J58=subset(AFW1,id=='58');J58$idloc <- seq.int(nrow(J58))   ###############  AFW1
-J58trk<-AFW1trk %>% filter(id=="58")
+J58trk<-AFW1trk %>% filter(id=="58");J58trk$idloc <- seq.int(nrow(J58trk))
 J59=subset(Pantanal,id=='59');J59$idloc <- seq.int(nrow(J59)) ########## Pantanal
-J59trk<-Pantanaltrk %>% filter(id=="59")
+J59trk<-Pantanaltrk %>% filter(id=="59");J59trk$idloc <- seq.int(nrow(J59trk))
 J60=subset(Pantanal,id=='60');J60$idloc <- seq.int(nrow(J60)) ########## Pantanal
-J60trk<-Pantanaltrk %>% filter(id=="60")
+J60trk<-Pantanaltrk %>% filter(id=="60");J60trk$idloc <- seq.int(nrow(J60trk))
 J61=subset(Pantanal,id=='61');J61$idloc <- seq.int(nrow(J61)) ########## Pantanal
-J61trk<-Pantanaltrk %>% filter(id=="61")
+J61trk<-Pantanaltrk %>% filter(id=="61");J61trk$idloc <- seq.int(nrow(J61trk))
 J62=subset(AFW1,id=='62');J62$idloc <- seq.int(nrow(J62))   ###############  AFW1
-J62trk<-AFW1trk %>% filter(id=="62")
+J62trk<-AFW1trk %>% filter(id=="62");J62trk$idloc <- seq.int(nrow(J62trk))
 J63=subset(AFW2,id=='63');J63$idloc <- seq.int(nrow(J63))   ###############  AFW2
-J63trk<-AFW2trk %>% filter(id=="63")
+J63trk<-AFW2trk %>% filter(id=="63");J63trk$idloc <- seq.int(nrow(J63trk))
 J64=subset(Sonora,id=='64');J64$idloc <- seq.int(nrow(J64)) ######## Sonora
-J64trk<-Sonoratrk %>% filter(id=="64")
+J64trk<-Sonoratrk %>% filter(id=="64");J64trk$idloc <- seq.int(nrow(J64trk))
 J65=subset(Cerrado1,id=='65');J65$idloc <- seq.int(nrow(J65))  ########## Cerrado1
-J65trk<-Cerrado1trk %>% filter(id=="65")
+J65trk<-Cerrado1trk %>% filter(id=="65");J65trk$idloc <- seq.int(nrow(J65trk))
 J66=subset(Iguazu1,id=='66');J66$idloc <- seq.int(nrow(J66))  ########## Iguazu1
-J66trk<-Iguazu1trk %>% filter(id=="66")
+J66trk<-Iguazu1trk %>% filter(id=="66");J66trk$idloc <- seq.int(nrow(J66trk))
 J67=subset(Cerrado1,id=='67');J67$idloc <- seq.int(nrow(J67))  ########## Cerrado1
-J67trk<-Cerrado1trk %>% filter(id=="67")
+J67trk<-Cerrado1trk %>% filter(id=="67");J67trk$idloc <- seq.int(nrow(J67trk))
 J68=subset(Pantanal,id=='68');J68$idloc <- seq.int(nrow(J68)) ########## Pantanal
-J68trk<-Pantanaltrk %>% filter(id=="68")
+J68trk<-Pantanaltrk %>% filter(id=="68");J68trk$idloc <- seq.int(nrow(J68trk))
 J69=subset(Pantanal,id=='69');J69$idloc <- seq.int(nrow(J69)) ########## Pantanal
-J69trk<-Pantanaltrk %>% filter(id=="69")
+J69trk<-Pantanaltrk %>% filter(id=="69");J69trk$idloc <- seq.int(nrow(J69trk))
 J70=subset(Drych1,id=='70');J70$idloc <- seq.int(nrow(J70))  ######## Drych1
-J70trk<-Drych1trk %>% filter(id=="70")
+J70trk<-Drych1trk %>% filter(id=="70");J70trk$idloc <- seq.int(nrow(J70trk))
 J71=subset(Drych2,id=='71');J71$idloc <- seq.int(nrow(J71))  ####### Drych2
-J71trk<-Drych2trk %>% filter(id=="71")
+J71trk<-Drych2trk %>% filter(id=="71");J71trk$idloc <- seq.int(nrow(J71trk))
 J72=subset(Drych2,id=='72');J72$idloc <- seq.int(nrow(J72))  ####### Drych2
-J72trk<-Drych2trk %>% filter(id=="72")
+J72trk<-Drych2trk %>% filter(id=="72");J72trk$idloc <- seq.int(nrow(J72trk))
 J73=subset(Drych2,id=='73');J73$idloc <- seq.int(nrow(J73))  ####### Drych2
-J73trk<-Drych2trk %>% filter(id=="73")
+J73trk<-Drych2trk %>% filter(id=="73");J73trk$idloc <- seq.int(nrow(J73trk))
 J74=subset(Pantanal,id=='74');J74$idloc <- seq.int(nrow(J74))   ########## Pantanal
-J74trk<-Pantanaltrk %>% filter(id=="74")
+J74trk<-Pantanaltrk %>% filter(id=="74");J74trk$idloc <- seq.int(nrow(J74trk))
 J75=subset(Pantanal,id=='75');J75$idloc <- seq.int(nrow(J75))   ########## Pantanal
-J75trk<-Pantanaltrk %>% filter(id=="75")
+J75trk<-Pantanaltrk %>% filter(id=="75");J75trk$idloc <- seq.int(nrow(J75trk))
 J76=subset(Drych1,id=='76');J76$idloc <- seq.int(nrow(J76))  ####### Drych1
-J76trk<-Drych1trk %>% filter(id=="76")
+J76trk<-Drych1trk %>% filter(id=="76");J76trk$idloc <- seq.int(nrow(J76trk))
 J77=subset(Drych1,id=='77');J77$idloc <- seq.int(nrow(J77))  ####### Drych1
-J77trk<-Drych1trk %>% filter(id=="77")
+J77trk<-Drych1trk %>% filter(id=="77");J77trk$idloc <- seq.int(nrow(J77trk))
 J78=subset(FPy,id=='78');J78$idloc <- seq.int(nrow(J78))   ####### FPy
-J78trk<-FPytrk %>% filter(id=="78")
+J78trk<-FPytrk %>% filter(id=="78");J78trk$idloc <- seq.int(nrow(J78trk))
 J79=subset(Pantanal,id=='79');J79$idloc <- seq.int(nrow(J79)) ########## Pantanal
-J79trk<-Pantanaltrk %>% filter(id=="79")
+J79trk<-Pantanaltrk %>% filter(id=="79");J79trk$idloc <- seq.int(nrow(J79trk))
 J80=subset(Iguazu1,id=='80');J80$idloc <- seq.int(nrow(J80)) ######## Iguazu1
-J80trk<-Iguazu1trk %>% filter(id=="80")
+J80trk<-Iguazu1trk %>% filter(id=="80");J80trk$idloc <- seq.int(nrow(J80trk))
 J81=subset(Pantanal,id=='81');J81$idloc <- seq.int(nrow(J81)) ########## Pantanal
-J81trk<-Pantanaltrk %>% filter(id=="81")
+J81trk<-Pantanaltrk %>% filter(id=="81");J81trk$idloc <- seq.int(nrow(J81trk))
 J82=subset(Cerrado1,id=='82');J82$idloc <- seq.int(nrow(J82))  ########## Cerrado1
-J82trk<-Cerrado1trk %>% filter(id=="82")
+J82trk<-Cerrado1trk %>% filter(id=="82");J82trk$idloc <- seq.int(nrow(J82trk))
 J83=subset(Iguazu2,id=='83');J83$idloc <- seq.int(nrow(J83))  ########## Iguazu2
-J83trk<-Iguazu2trk %>% filter(id=="83")
+J83trk<-Iguazu2trk %>% filter(id=="83");J83trk$idloc <- seq.int(nrow(J83trk))
 J84=subset(Pantanal,id=='84');J84$idloc <- seq.int(nrow(J84))  ########## Pantanal
-J84trk<-Pantanaltrk %>% filter(id=="84")
+J84trk<-Pantanaltrk %>% filter(id=="84");J84trk$idloc <- seq.int(nrow(J84trk))
 J85=subset(Cerrado1,id=='85');J85$idloc <- seq.int(nrow(J85))  ########## Cerrado1
-J85trk<-Cerrado1trk %>% filter(id=="85")
+J85trk<-Cerrado1trk %>% filter(id=="85");J85trk$idloc <- seq.int(nrow(J85trk))
 J86=subset(Pantanal,id=='86');J86$idloc <- seq.int(nrow(J86)) ########## Pantanal
-J86trk<-Pantanaltrk %>% filter(id=="86")
+J86trk<-Pantanaltrk %>% filter(id=="86");J86trk$idloc <- seq.int(nrow(J86trk))
 J87=subset(Pantanal,id=='87');J87$idloc <- seq.int(nrow(J87)) ########## Pantanal
-J87trk<-Pantanaltrk %>% filter(id=="87")
+J87trk<-Pantanaltrk %>% filter(id=="87");J87trk$idloc <- seq.int(nrow(J87trk))
 J88=subset(Pantanal,id=='88');J88$idloc <- seq.int(nrow(J88)) ########## Pantanal
-J88trk<-Pantanaltrk %>% filter(id=="88")
+J88trk<-Pantanaltrk %>% filter(id=="88");J88trk$idloc <- seq.int(nrow(J88trk))
 J89=subset(Cerrado2,id=='89');J89$idloc <- seq.int(nrow(J89)) ######### Cerrado2
-J89trk<-Cerrado2trk %>% filter(id=="89")
+J89trk<-Cerrado2trk %>% filter(id=="89");J89trk$idloc <- seq.int(nrow(J89trk))
 J90=subset(Iguazu1,id=='90');J90$idloc <- seq.int(nrow(J90)) ######### Iguazu1
-J90trk<-Iguazu1trk %>% filter(id=="90")
+J90trk<-Iguazu1trk %>% filter(id=="90");J90trk$idloc <- seq.int(nrow(J90trk))
 J91=subset(Pantanal,id=='91');J91$idloc <- seq.int(nrow(J91)) ########## Pantanal
-J91trk<-Pantanaltrk %>% filter(id=="91")
+J91trk<-Pantanaltrk %>% filter(id=="91");J91trk$idloc <- seq.int(nrow(J91trk))
 J92=subset(Pantanal,id=='92');J92$idloc <- seq.int(nrow(J92)) ########## Pantanal
-J92trk<-Pantanaltrk %>% filter(id=="92")
+J92trk<-Pantanaltrk %>% filter(id=="92");J92trk$idloc <- seq.int(nrow(J92trk))
 J93=subset(Mamiraua,id=='93');J93$idloc <- seq.int(nrow(J93)) ######### Mamiraua
-J93trk<-Mamirauatrk %>% filter(id=="93")
+J93trk<-Mamirauatrk %>% filter(id=="93");J93trk$idloc <- seq.int(nrow(J93trk))
 J94=subset(Mamiraua,id=='94');J94$idloc <- seq.int(nrow(J94)) ######### Mamiraua
-J94trk<-Mamirauatrk %>% filter(id=="94")
+J94trk<-Mamirauatrk %>% filter(id=="94");J94trk$idloc <- seq.int(nrow(J94trk))
 J95=subset(Mamiraua,id=='95');J95$idloc <- seq.int(nrow(J95)) ######### Mamiraua
-J95trk<-Mamirauatrk %>% filter(id=="95")
+J95trk<-Mamirauatrk %>% filter(id=="95");J95trk$idloc <- seq.int(nrow(J95trk))
 J96=subset(Mamiraua,id=='96');J96$idloc <- seq.int(nrow(J96)) ######### Mamiraua
-J96trk<-Mamirauatrk %>% filter(id=="96")
+J96trk<-Mamirauatrk %>% filter(id=="96");J96trk$idloc <- seq.int(nrow(J96trk))
 J97=subset(Mamiraua,id=='97');J97$idloc <- seq.int(nrow(J97)) ######### Mamiraua
-J97trk<-Mamirauatrk %>% filter(id=="97")
+J97trk<-Mamirauatrk %>% filter(id=="97");J97trk$idloc <- seq.int(nrow(J97trk))
 J98=subset(Mamiraua,id=='98');J98$idloc <- seq.int(nrow(J98)) ######### Mamiraua
-J98trk<-Mamirauatrk %>% filter(id=="98")
+J98trk<-Mamirauatrk %>% filter(id=="98");J98trk$idloc <- seq.int(nrow(J98trk))
 J99=subset(Mamiraua,id=='99');J99$idloc <- seq.int(nrow(J99)) ######### Mamiraua
-J99trk<-Mamirauatrk %>% filter(id=="99")
+J99trk<-Mamirauatrk %>% filter(id=="99");J99trk$idloc <- seq.int(nrow(J99trk))
 J100=subset(Mamiraua,id=='100');J100$idloc <- seq.int(nrow(J100))######### Mamiraua
-J100trk<-Mamirauatrk %>% filter(id=="100")
+J100trk<-Mamirauatrk %>% filter(id=="100");J100trk$idloc <- seq.int(nrow(J100trk))
 J101=subset(Pantanal,id=='101');J101$idloc <- seq.int(nrow(J101)) ########## Pantanal
-J101trk<-Pantanaltrk %>% filter(id=="101")
+J101trk<-Pantanaltrk %>% filter(id=="101");J101trk$idloc <- seq.int(nrow(J101trk))
 J102=subset(Pantanal,id=='102');J102$idloc <- seq.int(nrow(J102)) ########## Pantanal
-J102trk<-Pantanaltrk %>% filter(id=="102")
+J102trk<-Pantanaltrk %>% filter(id=="102");J102trk$idloc <- seq.int(nrow(J102trk))
 J103=subset(Pantanal,id=='103');J103$idloc <- seq.int(nrow(J103)) ########## Pantanal
-J103trk<-Pantanaltrk %>% filter(id=="103")
+J103trk<-Pantanaltrk %>% filter(id=="103");J103trk$idloc <- seq.int(nrow(J103trk))
 J104=subset(Pantanal,id=='104');J104$idloc <- seq.int(nrow(J104)) ########## Pantanal
-J104trk<-Pantanaltrk %>% filter(id=="104")
+J104trk<-Pantanaltrk %>% filter(id=="104");J104trk$idloc <- seq.int(nrow(J104trk))
 J105=subset(Pantanal,id=='105');J105$idloc <- seq.int(nrow(J105)) ########## Pantanal
-J105trk<-Pantanaltrk %>% filter(id=="105")
+J105trk<-Pantanaltrk %>% filter(id=="105");J105trk$idloc <- seq.int(nrow(J105trk))
 J106=subset(Pantanal,id=='106');J106$idloc <- seq.int(nrow(J106)) ########## Pantanal
-J106trk<-Pantanaltrk %>% filter(id=="106")
+J106trk<-Pantanaltrk %>% filter(id=="106");J106trk$idloc <- seq.int(nrow(J106trk))
 J107=subset(Pantanal,id=='107');J107$idloc <- seq.int(nrow(J107))########## Pantanal
-J107trk<-Pantanaltrk %>% filter(id=="107")
+J107trk<-Pantanaltrk %>% filter(id=="107");J107trk$idloc <- seq.int(nrow(J107trk))
 J108=subset(Pantanal,id=='108');J108$idloc <- seq.int(nrow(J108))########## Pantanal
-J108trk<-Pantanaltrk %>% filter(id=="108")
+J108trk<-Pantanaltrk %>% filter(id=="108");J108trk$idloc <- seq.int(nrow(J108trk))
 J109=subset(Pantanal,id=='109');J109$idloc <- seq.int(nrow(J109))########## Pantanal
-J109trk<-Pantanaltrk %>% filter(id=="109")
+J109trk<-Pantanaltrk %>% filter(id=="109");J109trk$idloc <- seq.int(nrow(J109trk))
 J110=subset(Pantanal,id=='110');J110$idloc <- seq.int(nrow(J110))########## Pantanal
-J110trk<-Pantanaltrk %>% filter(id=="110")
+J110trk<-Pantanaltrk %>% filter(id=="110");J110trk$idloc <- seq.int(nrow(J110trk))
 J111=subset(Pantanal,id=='111');J111$idloc <- seq.int(nrow(J111))########## Pantanal
-J111trk<-Pantanaltrk %>% filter(id=="111")
+J111trk<-Pantanaltrk %>% filter(id=="111");J111trk$idloc <- seq.int(nrow(J111trk))
 J112=subset(Pantanal,id=='112');J112$idloc <- seq.int(nrow(J112))########## Pantanal
-J112trk<-Pantanaltrk %>% filter(id=="112")
+J112trk<-Pantanaltrk %>% filter(id=="112");J112trk$idloc <- seq.int(nrow(J112trk))
 J113=subset(Pantanal,id=='113');J113$idloc <- seq.int(nrow(J113))########## Pantanal
-J113trk<-Pantanaltrk %>% filter(id=="113")
+J113trk<-Pantanaltrk %>% filter(id=="113");J113trk$idloc <- seq.int(nrow(J113trk))
 J114=subset(Pantanal,id=='114');J114$idloc <- seq.int(nrow(J114))########## Pantanal
-J114trk<-Pantanaltrk %>% filter(id=="114")
+J114trk<-Pantanaltrk %>% filter(id=="114");J114trk$idloc <- seq.int(nrow(J114trk))
 J115=subset(Pantanal,id=='115');J115$idloc <- seq.int(nrow(J115))########## Pantanal
-J115trk<-Pantanaltrk %>% filter(id=="115")
+J115trk<-Pantanaltrk %>% filter(id=="115");J115trk$idloc <- seq.int(nrow(J115trk))
 J116=subset(Pantanal,id=='116');J116$idloc <- seq.int(nrow(J116))########## Pantanal
-J116trk<-Pantanaltrk %>% filter(id=="116")
+J116trk<-Pantanaltrk %>% filter(id=="116");J116trk$idloc <- seq.int(nrow(J116trk))
 J117=subset(Pantanal,id=='117');J117$idloc <- seq.int(nrow(J117))########## Pantanal
-J117trk<-Pantanaltrk %>% filter(id=="117")
+J117trk<-Pantanaltrk %>% filter(id=="117");J117trk$idloc <- seq.int(nrow(J117trk))
 
 #' 
 #' 
