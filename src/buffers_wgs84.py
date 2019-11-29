@@ -33,12 +33,8 @@ from grass.pygrass.modules.shortcuts import raster as r
 # The next step will be to reproject these
 g.mapset(mapset = "variables_cut", flags = "c")
 
-# resturn to PERMANENT
-g.mapset(mapset = "PERMANENT")
-
 #---------------------------------------
 # Import buffers
-
 folder_path = r'E:\_neojaguardatabase\Buffer70_zones\buffers'
 os.chdir(folder_path) # Change to this folder
 
@@ -53,7 +49,24 @@ for i in files:
 #------
 # cut for buffers
 
-maps = ['drainage_15s_binary_tif_exp', ]
+# maps to be exported (names within grass)
+maps = ['human_footprint_1993_1km_tif_exp', 'human_footprint_2009_1km_tif_exp',
+'Landcover_ESACCI_2015_300m_neotropic_albers_tif_exp', 'Livestock_Cattle_CC2006_AD_1km_neotropic_albers_tif_exp',
+'Neotropic_Earthenv_dem90m_tif_exp', 
+'Neotropic_Hansen_forest1_0_95percenttreecover_2000_30_tif_exp', 
+'drainage_15s_binary_tif_exp', 'water_frequency_2010_30m_tif_exp', 'water_frequency_2010_1km_tif_exp',
+'tree_plantation_type_tif_exp', 'tree_plantations_binary_tif_exp']
+
+# new simplified names when exporting
+names = []
+
+# years for forest prop
+pa = r'C:\Users\bebs0001\Documents\JaguarDB\jaguar-codes\src'
+os.chdir(pa)
+arq = np.genfromtxt('YEARS_JAGUAR_FINAL.csv', skip_header = 1, delimiter = ';')
+arq = np.genfromtxt('YEARS_JAGUAR_FINAL.csv', delimiter = ';', dtype = None, skip_header = 1)
+years = [arq[index][5] for index in range(len(arq))]
+ind_cod = [arq[index][1][1:-1] for index in range(len(arq))]
 
 # List of buffers
 list_buffers = grass.list_grouped('vect', pattern = '*buffer*')['PERMANENT']
@@ -65,6 +78,9 @@ map_for_define_region = 'Neotropic_Hansen_percenttreecoverd_2000_wgs84'
 for i in list_buffers:
     
     print i
+    
+    which_ind = np.where(np.char.find(ind_cod, ind_codmatch) == 0)[0][0]
+    yy = years[which_ind]
     
     # define region
     grass.run_command('g.region', vect = i, res = 30,
@@ -82,8 +98,26 @@ for i in list_buffers:
         print expr
         r.mapcalc(expr, overwrite = True)
     
+    # Loop for Hansen
+    
+    # thresholds for binary values of natural vegetation
+    thresholds = [0, 30, 50, 80]
+    
+    # loop to cut for each one and account for deforestation
+    for tr in thresholds:
+        
+        # Hansen bin
+        r.mapcalc(i+'_Neotropic_Hansen_percenttreecoverd_2000_wgs84_gt'+str(tr)+'_binary = if(Neotropic_Hansen_percenttreecoverd_2000_wgs84 > '+str(tr)+', 1, 0)', overwrite = True)
+        
+        # Hansen correspondent year
+        expr = i+'_Neotropic_Hansen_percenttreecoverd_2000_wgs84_gt'+str(tr)+'_binary_year'+str(yy)+' = if('+i+'_Neotropical_Hansen_treecoverlossperyear_wgs84_2017 > 0 && '+ \
+        i+'_Neotropical_Hansen_treecoverlossperyear_wgs84_2017 < '+str(yy)+', 0, '+i+'_Neotropic_Hansen_percenttreecoverd_2000_wgs84_gt'+str(tr)+'_binary)'
+        r.mapcalc(expr, overwrite = True)
+    
     # Remove mask
     grass.run_command('r.mask', flags = 'r')
+
+
 
 
 # remove all these, they have error 0,1,128

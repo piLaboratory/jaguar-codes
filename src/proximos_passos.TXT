@@ -1,0 +1,21 @@
+No location cgs-WGS84
+
+1. quem e o individuo e qual e a zona, qual o ano
+* conferir o ano de cada individuo
+
+2. definir qual eh o mapset correspondente e mudar para ele
+
+3. definir a regiao, colocar a mascara e cortar os mapas 
+do PERMANNENT para o mapset UTM correspondente
+
+4. Repetir 1 a 3 para cada individuo
+
+#-----------------------------
+
+Em cada location UTM
+
+1. Ler os mapas a serem reprojetados
+
+2. Reprojetar
+
+3. calcular as variaveis derivadas (distancias, areas etc)
