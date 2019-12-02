@@ -2,6 +2,7 @@
 
 # os.chdir(r'H:\_neojaguardatabase\Envdatabase\30m\Neotropic\Water frequency\2010')
 # grass.run_command('r.import', input = 'p001r050_WF_2010.tif', output = 'p001r050_WF_2010')
+python
 
 # Load modules
 import os
@@ -237,7 +238,7 @@ grass.mapcalc('GIW_sin_1km_bilinear_wgs84_1km_neotropic_tif_exp = GIW_sin_1km_bi
 # 2. Ecoregions 2017 - vector
 
 # Import vector
-folder_path = r'H:\_neojaguardatabase\Envdatabase\Vetores\World\Ecoregions'
+folder_path = r'E:\_neojaguardatabase\Envdatabase\Vetores\World\Ecoregions'
 os.chdir(folder_path) # Change to this folder
 grass.run_command('v.import', input = 'Ecoregions2017.shp', output = 'Ecoregions2017_shp', overwrite = True)
 
@@ -307,4 +308,46 @@ grass.run_command('v.to.rast', input = 'protected_areas_2018_shp',
                   output = 'protected_areas_2018_iucn_category_tif_exp', use = 'attr', attribute_column = 'IUCN_numer', overwrite = True)
 
 
+##17. Tree plantations 2013-2014 - vector
+# Import vector
+folder_path = r'E:\_neojaguardatabase\Envdatabase\Vetores\World\Tree plantations'
+os.chdir(folder_path) # Change to this folder
+grass.run_command('v.import', input = 'Tree_plantations.shp', output = 'tree_plantations_2013_shp', overwrite = True)
 
+# Region of study
+grass.run_command('g.region', rast = map_for_define_region, res = '00:00:00.9', flags = 'ap')
+
+# Rasterize using a binary classification (tree plantation = 1, non tree plantation = null) - 30m
+grass.run_command('v.to.rast', input = 'tree_plantations_2013_shp',
+                  output = 'tree_plantations_binary_exp', use = 'val', value = '1', overwrite = True)
+
+# Transform in binary (tree plantation = 1, non tree plantation = 0) - 30m
+grass.run_command('r.null', map = 'tree_plantations_binary_exp', null = 0)
+
+
+# Rasterize using the type of tree plantation (column spec_1) - 30m 
+
+# We created a numerice columm for each category of the columm spec_simp: Fruit = 1, Fruit mix = 2, Oil palm = 3, Oil palm mix = 4,
+# Other = 5, Other mix = 6, Recently cleared = 7, Rubber = 8,Rubber mix = 9, Unknown = 10, Wood fiber / timber = 11,
+# Wood fiber / timber mix = 12
+grass.run_command('v.to.rast', input = 'tree_plantations_2013_shp',
+                  output = 'tree_plantation_type_exp', use = 'attr', attribute_column = 'SPEC_num', overwrite = True)
+
+
+# 18. Drainage
+
+# Import vector
+folder_path = r'E:\_neojaguardatabase\Envdatabase\Vetores\World\Hydrosheds\River networks'
+os.chdir(folder_path) # Change to this folder
+grass.run_command('v.import', input = 'ca_sa_riv_merged_15s_albers.shp', output = 'drainage_15s_shp', overwrite = True)
+
+# Region of study
+grass.run_command('g.region', rast = map_for_define_region, res = '00:00:00.9', flags = 'ap')
+
+
+# Rasterize using a binary classification (drainage = 1, non protected = null) - 30m
+grass.run_command('v.to.rast', input = 'drainage_15s_shp',
+                  output = 'drainage_15s_binary_tif_exp', use = 'attr', attribute_column = 'DREN_num', overwrite = True)
+
+# Transform in binary (drainage = 1, non drainage = 0) - 30m 
+grass.run_command('r.null', map = 'drainage_15s_binary_tif_exp', null = 0)
