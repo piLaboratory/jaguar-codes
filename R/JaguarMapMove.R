@@ -1,149 +1,449 @@
-###########################################################################################################
-                            ############# Jaguar Map Move ##############   
-###########################################################################################################						
-######################################## Preparation ######################################################
-rm(list= ls())                                                  ### For a fresh start
-## Commented because is not generic
-#setwd("C:/RWorkDir/jaguardatapaper")                           ### Set directory (because it is a local setting)
-###########################################################################################################         																					
-###Enter jaguar data from Morato et al. 2018/ Bernardo scripts  
-  ## Load packages
-if(!require(install.load)) install.packages('install.load'); library(install.load)
-install.load::install_load("ggmap","maptools",'move',"circular","RCurl","dplyr","readr","caTools","adehabitatLT","ggsn","magick","rgl","tidyverse","htmltools","rglwidget")                                       
-### The require() can be used inside functions as it gives a warning message and returns a logical value. 
-### FALSE if the requested package is not found and TRUE if the package is loaded.###(Movement data should be checked and cleaned (for outliers, duplicated timestamps, etc)first!!! 
-### Load and adjust the data (already cleaned) and create a dataframe object
-#mov.data.org <- read.delim(file="c:/RWorkDir/jaguardatapaper/mov.data.org.txt") ## comentted because it is a local path
-mov.data.org <- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:tag.local.identifier))
-str(mov.data.org)
-## summary(mov.data.org)
+#' #  **Jaguar Map Move**
+#' 
+#' #### *Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima,Claudia Kanda, Milton Ribeiro, Ronaldo Morato,Paulo Prado*
+#' date: "March, 13 2019"
+#' #### Run JaguarDataPrep first !!! 
+#'
+#' ### Visualize all data with leaflet
+pal <- colorFactor(palette = 'paired',domain = jaguar_df$id)
+leaflet(jaguar_df)%>%addTiles()%>%addCircles(jaguar_df$x,jaguar_df$y,color=~pal(id))%>% addProviderTiles(providers$Esri.WorldImagery)
+xyplot(id~date, data = jaguar_df, groups = project_region, auto.key=list(columns = 3))
+options(max.print=1000000)
+#^ Summary
+summary(jaguar_df)
+#' ##### All individuals basic counts
+colSums(ifelse(table(jaguar_df$id,jaguar_df$sex)>0,1,0)) #table(droplevels(jaguar_df$id),jaguar_df$sex)  # sex
+colSums(ifelse(table(jaguar_df$id,jaguar_df$age)>0,1,0)) #table(droplevels(jaguar_df$id),jaguar_df$age)  # age
+colSums(ifelse(table(jaguar_df$id,jaguar_df$weight)>0,1,0)) #table(droplevels(jaguar_df$id),jaguar_df$weight) # weight
+colSums(ifelse(table(jaguar_df$id,jaguar_df$status)>0,1,0)) #table(droplevels(jaguar_df$id),jaguar_df$status) # residence status
+colSums(ifelse(table(jaguar_df$id,jaguar_df$country)>0,1,0)) #table(droplevels(jaguar_df$id),jaguar_df$country) # country
+colSums(ifelse(table(jaguar_df$id,jaguar_df$project_region)>0,1,0)) #table(droplevels(jaguar_df$id),jaguar_df$project_region) 
+colSums(ifelse(table(jaguar_df$id,jaguar_df$project_bioveg)>0,1,0)) #table(droplevels(jaguar_df$id),jaguar_df$project_bioveg) 
 
-# Add Individual info ## Commented because is not generic!!!
-#info <- read.delim(file="c:/RWorkDir/jaguardatapaper/info.txt") ### preparation to merge deleted
+#'
+#' #### 1) Atlantic Forest W1
+pal <- colorFactor(palette = 'Dark2',domain = AFW1$id)
+#pal <- colorFactor(palette = 'Paired',domain = AFW1$id)
+leaflet(AFW1)%>%addTiles()%>%addCircles(AFW1$x, AFW1$y, color =~pal(id))%>% addProviderTiles(providers$Esri.WorldImagery)
 
-#Merge movement with individual info/parameters
-merged<- merge(mov.data.org,info)
-mov.data.org <- merged 
-str(mov.data.org)
+#ft=ftable(AFW1$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+table(AFW1$id)
+xyplot(id~date, data = AFW1, groups = id)
+#' ## Control for speed and timelag
+max(AFW1trk$speed,na.rm=TRUE) # m/s
+max(AFW1trk$speed,na.rm=TRUE)*3.6  # Km/h
 
-##########################
-# Organize data
-#mov.data.org 
+max(AFW1trk$dt,na.rm=TRUE)
+as.numeric(max(AFW1trk$dt,na.rm=TRUE))/60/60/24  # days
+max(J34trk$dt,na.rm=TRUE)
+as.numeric(max(J34trk$dt,na.rm=TRUE))/60/60/24  # days
 
-# Add 2000 to years
-get.year <- function(time.stamp) {
-  init <- gregexpr('/', time.stamp, fixed = T)[[1]][2] + 1
-  end <- gregexpr(' ', time.stamp, fixed = T)[[1]][1] - 1
-  substr(time.stamp, init, end)
-}
+max(J35trk$dt,na.rm=TRUE)
+as.numeric(max(J35trk$dt,na.rm=TRUE))/60/60/24  # days
+print(J35trk, n = Inf, width=Inf); J35trk %>% select(dt, idloc) %>%  filter(dt == "16414500")
 
-# Test
-get.year(time.stamp = mov.data.org$timestamp[10000])
-# All individuals
-year <- as.numeric(sapply(mov.data.org$timestamp, get.year))
-table(year)
-
-# Add 1900/2000
-new.year <- as.character(ifelse(year > 50, year + 1900, year + 2000))
-table(new.year)
-
-# New dates
-set.year <- function(time.stamp, year) {
-  init <- gregexpr('/', time.stamp, fixed = T)[[1]][2]
-  end <- gregexpr(' ', time.stamp, fixed = T)[[1]][1]
-  paste(substr(time.stamp, 1, init), year,
-        substr(time.stamp, end, nchar(time.stamp)), sep = "")
-}
+max(J36trk$dt,na.rm=TRUE)
+as.numeric(max(J36trk$dt,na.rm=TRUE))/60/60/24  # days
+print(J36trk, n = Inf, width=Inf); J36trk %>% select(dt, idloc) %>%  filter(dt == "85975800 ")
+jaguar_df %>% select(dt,x,y, date, Event_ID) %>%  filter(dt == "85975800")
 
 
-# Test
-set.year(time.stamp = as.character(mov.data.org$timestamp[10000]), year = '2013')
-# All individuals
-date.time <- as.character(mapply(set.year, as.character(mov.data.org$timestamp),
-                                 new.year))
-str(date.time)
-#date.time
-#########################################################
+max(J37trk$dt,na.rm=TRUE)
+as.numeric(max(J37trk$dt,na.rm=TRUE))/60/60/24  # days
+max(J38trk$dt,na.rm=TRUE)
+as.numeric(max(J38trk$dt,na.rm=TRUE))/60/60/24  # days
+max(J58trk$dt,na.rm=TRUE)
+as.numeric(max(J58trk$dt,na.rm=TRUE))/60/60/24  # days
+max(J62trk$dt,na.rm=TRUE)
+as.numeric(max(J62trk$dt,na.rm=TRUE))/60/60/24  # days
 
-# All individuals
-date.time <- as.character(mapply(set.year, as.character(mov.data.org$timestamp),
-                                 new.year))
-str(date.time)
-#date.time
-# Date/Time as POSIXct object
-mov.data.org$timestamp.posix <- as.POSIXct(date.time, 
-                                           format = "%m/%d/%Y %H:%M", tz = 'GMT')
-										   
-str(mov.data.org)
-
-##################################################################################################
-###  Get local time!!!
-
-# I included a column to represent the local timezone (already with the - signal) to them multiply the timestamp and get the difference:
-mov.data.org$local_time <- mov.data.org$timestamp.posix + mov.data.org$timezone*60*60
-mov.data.org$timestamp.posix.GMT <- mov.data.org$timestamp.posix
-mov.data.org$timestamp.posix <- mov.data.org$local_time ### If we do that all the (timestamp.posix)'s calculations will be based on local time
-str(mov.data.org)
-################################################################
+#' ##### 3D plot
+open3d()
+# To get a bigger window than the default
+par3d(windowRect = c(100, 100, 612, 612))
+Sys.sleep(0.1) # Allow sluggish window managers to catch up
+with(AFW1, plot3d(x,y,date, type="l", col=as.factor(AFW1$idf)))
+(stcube<-with(AFW1, plot3d(x,y,date, type="l",col=as.numeric(cut(AFW1$id,7)), alpha=0.4)))
+#' ##### 3D plot
+open3d()
+# To get a bigger window than the default
+par3d(windowRect = c(100, 100, 612, 612))
+Sys.sleep(0.1) # Allow sluggish window managers to catch up
+with(AFW1, plot3d(x,y,date, type="p", col=as.numeric(AFW1$weight)))
+(stcube<-with(AFW1, plot3d(x,y,date, type="p",col=as.numeric(cut(AFW1$weight,7)), alpha=0.4)))
 
 
-#-----------------------------
-# Distribution of fix rates
-mov.data.diff <- mov.data.org
+#' ##### Individuals basic counts
+summary(AFW1)
+table(droplevels(AFW1$id),AFW1$sex); colSums(ifelse(table(AFW1$id,AFW1$sex)>0,1,0))  # sex
+table(droplevels(AFW1$id),AFW1$age); colSums(ifelse(table(AFW1$id,AFW1$age)>0,1,0)) # age
+table(droplevels(AFW1$id),AFW1$weight); colSums(ifelse(table(AFW1$id,AFW1$weight)>0,1,0))  # weight
+table(droplevels(AFW1$id),AFW1$status); colSums(ifelse(table(AFW1$id,AFW1$status)>0,1,0)) # residence status
 
-# Calculation of time between fixes
-time.between <- function(individual, dat) {
-  # Select individual
-  ind <- dat[dat$individual.local.identifier..ID. == individual,]
-  # Calculate difference in time, in hours, and return
-  c(as.numeric(diff.POSIXt(ind$timestamp.posix), units = 'hours'), NA)
-}
-# All individuals
-inds <- unique(mov.data.diff$individual.local.identifier..ID.)
-mov.data.diff$time.diff <- unlist(sapply(inds, FUN = time.between, dat = mov.data.diff))
+#' ##### Working with amt
+AFW1trk -> trk; get_crs(AFW1trk) # double checking CRS
+AFW1trk %>% dplyr::select(id,sl) %>% unnest %>% 
+  ggplot(aes(sl, fill = factor(id))) + geom_density(alpha = 0.4)
 
-# Histogram
-for(i in inds) {
-  print(paste(i, paste(range(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == i], na.rm = T), collapse = ', '), sep = ': '))
-}
+AFW1trk %>% dplyr::select(id,dt) %>% unnest %>% 
+  ggplot(aes(dt, fill = factor(id))) + geom_density(alpha = 0.4)
 
-hist(mov.data.diff$time.diff[mov.data.diff$time.diff > 0 & mov.data.diff$time.diff < 48],
-     main = 'All individuals pooled', xlab = "Time between fixes (h)")
-#-----------------------------
 
-## adehabitatLT
-# Transforms in ltraj object
-coords <- data.frame(mov.data.org$location.long, mov.data.org$location.lat)
-mov.traj <- as.ltraj(xy = coords, date=mov.data.org$timestamp.posix, 
-                     id=mov.data.org$individual.local.identifier..ID., 
-                     burst=mov.data.org$individual.local.identifier..ID., 
-                     infolocs = mov.data.org[,-c(3:4, ncol(mov.data.org))])
-mov.traj.df <- ld(mov.traj)
-#mov.traj
-#plot(mov.traj)
-#hist(mov.traj.df$dist)
+trk <- trk %>%dplyr::select(x_,y_,t_,id,tod_, everything())
+trk <- trk%>%dplyr::select(-sl,-project_region,-dir_abs,-dir_rel,-nsd_,-long_x,-lat_y, 
+                   -week, -month, -year,-hour, everything())
+trk # %>% print(n = Inf)
 
-## move
-# Organize data as a move package format
-move.data <- move(x = mov.traj.df$x, y = mov.traj.df$y, 
-                  time = mov.traj.df$date, 
+trk <- trk%>%select(-sl,-project_region,-dir_abs,-dir_rel,-nsd_,-long_x,-lat_y, 
+                    -week, -month, -year,-hour, everything())
+
+
+#' Check the current sampling rate
+(timestats<-trk %>% nest(-id) %>% mutate(sr = map(data, summarize_sampling_rate, time_unit = "hour")) %>%
+    select(id, sr) %>% unnest)
+#  Lets add on the time difference to each obs.
+trk<-trk %>% group_by(id) %>% mutate(dt_ = t_ - lag(t_, default = NA))
+trk <- trk %>%select(x_,y_,t_,id,tod_, everything())
+trk
+
+
+
+#' ##### J34
+leaflet(J34)%>%addTiles()%>%addCircles(J34$x, J34$y,color = "red")%>% addProviderTiles(providers$Esri.WorldImagery)
+
+leaflet(J34)%>%addTiles()%>% addPolylines(J34$x, J34$y, smoothFactor = 0.01,stroke=0.01,weight = 2,color = "red")%>% addProviderTiles(providers$Esri.WorldImagery)
+
+
+xyplot(id~date, data = J34, groups = id,xlab = "Sampling period",ylab = "ID Number")
+J34trk %>% dplyr::select(id,dt) %>% unnest %>% 
+  ggplot(aes(dt, fill = factor(id))) + geom_density(alpha = 0.4)
+
+head(J34)
+nrow(J34);range(J34$date)
+max(J34$dt, na.rm = TRUE)/60/60/24;mean(J34$dt, na.rm = TRUE)/60/60/24;median(J34$dt, na.rm = TRUE)/60/60/24 # days
+min(J34$dt, na.rm = TRUE)/60/60 #hours
+
+J34trk 
+
+#' ## Display space-time cube. 
+open3d()
+# To get a bigger window than the default
+par3d(windowRect = c(100, 100, 612, 612))
+Sys.sleep(0.1) # Allow sluggish window managers to catch up
+with(J34, plot3d(x,y,date, type="l", col=as.numeric(J34$date)))
+(stcube<-with(J34, plot3d(x,y,date, type="l",col=as.numeric(cut(J34$date,20)), alpha=0.4)))
+
+#Histograms and plots
+hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 34],
+     main = 'Individual 34', xlab = "Time between fixes (h)")
+plot(density.default(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 34],
+                     na.rm = T), main = 'Individual 34')
+
+breaks <- c(0, 0.5, 1.5, 2.5, 4.5, 8.5, 16.5, 32.5, 64.5, 128.5, 256.5, 1000)
+breaks <- c(0, 1, 2*(1:256))
+hh <- hist(mov.data.diff$time.diff[mov.data.diff$individual.local.identifier..ID. == 34 &
+                                     mov.data.diff$time.diff > 0 & 
+                                     mov.data.diff$time.diff < 512],
+           main = 'Individual 34',xlab = 'Time between fixes (h)',
+           plot = T, breaks = breaks)
+
+
+
+
+
+
+
+leaflet(J35 )%>%addTiles()%>%addCircles(J35$x, J35$y, color = "red" )%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J36 )%>%addTiles()%>%addCircles(J36$x, J36$y,color = "red" )%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J37 )%>%addTiles()%>%addCircles(J37 $x, J37 $y,color = "red")%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J38 )%>%addTiles()%>%addCircles(J38 $x, J38 $y,color = "red")%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J58 )%>%addTiles()%>%addCircles(J58 $x, J58 $y,color = "blue")%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J62 )%>%addTiles()%>%addCircles(J62 $x, J62 $y,color = "blue")%>% addProviderTiles(providers$Esri.WorldImagery)
+
+#'
+#' #### 2) Atlantic Forest W2
+pal <- colorFactor(palette = 'Dark2',domain = AFW2$id)
+leaflet(AFW2)%>%addTiles()%>%addCircles(AFW2$x, AFW2$y, color =~pal(id))%>% addProviderTiles(providers$Esri.WorldImagery)
+
+table(AFW2$id)
+xyplot(id~date, data = AFW2, groups = id)
+
+max(AFW2trk$speed,na.rm=TRUE)*3.6  # Km/h
+as.numeric(max(AFW2trk$dt,na.rm=TRUE))/60/60/24  # days
+
+max(J39trk$dt,na.rm=TRUE); as.numeric(max(J39trk$dt,na.rm=TRUE))/60/60/24  # days
+max(J40trk$dt,na.rm=TRUE); as.numeric(max(J40trk$dt,na.rm=TRUE))/60/60/24  # days
+
+max(J63trk$dt,na.rm=TRUE);as.numeric(max(J63trk$dt,na.rm=TRUE))/60/60/24  # days
+
+print(J40trk, n = Inf)
+
+AFW2trk %>% dplyr::select(id,sl) %>% unnest %>% 
+  ggplot(aes(sl, fill = factor(id))) + geom_density(alpha = 0.4)
+
+AFW2trk %>% dplyr::select(id,dt) %>% unnest %>% 
+  ggplot(aes(dt, fill = factor(id))) + geom_density(alpha = 0.4)
+
+
+#' ##### AFW2 individuals
+
+#' Sex  # table(AFW2$id,AFW2$sex);colSums(ifelse(table(AFW2$id,AFW2$sex)>0,1,0))
+Male=subset(AFW2,sex=='Male')  # Males
+f<-as.data.frame.table(ftable(Male$id));f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0) 
+# colSums(ifelse(table(Male$id,Male$age)>0,1,0));table(Male$id,Male$age)
+Female=subset(AFW2,sex=='Female')  # Females
+f<-as.data.frame.table(ftable(Female$id));f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0) 
+# colSums(ifelse(table(Female$id,Female$age)>0,1,0));table(Female$id,Female$age)
+
+
+new_df <- AFW2trk %>%select(period,tod_, everything())
+new_df%>% print(n = Inf)
+
+
+leaflet(J39 )%>%addTiles()%>%addCircles(J39 $x, J39 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J40 )%>%addTiles()%>%addCircles(J40 $x, J40 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J63 )%>%addTiles()%>%addCircles(J63 $x, J63 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+#'
+#' #### 3) Caatinga
+leaflet(Caatinga)%>%addTiles()%>%addCircles(Caatinga$x, Caatinga$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+
+Caatingatrk %>% dplyr::select(id,sl) %>% unnest %>% 
+  ggplot(aes(sl, fill = factor(id))) + geom_density(alpha = 0.4)
+
+Caatingatrk %>% dplyr::select(id,dt) %>% unnest %>% 
+  ggplot(aes(dt, fill = factor(id))) + geom_density(alpha = 0.4)
+
+#'Caatinga individuals
+ft=ftable(Caatinga$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+
+
+
+leaflet(J20 )%>%addTiles()%>%addCircles(J20 $x, J20 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J50 )%>%addTiles()%>%addCircles(J50 $x, J50 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+#'
+#' #### 4) Cerrado1
+leaflet(Cerrado1)%>%addTiles()%>%addCircles(Cerrado1$x, Cerrado1$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+Cerrado1trk %>% dplyr::select(id,sl) %>% unnest %>% 
+  ggplot(aes(sl, fill = factor(id))) + geom_density(alpha = 0.4)
+
+Cerrado1trk %>% dplyr::select(id,dt) %>% unnest %>% 
+  ggplot(aes(dt, fill = factor(id))) + geom_density(alpha = 0.4)
+
+
+#'Cerrado1 individuals
+ft=ftable(Cerrado1$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+leaflet(J17 )%>%addTiles()%>%addCircles(J17 $x, J17 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J65 )%>%addTiles()%>%addCircles(J65 $x, J65 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J67 )%>%addTiles()%>%addCircles(J67 $x, J67 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J82 )%>%addTiles()%>%addCircles(J82 $x, J82 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J85 )%>%addTiles()%>%addCircles(J85 $x, J85 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+#'
+#' #### 5) Cerrado2
+leaflet(Cerrado2)%>%addTiles()%>%addCircles(Cerrado2$x, Cerrado2$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+Cerrado2trk %>% dplyr::select(id,sl) %>% unnest %>% 
+  ggplot(aes(sl, fill = factor(id))) + geom_density(alpha = 0.4)
+
+Cerrado2trk %>% dplyr::select(id,dt) %>% unnest %>% 
+  ggplot(aes(dt, fill = factor(id))) + geom_density(alpha = 0.4)
+
+
+#'Cerrado2 individuals
+ft=ftable(Cerrado2$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+leaflet(J89 )%>%addTiles()%>%addCircles(J89 $x, J89 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+#'
+#' #### 6) Costa Rica
+leaflet(CRica)%>%addTiles()%>%addCircles(CRica$x, CRica$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+CRicatrk %>% dplyr::select(id,sl) %>% unnest %>% 
+  ggplot(aes(sl, fill = factor(id))) + geom_density(alpha = 0.4)
+
+CRicatrk %>% dplyr::select(id,dt) %>% unnest %>% 
+  ggplot(aes(dt, fill = factor(id))) + geom_density(alpha = 0.4)
+
+
+#'Costa Rica individuals
+ft=ftable(CRica$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+leaflet(J26 )%>%addTiles()%>%addCircles(J26 $x, J26 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+#'
+#' #### 7) Drych1 
+leaflet(Drych1)%>%addTiles()%>%addCircles(Drych1$x, Drych1$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+Drych1trk %>% dplyr::select(id,sl) %>% unnest %>% 
+  ggplot(aes(sl, fill = factor(id))) + geom_density(alpha = 0.4)
+
+Drych1trk %>% dplyr::select(id,dt) %>% unnest %>% 
+  ggplot(aes(dt, fill = factor(id))) + geom_density(alpha = 0.4)
+
+
+#' Drych1 individuals
+ft=ftable(Drych1$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+leaflet(J16 )%>%addTiles()%>%addCircles(J16 $x, J16 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J70 )%>%addTiles()%>%addCircles(J70 $x, J70 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J76 )%>%addTiles()%>%addCircles(J76 $x, J76 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(J77 )%>%addTiles()%>%addCircles(J77 $x, J77 $y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+#' 
+#' #### 8) Drych2
+leaflet(Drych2)%>%addTiles()%>%addCircles(Drych2$x, Drych2$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+Drych2trk %>% dplyr::select(id,sl) %>% unnest %>% 
+  ggplot(aes(sl, fill = factor(id))) + geom_density(alpha = 0.4)
+
+Drych2trk %>% dplyr::select(id,dt) %>% unnest %>% 
+  ggplot(aes(dt, fill = factor(id))) + geom_density(alpha = 0.4)
+
+#'
+#' #### 9) Humid Chaco 
+leaflet(Hch)%>%addTiles()%>%addCircles(Hch$x, Hch$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+Hchtrk %>% dplyr::select(id,sl) %>% unnest %>% 
+  ggplot(aes(sl, fill = factor(id))) + geom_density(alpha = 0.4)
+
+Hchtrk %>% dplyr::select(id,dt) %>% unnest %>% 
+  ggplot(aes(dt, fill = factor(id))) + geom_density(alpha = 0.4)
+
+#' 
+J1
+
+#' #### 10) Forest Paraguay
+leaflet(FPy)%>%addTiles()%>%addCircles(FPy$x, FPy$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+#' 
+#' #### 11) Iguazu1
+leaflet(Iguazu1)%>%addTiles()%>%addCircles(Iguazu1$x, Iguazu1$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+#' 
+#'#### 12) Iguazu2
+leaflet(Iguazu2)%>%addTiles()%>%addCircles(Iguazu2$x, Iguazu2$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+#' 
+#' #### 13) Amazonia Mamiraua (Brazil) - Flooded Amazonia
+leaflet(Mamiraua)%>%addTiles()%>%addCircles(Mamiraua$x, Mamiraua$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+#' 
+#' #### 14) IOP Para Amazonia   
+# Translocated animal   
+leaflet(iopPA)%>%addTiles()%>%addCircles(iopPA$x, iopPA$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+#' 
+#' #### 15) Greater Lacandona, Mexico 
+leaflet(Lacandona)%>%addTiles()%>%addCircles(Lacandona$x, Lacandona$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+#' 
+#' #### 16) Mexico East
+leaflet(MexEast)%>%addTiles()%>%addCircles(MexEast$x, MexEast$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+#' 
+#' #### 17) Mexico Sonora
+leaflet(Sonora)%>%addTiles()%>%addCircles(Sonora$x, Sonora$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+#' 
+#' #### 18) PantanalTotal Brazil&Paraguay   -  7 Projects in total
+leaflet(Pantanal)%>%addTiles()%>%addCircles(Pantanal$x, Pantanal$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+ft=ftable(Pantanal$id); f<-as.data.frame.table(ft);f$Var1 <- NULL;f$Var2 <- NULL;subset(f,Freq>0)
+x11()
+xyplot(id~date, data = Pantanal, groups = id)
+xyplot(id~date, data = Pantanal, groups = id, auto.key=list(columns = 3))
+
+
+
+#' 
+leaflet(Oncafari)%>%addTiles()%>%addCircles(Oncafari$x, Oncafari$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(Paraguay)%>%addTiles()%>%addCircles(Paraguay$x, Paraguay$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(Panthera1)%>%addTiles()%>%addCircles(Panthera1$x, Panthera1$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(Panthera2)%>%addTiles()%>%addCircles(Panthera2$x, Panthera2$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(RioNegro)%>%addTiles()%>%addCircles(RioNegro$x, RioNegro$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(SaoBento)%>%addTiles()%>%addCircles(SaoBento$x, SaoBento$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+leaflet(Taiama)%>%addTiles()%>%addCircles(Taiama$x, Taiama$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+
+
+
+#' 
+#' 
+
+
+
+
+#' 
+#' 
+
+
+#' ### Organize data again accordingly with packages for visualization/visual analysis
+#' 
+#' ####  amt
+#'  already set in data prep (trk files for region or individuals e.g. Pantanaltrk or )
+
+
+#' 
+#' #### Adjust again as move object
+move.data <- move(x = jaguar_df$x, y = jaguar_df$y, 
+                  time = jaguar_df$date, 
                   proj = CRS('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'),
-                  data = mov.traj.df, animal = mov.traj.df$id, sensor = 'GPS')
+                  data = jaguar_df, animal = jaguar_df$id, sensor = 'GPS')
 
 move.data  ### moveStack
 ###Separate individual animals' trajectories 
 unstacked <- split(move.data)
 head(unstacked)
-jaguar_df <- as(move.data, "data.frame")
+
+
+#-----------------------------
+# Distribution of fix rates
+mov.data.diff <- jaguar_df
+
+# Calculation of time between fixes
+time.between <- function(individual, dat) {
+  # Select individual
+  ind <- dat[dat$id == individual,]
+  # Calculate difference in time, in hours, and return
+  c(as.numeric(diff.POSIXt(ind$timestamp.posix), units = 'hours'), NA)
+}
+# All individuals
+inds <- unique(mov.data.diff$id)
+mov.data.diff$time.diff <- unlist(sapply(inds, FUN = time.between, dat = mov.data.diff))
+
+# Histogram
+for(i in inds) {
+  print(paste(i, paste(range(mov.data.diff$time.diff[mov.data.diff$id == i], na.rm = T), collapse = ', '), sep = ': '))
+}
+
+hist(mov.data.diff$time.diff[mov.data.diff$time.diff > 0 & mov.data.diff$time.diff < 48],
+     main = 'All individuals pooled', xlab = "Time between fixes (h)")
+
+hist(mov.data.diff$time.diff[mov.data.diff$time.diff > 0 & mov.data.diff$time.diff > 720],
+     main = 'All individuals pooled', xlab = "Time between fixes (h)")
+
+table(mov.data.diff$time.diff[mov.data.diff$time.diff  > 720])
+z=(mov.data.diff$time.diff[mov.data.diff$time.diff  > 720])
+
+# Checking the range
+(summary_range=tapply(Pantanal$date,list(Pantanal$id),range))
+# Checking the range in terms of days
+(dr=with(Pantanal, tapply(date, list(id), function(date) max(date)-min(date))))
+
+
+#-----------------------------
+
 
 	## Plot individual animals' trajectories (Maximum Zoom to include all points)
 #X1	
 unstacked <- split(move.data)
 X1=unstacked$X1
 X1_df <- as(X1, "data.frame")
-head(X1_df)
+head(X1)
 nrow(X1_df)
 range(X1_df$date)
+#' Now, using leaflet
+leaflet(X1)%>%addTiles()%>%addCircles(X1$x, X1$y)
+
+leaflet(X1)%>%addTiles()%>%addCircles(X1$x, X1$y)%>% addProviderTiles(providers$Esri.NatGeoWorldMap)
+
+leaflet(X1)%>%addTiles()%>%addCircles(X1$x, X1$y)%>% addProviderTiles(providers$Esri.WorldImagery)
+
+
+
 m <- get_map(bbox(extent(X1)*1.1), source="google", zoom=12, maptype="satellite") #define the box for map based on the trajectory coordinates
 ggmap(m)+geom_path(data=X1_df,aes(x=x, y=y),colour = "red") #plot the map and the trajectory
 #aes(colour = as.numeric(date)

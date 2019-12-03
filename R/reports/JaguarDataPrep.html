@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title><strong>Jaguar Data Preparation</strong></title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: #990073
+   }
+
+   pre .number {
+     color: #099;
+   }
+
+   pre .comment {
+     color: #998;
+     font-style: italic
+   }
+
+   pre .keyword {
+     color: #900;
+     font-weight: bold
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: #d14;
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h1><strong>Jaguar Data Preparation</strong></h1>
+
+<h4><em>Alan E. de Barros, Bernardo Niebuhr, Vanesa Bejarano, Julia Oshima,Claudia Kanda, Milton Ribeiro, Ronaldo Morato,Paulo Prado</em></h4>
+
+<p>date: &ldquo;March, 13 2019&rdquo;</p>
+
+<h5>Scripts adapted from Bernardo Niebuhr data preparation, and Luca Borger and John Fieberg&#39;s lectures.</h5>
+
+<h4><em>Preamble</em></h4>
+
+<p>For a fresh start, clean everything in working memory</p>
+
+<pre><code class="r">rm(list= ls())                                                 
+</code></pre>
+
+<p>Install and load packages</p>
+
+<pre><code class="r">if(!require(install.load)) install.packages(&#39;install.load&#39;); library(install.load)
+install.load::install_load(&quot;move&quot;, &quot;adehabitatLT&quot;, &quot;amt&quot;) # Movement packages
+install.load::install_load(&quot;maptools&quot;, &quot;raster&quot;, &quot;rgdal&quot;,&quot;sp&quot;) # Spatial packages
+install.load::install_load(&quot;colorspace&quot;, &quot;rgl&quot;, &quot;lattice&quot;, &quot;leaflet&quot;,&quot;ggplot2&quot;) # Visualization packages
+install.load::install_load(&quot;RCurl&quot;, &quot;dplyr&quot;, &quot;readr&quot;, &quot;lubridate&quot;, &quot;tibble&quot;) # Aux packages
+install.load::install_load(&quot;circular&quot;, &quot;caTools&quot;) # Stats packages
+install.load::install_load(&quot;knitr&quot;, &quot;ezknitr&quot;) # To render documents 
+</code></pre>
+
+<h3>Source functions from GitHub local directory</h3>
+
+<pre><code class="r"># Do not required to set directory if Rscript have been opened from the GitHub local directory
+source(&quot;DataPrepFunctions.R&quot;) 
+</code></pre>
+
+<h4>Load the data and create a dataframe object:</h4>
+
+<pre><code class="r">mov.data.org &lt;- read.delim(file=&quot;../data/mov.data.org.txt&quot;)
+mov.data.org &lt;- dplyr::select(mov.data.org, -(individual.taxon.canonical.name:tag.local.identifier))
+</code></pre>
+
+<h4>Add Individual info  (see older development files for details)</h4>
+
+<pre><code class="r">info &lt;- read.delim(file=&quot;../data/info.txt&quot;)
+</code></pre>
+
+<h4>Merge movement with individual info/parameters</h4>
+
+<pre><code class="r">merged&lt;- merge(mov.data.org,info)
+mov.data.org &lt;- merged 
+</code></pre>
+
+<h4>Organize data</h4>
+
+<p>Test
+get.year(time.stamp = mov.data.org$timestamp[10000])</p>
+
+<p>All individuals</p>
+
+<pre><code class="r">year &lt;- as.numeric(sapply(mov.data.org$timestamp, get.year))
+</code></pre>
+
+<p>Add 1900/2000</p>
+
+<pre><code class="r">new.year &lt;- as.character(ifelse(year &gt; 50, year + 1900, year + 2000))
+</code></pre>
+
+<p>Test</p>
+
+<pre><code class="r">set.year(time.stamp = as.character(mov.data.org$timestamp[10000]), year = &#39;2013&#39;)
+</code></pre>
+
+<pre><code>## [1] &quot;12/19/2013 21:00&quot;
+</code></pre>
+
+<p>All individuals</p>
+
+<pre><code class="r">date.time &lt;- as.character(mapply(set.year, as.character(mov.data.org$timestamp),
+                                 new.year))
+</code></pre>
+
+<p>Date/Time as POSIXct object</p>
+
+<pre><code class="r">mov.data.org$timestamp.posix &lt;- as.POSIXct(date.time,format = &quot;%m/%d/%Y %H:%M&quot;, tz = &#39;UTC&#39;)
+mov.data.org$GMTtime &lt;- mov.data.org$timestamp.posix
+</code></pre>
+
+<h2>Get local time</h2>
+
+<p>A column to represent the local timezone (already with the - signal) has been included to then multiply the timestamp and get the difference:</p>
+
+<pre><code class="r">mov.data.org$local_time &lt;- mov.data.org$timestamp.posix + mov.data.org$timezone*60*60
+mov.data.org$timestamp.posix &lt;- mov.data.org$local_time 
+</code></pre>
+
+<p>Now all the (timestamp.posix)&#39;s calculations are based on local time</p>
+
+<h4><em>Note: UTC has also been assigned to the local time here. But the correct timezones of each region are assigned below</em></h4>
+
+<h3>Adjusting for Movement Packages</h3>
+
+<h4>Creating a track in amt (with lat long for now)</h4>
+
+<pre><code class="r">trk1 &lt;- mk_track(mov.data.org,.x=location.long, .y=location.lat, .t=timestamp.posix,
+                id=individual.local.identifier..ID.,sex=sex,age=age, weight=weight, 
+                status=status,model=model,project_region=project_region, project_bioveg=project_bioveg,
+                country=country,GMTtime=GMTtime,local_time=local_time,crs = CRS(&quot;+init=epsg:4326&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<pre><code class="r">trk1 &lt;- trk1 %&gt;% arrange(id)
+jaguar_df &lt;- as.data.frame(trk1)
+</code></pre>
+
+<p>Reclassifying variables</p>
+
+<pre><code class="r">jaguar_df$idf &lt;- as.factor(jaguar_df$id)
+age &lt;- as.numeric(levels(jaguar_df$age))[jaguar_df$age]
+</code></pre>
+
+<pre><code>## Warning: NAs introduced by coercion
+</code></pre>
+
+<pre><code class="r">weight &lt;- as.numeric(levels(jaguar_df$weight))[jaguar_df$weight]
+</code></pre>
+
+<pre><code>## Warning: NAs introduced by coercion
+</code></pre>
+
+<pre><code class="r">jaguar_df$age &lt;- age   
+jaguar_df$weight &lt;- weight  
+jaguar_df&lt;-rename(jaguar_df, x = x_)
+jaguar_df&lt;-rename(jaguar_df, y = y_)
+jaguar_df&lt;-rename(jaguar_df, date = t_)
+</code></pre>
+
+<h3>More Data checking and cleaning</h3>
+
+<p>Delete observations where missing lat or long or a timestamp. (There are no missing observations but it is a good practice)</p>
+
+<pre><code class="r">ind&lt;-complete.cases(jaguar_df[,c(&quot;y&quot;,&quot;x&quot;,&quot;date&quot;)])
+jaguar_df&lt;-jaguar_df[ind==TRUE,]
+</code></pre>
+
+<pre><code class="r">#&quot; Check order (data should already be ordered)
+jaguar_ord &lt;- jaguar_df[order(jaguar_df$id,jaguar_df$date),]
+all.equal(jaguar_df,jaguar_ord)
+</code></pre>
+
+<pre><code>## [1] TRUE
+</code></pre>
+
+<p>Check for duplicated observations (ones with same lat, long, timestamp,
+ and individual identifier). No duplicate observations in this data set</p>
+
+<pre><code class="r">ind2&lt;-duplicated(jaguar_df[,c(&quot;date&quot;,&quot;x&quot;,&quot;y&quot;,&quot;id&quot;)])
+</code></pre>
+
+<p>sum(ind2) # no duplicates</p>
+
+<pre><code class="r">jaguar_df&lt;-jaguar_df[ind2!=TRUE,]
+</code></pre>
+
+<p>Clean suspectly close points!!!  Above 1200 secs or 20 min minimal interval </p>
+
+<pre><code class="r">#  Lets add on the time difference to each obs to select and exclude them after
+jaguar_df&lt;-jaguar_df %&gt;% group_by(id) %&gt;% mutate(dt = date - lag(date, default = NA))
+excludes &lt;- filter(jaguar_df, dt &lt; 1200)
+removed&lt;- anti_join(jaguar_df, excludes)
+</code></pre>
+
+<pre><code>## Joining, by = c(&quot;x&quot;, &quot;y&quot;, &quot;date&quot;, &quot;id&quot;, &quot;sex&quot;, &quot;age&quot;, &quot;weight&quot;, &quot;status&quot;, &quot;model&quot;, &quot;project_region&quot;, &quot;project_bioveg&quot;, &quot;country&quot;, &quot;GMTtime&quot;, &quot;local_time&quot;, &quot;idf&quot;, &quot;dt&quot;)
+</code></pre>
+
+<pre><code class="r">jaguar_df &lt;- removed
+jaguar_df &lt;- as.data.frame(jaguar_df)
+</code></pre>
+
+<p>Create a new Event_ID</p>
+
+<pre><code class="r">jaguar_ord &lt;- jaguar_df[order(jaguar_df$id,jaguar_df$date),]
+jaguar_df &lt;- jaguar_ord
+jaguar_df$Event_ID &lt;- seq.int(nrow(jaguar_df))
+</code></pre>
+
+<h4><strong>Need still add some individual cleaning of outliers (based on ctmm and large timelags)!!!</strong></h4>
+
+<h3>Add UTMs and POSIX timezone</h3>
+
+<h4>Grouping project regions when they occur within the same UTM and time zone</h4>
+
+<pre><code class="r"># Code with function =&gt; crs.convert
+</code></pre>
+
+<h3>ATLANTIC FOREST WEST    (Project regions 1 and 2)</h3>
+
+<p>1) Atlantic Forest W1</p>
+
+<pre><code class="r">AFW1 &lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Atlantic Forest W1&#39;),
+                    crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                    crs.output = &quot;+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs&quot;,
+                    point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+AFW1$date &lt;- as.character(AFW1$date)
+AFW1$date &lt;- as.POSIXct(AFW1$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+3&quot;) 
+</code></pre>
+
+<p>2) Atlantic Forest W2</p>
+
+<pre><code class="r">AFW2 &lt;- crs.convert(data =subset(jaguar_df,project_region==&#39;Atlantic Forest W2&#39;),
+                    crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                    crs.output = &quot;+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs&quot;,
+                    point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+AFW2$date &lt;- as.character(AFW2$date)
+AFW2$date &lt;- as.POSIXct(AFW2$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+3&quot;) 
+</code></pre>
+
+<p>Atlantic Forest West</p>
+
+<pre><code class="r">AFW=rbind(AFW1,AFW2)
+</code></pre>
+
+<h3>CAATINGA</h3>
+
+<p>3) Caatinga</p>
+
+<pre><code class="r">Caatinga &lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Caatinga&#39;),
+                    crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                    crs.output = &quot;+proj=utm +zone=23L +south +datum=WGS84 +units=m +no_defs&quot;,
+                    point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Caatinga$date &lt;- as.character(Caatinga$date)
+Caatinga$date &lt;- as.POSIXct(Caatinga$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+3&quot;) 
+</code></pre>
+
+<h3>CERRADO   2 Projects (4 and 5)</h3>
+
+<p>4)  Cerrado1</p>
+
+<pre><code class="r">Cerrado1&lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Cerrado1&#39;),
+                       crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                       crs.output = &quot;+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs&quot;,
+                       point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Cerrado1$date &lt;- as.character(Cerrado1$date)
+Cerrado1$date &lt;- as.POSIXct(Cerrado1$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+3&quot;) 
+</code></pre>
+
+<p>5)  Cerrado2</p>
+
+<pre><code class="r">Cerrado2&lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Cerrado2&#39;),
+                       crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                       crs.output = &quot;+proj=utm +zone=22L +south +datum=WGS84 +units=m +no_defs&quot;,
+                       point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Cerrado2$date &lt;- as.character(Cerrado2$date)
+Cerrado2$date &lt;- as.POSIXct(Cerrado2$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+3&quot;) 
+Cerrado=rbind(Cerrado1,Cerrado2)
+</code></pre>
+
+<h3>COSTA RICA</h3>
+
+<p>6) Costa Rica</p>
+
+<pre><code class="r">CRica&lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Costa Rica&#39;),
+                       crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                       crs.output = &quot;+proj=utm +zone=16P +north +datum=WGS84 +units=m +no_defs&quot;,
+                       point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+CRica$date &lt;- as.character(CRica$date)
+CRica$date &lt;- as.POSIXct(CRica$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+6&quot;) 
+</code></pre>
+
+<h3>DRY CHACO</h3>
+
+<p>Transforming coordinate to UTM # ids: 16,70 =&gt; (most 20K), ids: 76,77 =&gt; (20 K); ids: 71,72,73 =&gt; (21 K) </p>
+
+<pre><code class="r">Drych=subset(jaguar_df,project_region==&#39;Dry chaco&#39;)
+J16=subset(Drych,id==&#39;16&#39;)
+J70=subset(Drych,id==&#39;70&#39;)
+J71=subset(Drych,id==&#39;71&#39;)
+J72=subset(Drych,id==&#39;72&#39;)
+J73=subset(Drych,id==&#39;73&#39;)
+J76=subset(Drych,id==&#39;76&#39;)
+J77=subset(Drych,id==&#39;77&#39;)
+</code></pre>
+
+<p>Drych1 and Drych2</p>
+
+<pre><code class="r">Drych1=rbind(J16,J70,J76,J77)
+Drych2=rbind(J71,J72,J73)
+</code></pre>
+
+<p>7) Drych1    </p>
+
+<pre><code class="r"># 76,77  Zone 20 K; 16 &amp; 70 (most is in Zone 20 K too, but a little bit in 21K)
+Drych1&lt;- crs.convert(data = Drych1,
+                    crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                    crs.output = &quot;+proj=utm +zone=20K +south +datum=WGS84 +units=m +no_defs&quot;,
+                    point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Drych1$date &lt;- as.character(Drych1$date)
+Drych1$date &lt;- as.POSIXct(Drych1$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+4&quot;) 
+</code></pre>
+
+<p>8) Drych2  </p>
+
+<pre><code class="r"># 71,72,73 =&gt; (21 K)
+Drych2&lt;- crs.convert(data = Drych2,
+                     crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                     crs.output = &quot;+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs&quot;,
+                     point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Drych2$date &lt;- as.character(Drych2$date)
+Drych2$date &lt;- as.POSIXct(Drych2$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+4&quot;) 
+# Dry Chaco Total
+Drych=rbind(Drych1,Drych2)
+</code></pre>
+
+<h3>HUMID CHACO</h3>
+
+<p>9) Humid Chaco  </p>
+
+<pre><code class="r">Hch&lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Humid chaco&#39;),
+                    crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                    crs.output = &quot;+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs&quot;,
+                    point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Hch$date &lt;- as.character(Hch$date)
+Hch$date &lt;- as.POSIXct(Hch$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+4&quot;) 
+</code></pre>
+
+<h3>FOREST PARAGUAY</h3>
+
+<p>10) Forest Paraguay   </p>
+
+<pre><code class="r">FPy&lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Forest Paraguay&#39;),
+                  crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                  crs.output = &quot;+proj=utm +zone=21J +south +datum=WGS84 +units=m +no_defs&quot;,
+                  point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+FPy$date &lt;- as.character(FPy$date)
+FPy$date &lt;- as.POSIXct(FPy$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+4&quot;) 
+</code></pre>
+
+<h3>IGUAZU</h3>
+
+<pre><code class="r">Iguazu=subset(jaguar_df,project_region==&#39;Iguazu&#39;)
+# Transforming coordinate to UTM   # 42,66,80,90 =&gt; (21 J);      83 =&gt; (22 J) 
+J42=subset(Iguazu,id==&#39;42&#39;)
+J66=subset(Iguazu,id==&#39;66&#39;)
+J80=subset(Iguazu,id==&#39;80&#39;)
+J90=subset(Iguazu,id==&#39;90&#39;)
+J83=subset(Iguazu,id==&#39;83&#39;)
+</code></pre>
+
+<p>Iguazu1 and Iguazu2</p>
+
+<pre><code class="r">Iguazu1=rbind(J42,J66,J80,J90)
+Iguazu2=(J83)
+</code></pre>
+
+<p>11) Iguazu1    </p>
+
+<pre><code class="r"># 42,66,80,90 =&gt; ( Zone 21 J)
+Iguazu1&lt;- crs.convert(data = Iguazu1,
+                     crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                     crs.output = &quot;+proj=utm +zone=21J +south +datum=WGS84 +units=m +no_defs&quot;,
+                     point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Iguazu1$date &lt;- as.character(Iguazu1$date)
+Iguazu1$date &lt;- as.POSIXct(Iguazu1$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+3&quot;) 
+</code></pre>
+
+<p>12) Iguazu2    </p>
+
+<pre><code class="r">#  83 =&gt; (22 J) 
+Iguazu2&lt;- crs.convert(data = Iguazu2,
+                      crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                      crs.output = &quot;+proj=utm +zone=22J +south +datum=WGS84 +units=m +no_defs&quot;,
+                      point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Iguazu2$date &lt;- as.character(Iguazu2$date)
+Iguazu2$date &lt;- as.POSIXct(Iguazu2$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+3&quot;) 
+</code></pre>
+
+<p>Iguazu</p>
+
+<pre><code class="r">Iguazu=rbind(Iguazu1,Iguazu2)
+</code></pre>
+
+<h3>AMAZONIA</h3>
+
+<p>13)  Amazonia Mamiraua (Brazil) - Flooded Amazonia</p>
+
+<pre><code class="r">Mamiraua&lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Mamiraua&#39;),
+                  crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                  crs.output = &quot;+proj=utm +zone=20M +south +datum=WGS84 +units=m +no_defs&quot;,
+                  point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Mamiraua$date &lt;- as.character(Mamiraua$date)
+Mamiraua$date &lt;- as.POSIXct(Mamiraua$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+4&quot;) 
+</code></pre>
+
+<p>Dry Amazonia, PA, translocated 
+14) IOP Para Amazonia   </p>
+
+<pre><code class="r"># Translocated animal   
+iopPA&lt;- crs.convert(data = subset(jaguar_df,id==&#39;24&#39;),
+                       crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                       crs.output = &quot;+proj=utm +zone=22M +south +datum=WGS84 +units=m +no_defs&quot;,
+                       point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+iopPA$date &lt;- as.character(iopPA$date)
+iopPA$date &lt;- as.POSIXct(iopPA$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+3&quot;) 
+</code></pre>
+
+<h3>MEXICO</h3>
+
+<p>Greater Lacandona  15) Mexico </p>
+
+<pre><code class="r">Lacandona&lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Greater Lacandona&#39;),
+                    crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                    crs.output = &quot;+proj=utm +zone=15Q +south +datum=WGS84 +units=m +no_defs&quot;,
+                    point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Lacandona$date &lt;- as.character(Lacandona$date)
+Lacandona$date &lt;- as.POSIXct(Lacandona$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+6&quot;) 
+</code></pre>
+
+<p>Mexico East  16) </p>
+
+<pre><code class="r">MexEast&lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Mexico East&#39;),
+                        crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                        crs.output = &quot;+proj=utm +zone=16Q +south +datum=WGS84 +units=m +no_defs&quot;,
+                        point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+MexEast$date &lt;- as.character(MexEast$date)
+MexEast$date &lt;- as.POSIXct(MexEast$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+6&quot;) 
+</code></pre>
+
+<p>Mexico Sonora 17) </p>
+
+<pre><code class="r">Sonora&lt;- crs.convert(data = subset(jaguar_df,project_region==&#39;Mexico Sonora&#39;),
+                      crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                      crs.output = &quot;+proj=utm +zone=12R +south +datum=WGS84 +units=m +no_defs&quot;,
+                      point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Sonora$date &lt;- as.character(Sonora$date)
+Sonora$date &lt;- as.POSIXct(Sonora$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+7&quot;) 
+</code></pre>
+
+<p>Mexico</p>
+
+<pre><code class="r">Mex=rbind(Lacandona,MexEast,Sonora)
+</code></pre>
+
+<h3>PANTANAL</h3>
+
+<p>18) PantanalTotal Brazil&amp;Paraguay   -  7 Projects in total, all in the same UTM zone</p>
+
+<pre><code class="r">Pantanal&lt;- crs.convert(data = subset(jaguar_df,project_bioveg==&#39;Pantanal&#39;),
+                     crs.input = &quot;+proj=longlat +datum=WGS84&quot;,
+                     crs.output = &quot;+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs&quot;,
+                     point.names = c(&quot;utm_x&quot;, &quot;utm_y&quot;, &quot;long_x&quot;, &quot;lat_y&quot;))
+Pantanal$date &lt;- as.character(Pantanal$date)
+Pantanal$date &lt;- as.POSIXct(Pantanal$date, format =&quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;Etc/GMT+4&quot;) 
+</code></pre>
+
+<h3>Jaguar Dataframe with UTMs</h3>
+
+<h4><em>Important Note: A single dataframe can NOT hold multiple POSIX tzs</em></h4>
+
+<p>This will assign the POSIXct of the first region (AFW in this case). 
+Hence it is required to store the regional POSIXct in multiple dataframes (or within a tibble for example)</p>
+
+<pre><code class="r">jaguar_df=rbind(AFW1,AFW2,Caatinga,Cerrado1,Cerrado2,CRica,Pantanal,
+          Drych1,Drych2,Hch,FPy,Iguazu1,Iguazu2,Mamiraua,iopPA,Lacandona,MexEast,Sonora)
+</code></pre>
+
+<p>Need re-order the data again</p>
+
+<pre><code class="r">jaguar_ord &lt;- jaguar_df[order(jaguar_df$id,jaguar_df$date),]
+jaguar_df &lt;- jaguar_ord
+</code></pre>
+
+<p>We assign UTC again just to store a full dataframe with UTMS but bellow we use regional POSIXct to create trks (amt package).</p>
+
+<pre><code class="r">jaguar_df$date &lt;- jaguar_df$local_time
+</code></pre>
+
+<p>In case we want save and read it as txt</p>
+
+<pre><code class="r"># write.table(jaguar_df,file=&quot;../data/jaguar_df.txt&quot;,row.names = F,quote=F,col.names=T,sep=&quot;\t&quot;)
+# jaguar &lt;- read.delim(file=&quot;../data/jaguar_df.txt&quot;)
+</code></pre>
+
+<h2>Creating tracks in amt</h2>
+
+<h4>Based on UTM, project regions and timezones (Commom to both RSF and SSF)</h4>
+
+<h3>ATLANTIC FOREST WEST  (Project regions 1 and 2)</h3>
+
+<p>Atlantic Forest West</p>
+
+<pre><code class="r">AFWtrk &lt;- trk.convert(data = AFW,
+                      .x=utm_x,
+                      .y=utm_y,
+                      .t=date,
+                      id=id,
+                      dt=dt,
+                      project_region=project_region,
+                      sex=sex,
+                      age=age,
+                      weight=weight, 
+                      status=status,
+                      long_x=long_x,
+                      lat_y=lat_y,
+                      crs = CRS(&quot;+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<p>Objects for AFW project regions</p>
+
+<pre><code class="r"> AFW1trk=AFWtrk %&gt;% filter(project_region == &quot;Atlantic Forest W1&quot;)
+ AFW2trk=AFWtrk %&gt;% filter(project_region == &quot;Atlantic Forest W2&quot;)
+</code></pre>
+
+<h3>CAATINGA</h3>
+
+<p>3) Caatinga   </p>
+
+<pre><code class="r">Caatingatrk &lt;- trk.convert(data = Caatinga,
+                      .x=utm_x,
+                      .y=utm_y,
+                      .t=date,
+                      id=id,
+                      dt=dt,
+                      project_region=project_region,
+                      sex=sex,
+                      age=age,
+                      weight=weight, 
+                      status=status,
+                      long_x=long_x,
+                      lat_y=lat_y,
+                      crs = CRS(&quot;+proj=utm +zone=23L +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<h3>CERRADO   (2 Projects: 4 and 5)</h3>
+
+<p>4) Cerrado1   </p>
+
+<pre><code class="r">Cerrado1trk &lt;- trk.convert(data = Cerrado1,
+                           .x=utm_x,
+                           .y=utm_y,
+                           .t=date,
+                           id=id,
+                           dt=dt,
+                           project_region=project_region,
+                           sex=sex,
+                           age=age,
+                           weight=weight, 
+                           status=status,
+                           long_x=long_x,
+                           lat_y=lat_y,
+                           crs = CRS(&quot;+proj=utm +zone=22K +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<p>5) Cerrado2   </p>
+
+<pre><code class="r">Cerrado2trk &lt;- trk.convert(data = Cerrado2,
+                           .x=utm_x,
+                           .y=utm_y,
+                           .t=date,
+                           id=id,
+                           dt=dt,
+                           project_region=project_region,
+                           sex=sex,
+                           age=age,
+                           weight=weight, 
+                           status=status,
+                           long_x=long_x,
+                           lat_y=lat_y,
+                           crs = CRS(&quot;+proj=utm +zone=22L +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<pre><code class="r"># Cerradotrk
+# Cerradotrk=rbind(Cerrado1trk,Cerrado2trk) # This apparently would assign only the first UTM zone for both
+</code></pre>
+
+<h3>COSTA RICA</h3>
+
+<p>6) Costa Rica</p>
+
+<pre><code class="r">CRicatrk &lt;- trk.convert(data = CRica,
+                          .x=utm_x,
+                          .y=utm_y,
+                          .t=date,
+                          id=id,
+                          dt=dt,
+                          project_region=project_region,
+                          sex=sex,
+                          age=age,
+                          weight=weight, 
+                          status=status,
+                          long_x=long_x,
+                          lat_y=lat_y,
+                          crs = CRS(&quot;+proj=utm +zone=16P +north +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<h3>DRY CHACO</h3>
+
+<p>7) Drych1</p>
+
+<pre><code class="r">Drych1trk &lt;- trk.convert(data = Drych1,
+                        .x=utm_x,
+                        .y=utm_y,
+                        .t=date,
+                        id=id,
+                        dt=dt,
+                        project_region=project_region,
+                        sex=sex,
+                        age=age,
+                        weight=weight, 
+                        status=status,
+                        long_x=long_x,
+                        lat_y=lat_y,
+                        crs = CRS(&quot;+proj=utm +zone=20K +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<p>8) Drych2</p>
+
+<pre><code class="r">Drych2trk &lt;- trk.convert(data = Drych2,
+                         .x=utm_x,
+                         .y=utm_y,
+                         .t=date,
+                         id=id,
+                         dt=dt,
+                         project_region=project_region,
+                         sex=sex,
+                         age=age,
+                         weight=weight, 
+                         status=status,
+                         long_x=long_x,
+                         lat_y=lat_y,
+                         crs = CRS(&quot;+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<pre><code class="r">#  DRY CHACO trk =&gt; Drychtrk
+# Drychtrk=rbind(Drych1trk,Drych2trk) # This apparently would assign only the first UTM zone for both
+</code></pre>
+
+<h3>HUMID CHACO</h3>
+
+<p>9) Humid Chaco       </p>
+
+<pre><code class="r">Hchtrk &lt;- trk.convert(data = Hch,
+                         .x=utm_x,
+                         .y=utm_y,
+                         .t=date,
+                         id=id,
+                         dt=dt,
+                         project_region=project_region,
+                         sex=sex,
+                         age=age,
+                         weight=weight, 
+                         status=status,
+                         long_x=long_x,
+                         lat_y=lat_y,
+                         crs = CRS(&quot;+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<h3>FOREST PARAGUAY</h3>
+
+<p>10) Forest Paraguay   </p>
+
+<pre><code class="r">FPytrk &lt;- trk.convert(data = FPy,
+                      .x=utm_x,
+                      .y=utm_y,
+                      .t=date,
+                      id=id,
+                      dt=dt,
+                      project_region=project_region,
+                      sex=sex,
+                      age=age,
+                      weight=weight, 
+                      status=status,
+                      long_x=long_x,
+                      lat_y=lat_y,
+                      crs = CRS(&quot;+proj=utm +zone=21J +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<h3>IGUAZU</h3>
+
+<p>11) Iguazu1</p>
+
+<pre><code class="r">Iguazu1trk &lt;- trk.convert(data = Iguazu1,
+                      .x=utm_x,
+                      .y=utm_y,
+                      .t=date,
+                      id=id,
+                      dt=dt,
+                      project_region=project_region,
+                      sex=sex,
+                      age=age,
+                      weight=weight, 
+                      status=status,
+                      long_x=long_x,
+                      lat_y=lat_y,
+                      crs = CRS(&quot;+proj=utm +zone=21J +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<p>12) Iguazu2</p>
+
+<pre><code class="r">Iguazu2trk &lt;- trk.convert(data = Iguazu2,
+                          .x=utm_x,
+                          .y=utm_y,
+                          .t=date,
+                          id=id,
+                          dt=dt,
+                          project_region=project_region,
+                          sex=sex,
+                          age=age,
+                          weight=weight, 
+                          status=status,
+                          long_x=long_x,
+                          lat_y=lat_y,
+                          crs = CRS(&quot;+proj=utm +zone=22J +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<pre><code class="r"># Iguazutrk   
+# Iguazutrk=rbind(Iguazu1trk,Iguazu2trk) # This apparently would assign only the first UTM zone for both
+</code></pre>
+
+<h3>AMAZONIA</h3>
+
+<p>13) Flooded  Amazonia, Mamiraua (Brazil)   </p>
+
+<pre><code class="r">Mamirauatrk &lt;- trk.convert(data = Mamiraua,
+                          .x=utm_x,
+                          .y=utm_y,
+                          .t=date,
+                          id=id,
+                          dt=dt,
+                          project_region=project_region,
+                          sex=sex,
+                          age=age,
+                          weight=weight, 
+                          status=status,
+                          long_x=long_x,
+                          lat_y=lat_y,
+                          crs = CRS(&quot;+proj=utm +zone=20M +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<p>14   Dry/ East Amazonia, IOP PA, translocated</p>
+
+<pre><code class="r">iopPAtrk &lt;- trk.convert(data = iopPA,
+                           .x=utm_x,
+                           .y=utm_y,
+                           .t=date,
+                           id=id,
+                           dt=dt,
+                           project_region=project_region,
+                           sex=sex,
+                           age=age,
+                           weight=weight, 
+                           status=status,
+                           long_x=long_x,
+                           lat_y=lat_y,
+                           crs = CRS(&quot;+proj=utm +zone=22M +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<h3>MEXICO</h3>
+
+<p>Greater Lacandona
+15) Lacandona</p>
+
+<pre><code class="r">Lacandonatrk &lt;- trk.convert(data = Lacandona,
+                        .x=utm_x,
+                        .y=utm_y,
+                        .t=date,
+                        id=id,
+                        dt=dt,
+                        project_region=project_region,
+                        sex=sex,
+                        age=age,
+                        weight=weight, 
+                        status=status,
+                        long_x=long_x,
+                        lat_y=lat_y,
+                        crs = CRS(&quot;+proj=utm +zone=15Q +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<p>16) MexEast</p>
+
+<pre><code class="r">MexEasttrk &lt;- trk.convert(data = MexEast,
+                            .x=utm_x,
+                            .y=utm_y,
+                            .t=date,
+                            id=id,
+                            dt=dt,
+                            project_region=project_region,
+                            sex=sex,
+                            age=age,
+                            weight=weight, 
+                            status=status,
+                            long_x=long_x,
+                            lat_y=lat_y,
+                            crs = CRS(&quot;+proj=utm +zone=16Q +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<p>17)  Sonora</p>
+
+<pre><code class="r">Sonoratrk &lt;- trk.convert(data = Sonora,
+                          .x=utm_x,
+                          .y=utm_y,
+                          .t=date,
+                          id=id,
+                          dt=dt,
+                          project_region=project_region,
+                          sex=sex,
+                          age=age,
+                          weight=weight, 
+                          status=status,
+                          long_x=long_x,
+                          lat_y=lat_y,
+                          crs = CRS(&quot;+proj=utm +zone=12R +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<h3>PANTANAL</h3>
+
+<p>18) PantanalTotal Brazil&amp;Paraguay  -  7 Projects in total, all in the same UTM zone</p>
+
+<pre><code class="r">Pantanaltrk &lt;- trk.convert(data = Pantanal,
+                         .x=utm_x,
+                         .y=utm_y,
+                         .t=date,
+                         id=id,
+                         dt=dt,
+                         project_region=project_region,
+                         sex=sex,
+                         age=age,
+                         weight=weight, 
+                         status=status,
+                         long_x=long_x,
+                         lat_y=lat_y,
+                         crs = CRS(&quot;+proj=utm +zone=21K +south +datum=WGS84 +units=m +no_defs&quot;))
+</code></pre>
+
+<pre><code>## .t found, creating `track_xyt`.
+</code></pre>
+
+<p>Objects for Pantanal project regions (trk and dataframes)</p>
+
+<pre><code class="r"> Oncafaritrk=Pantanaltrk %&gt;% filter(project_region == &quot;Oncafari&quot;)
+ Oncafari=Pantanal %&gt;% filter(project_region == &quot;Oncafari&quot;)
+ Paraguaytrk=Pantanaltrk %&gt;% filter(project_region == &quot;Pantanal Paraguay&quot;)
+ Paraguay=Pantanal %&gt;% filter(project_region == &quot;Pantanal Paraguay&quot;)
+ Panthera1trk=Pantanaltrk %&gt;% filter(project_region == &quot;Panthera1&quot;)
+ Panthera1=Pantanal %&gt;% filter(project_region == &quot;Panthera1&quot;)
+ Panthera2trk=Pantanaltrk %&gt;% filter(project_region == &quot;Panthera2&quot;)
+ Panthera2=Pantanal %&gt;% filter(project_region == &quot;Panthera2&quot;)
+ RioNegrotrk=Pantanaltrk %&gt;% filter(project_region == &quot;Rio Negro&quot;)
+ RioNegro=Pantanal %&gt;% filter(project_region == &quot;Rio Negro&quot;)
+ SaoBentotrk=Pantanaltrk %&gt;% filter(project_region == &quot;Sao Bento&quot;)
+ SaoBento=Pantanal %&gt;% filter(project_region == &quot;Sao Bento&quot;)
+ Taiamatrk=Pantanaltrk %&gt;% filter(project_region == &quot;Taiama&quot;)
+ Taiama=Pantanal %&gt;% filter(project_region == &quot;Taiama&quot;)
+</code></pre>
+
+<p>Dataframe and trk for each individual with adjusted timezones (to run if we need any specic individual)</p>
+
+<pre><code class="r">J1=subset(Hch,id==&#39;1&#39;);J1$idloc &lt;- seq.int(nrow(J1)) ####### Hch
+J1trk&lt;-Hchtrk %&gt;% filter(id==&quot;1&quot;)
+J2=subset(FPy,id==&#39;2&#39;);J2$idloc &lt;- seq.int(nrow(J2)) ######### FPy
+J2trk&lt;-FPytrk %&gt;% filter(id==&quot;2&quot;)
+J3=subset(Hch,id==&#39;3&#39;);J3$idloc &lt;- seq.int(nrow(J3)) ####### Hch
+J3trk&lt;-Hchtrk %&gt;% filter(id==&quot;3&quot;)
+J4=subset(Hch,id==&#39;4&#39;);J4$idloc &lt;- seq.int(nrow(J4))   ####### Hch
+J4trk&lt;-Hchtrk %&gt;% filter(id==&quot;4&quot;)
+J5=subset(Hch,id==&#39;5&#39;);J5$idloc &lt;- seq.int(nrow(J5))   ####### Hch
+J5trk&lt;-Hchtrk %&gt;% filter(id==&quot;5&quot;)
+J6=subset(Hch,id==&#39;6&#39;);J6$idloc &lt;- seq.int(nrow(J6))   ####### Hch
+J6trk&lt;-Hchtrk %&gt;% filter(id==&quot;6&quot;)
+J7=subset(Hch,id==&#39;7&#39;);J7$idloc &lt;- seq.int(nrow(J7))   ####### Hch
+J7trk&lt;-Hchtrk %&gt;% filter(id==&quot;7&quot;)
+J8=subset(FPy,id==&#39;8&#39;);J8$idloc &lt;- seq.int(nrow(J8))   ######### FPy
+J8trk&lt;-FPytrk %&gt;% filter(id==&quot;8&quot;)
+J9=subset(Hch,id==&#39;9&#39;);J9$idloc &lt;- seq.int(nrow(J9))   ####### Hch
+J9trk&lt;-Hchtrk %&gt;% filter(id==&quot;9&quot;)
+J10=subset(Hch,id==&#39;10&#39;);J10$idloc &lt;- seq.int(nrow(J10)) ####### Hch
+J10trk&lt;-Hchtrk %&gt;% filter(id==&quot;10&quot;)
+J11=subset(Hch,id==&#39;11&#39;);J11$idloc &lt;- seq.int(nrow(J11)) ####### Hch
+J11trk&lt;-Hchtrk %&gt;% filter(id==&quot;11&quot;)
+J12=subset(Pantanal,id==&#39;12&#39;);J12$idloc &lt;- seq.int(nrow(J12)) ########## Pantanal
+J12trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;12&quot;)
+J13=subset(Pantanal,id==&#39;13&#39;);J13$idloc &lt;- seq.int(nrow(J13)) ########## Pantanal
+J13trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;13&quot;)
+J14=subset(Pantanal,id==&#39;14&#39;);J14$idloc &lt;- seq.int(nrow(J14)) ########## Pantanal
+J14trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;14&quot;)
+J15=subset(Pantanal,id==&#39;15&#39;);J15$idloc &lt;- seq.int(nrow(J15)) ########## Pantanal
+J15trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;15&quot;)
+J16=subset(Drych1,id==&#39;16&#39;);J16$idloc &lt;- seq.int(nrow(J16)) ######### Drych1
+J16trk&lt;-Drych1trk %&gt;% filter(id==&quot;16&quot;)
+J17=subset(Cerrado1,id==&#39;17&#39;);J17$idloc &lt;- seq.int(nrow(J17)) ############### Cerrado1
+J17trk&lt;-Cerrado1trk %&gt;% filter(id==&quot;17&quot;)
+J18=subset(Pantanal,id==&#39;18&#39;);J18$idloc &lt;- seq.int(nrow(J18)) ########## Pantanal
+J18trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;18&quot;)
+J19=subset(Pantanal,id==&#39;19&#39;);J19$idloc &lt;- seq.int(nrow(J19)) ########## Pantanal
+J19trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;19&quot;)
+J20=subset(Caatinga,id==&#39;20&#39;);J20$idloc &lt;- seq.int(nrow(J20)) ################# Caatinga 
+J20trk&lt;-Caatingatrk %&gt;% filter(id==&quot;20&quot;)
+J21=subset(FPy,id==&#39;21&#39;);J21$idloc &lt;- seq.int(nrow(J21))  ######### FPy
+J21trk&lt;-FPytrk %&gt;% filter(id==&quot;21&quot;)
+J22=subset(Pantanal,id==&#39;22&#39;);J22$idloc &lt;- seq.int(nrow(J22)) ########## Pantanal
+J22trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;22&quot;)
+J23=subset(Pantanal,id==&#39;23&#39;);J23$idloc &lt;- seq.int(nrow(J23)) ########## Pantanal
+J23trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;23&quot;)
+J24=subset(iopPA,id==&#39;24&#39;);J24$idloc &lt;- seq.int(nrow(J24)) ###### iopPA
+J24trk&lt;-iopPAtrk %&gt;% filter(id==&quot;24&quot;)
+J25=subset(Pantanal,id==&#39;25&#39;);J25$idloc &lt;- seq.int(nrow(J25)) ########## Pantanal
+J25trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;25&quot;)
+J26=subset(CRica,id==&#39;26&#39;);J26$idloc &lt;- seq.int(nrow(J26))  ######### CRica
+J26trk&lt;-CRicatrk %&gt;% filter(id==&quot;26&quot;)
+J27=subset(Pantanal,id==&#39;27&#39;);J27$idloc &lt;- seq.int(nrow(J27)) ########## Pantanal
+J27trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;27&quot;)
+J28=subset(Pantanal,id==&#39;28&#39;);J28$idloc &lt;- seq.int(nrow(J28)) ########## Pantanal
+J28trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;28&quot;)
+J29=subset(Pantanal,id==&#39;29&#39;);J29$idloc &lt;- seq.int(nrow(J29)) ########## Pantanal
+J29trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;29&quot;)
+J30=subset(Pantanal,id==&#39;30&#39;);J30$idloc &lt;- seq.int(nrow(J30)) ########## Pantanal
+J30trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;30&quot;)
+J31=subset(Pantanal,id==&#39;31&#39;);J31$idloc &lt;- seq.int(nrow(J31)) ########## Pantanal
+J31trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;31&quot;)
+J32=subset(Pantanal,id==&#39;32&#39;);J32$idloc &lt;- seq.int(nrow(J32)) ########## Pantanal
+J32trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;32&quot;)
+J33=subset(Pantanal,id==&#39;33&#39;);J33$idloc &lt;- seq.int(nrow(J33)) ########## Pantanal
+J33trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;33&quot;)
+J34=subset(AFW1,id==&#39;34&#39;);J34$idloc &lt;- seq.int(nrow(J34))   ############### AFW1
+J34trk&lt;-AFW1trk %&gt;% filter(id==&quot;34&quot;)
+J35=subset(AFW1,id==&#39;35&#39;);J35$idloc &lt;- seq.int(nrow(J35))   ############### AFW1
+J35trk&lt;-AFW1trk %&gt;% filter(id==&quot;35&quot;)
+J36=subset(AFW1,id==&#39;36&#39;);J36$idloc &lt;- seq.int(nrow(J36))   ############### AFW1
+J36trk&lt;-AFW1trk %&gt;% filter(id==&quot;36&quot;)
+J37=subset(AFW1,id==&#39;37&#39;);J37$idloc &lt;- seq.int(nrow(J37))   ############### AFW1
+J37trk&lt;-AFW1trk %&gt;% filter(id==&quot;37&quot;)
+J38=subset(AFW1,id==&#39;38&#39;);J38$idloc &lt;- seq.int(nrow(J38))   ############### AFW1
+J38trk&lt;-AFW1trk %&gt;% filter(id==&quot;38&quot;)
+J39=subset(AFW2,id==&#39;39&#39;);J39$idloc &lt;- seq.int(nrow(J39))   ###############  AFW2
+J39trk&lt;-AFW2trk %&gt;% filter(id==&quot;39&quot;)
+J40=subset(AFW2,id==&#39;40&#39;);J40$idloc &lt;- seq.int(nrow(J40))   ###############  AFW2
+J40trk&lt;-AFW2trk %&gt;% filter(id==&quot;40&quot;)
+J41=subset(Pantanal,id==&#39;41&#39;);J41$idloc &lt;- seq.int(nrow(J41)) ########## Pantanal
+J41trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;41&quot;)
+J42=subset(Iguazu1,id==&#39;42&#39;);J42$idloc &lt;- seq.int(nrow(J42)) ######## Iguazu1
+J42trk&lt;-Iguazu1trk %&gt;% filter(id==&quot;42&quot;)
+J43=subset(Sonora,id==&#39;43&#39;);J43$idloc &lt;- seq.int(nrow(J43)) ######## Sonora
+J43trk&lt;-Sonoratrk %&gt;% filter(id==&quot;43&quot;)
+J44=subset(Lacandona,id==&#39;44&#39;);J44$idloc &lt;- seq.int(nrow(J44)) ######## Lacandona
+J44trk&lt;-Lacandonatrk %&gt;% filter(id==&quot;44&quot;)
+J45=subset(Lacandona,id==&#39;45&#39;);J45$idloc &lt;- seq.int(nrow(J45)) ######## Lacandona
+J45trk&lt;-Lacandonatrk %&gt;% filter(id==&quot;45&quot;)
+J46=subset(Lacandona,id==&#39;46&#39;);J46$idloc &lt;- seq.int(nrow(J46))  ######## Lacandona
+J46trk&lt;-Lacandonatrk %&gt;% filter(id==&quot;46&quot;)
+J47=subset(Lacandona,id==&#39;47&#39;);J47$idloc &lt;- seq.int(nrow(J47))  ######## Lacandona
+J47trk&lt;-Lacandonatrk %&gt;% filter(id==&quot;47&quot;)
+J48=subset(Lacandona,id==&#39;48&#39;);J48$idloc &lt;- seq.int(nrow(J48))  ######## Lacandona
+J48trk&lt;-Lacandonatrk %&gt;% filter(id==&quot;48&quot;)
+J49=subset(MexEast,id==&#39;49&#39;);J49$idloc &lt;- seq.int(nrow(J49))  ######### MexEast
+J49trk&lt;-MexEasttrk %&gt;% filter(id==&quot;49&quot;)
+J50=subset(Caatinga,id==&#39;50&#39;);J50$idloc &lt;- seq.int(nrow(J50))  ############### Caatinga
+J50trk&lt;-Caatingatrk %&gt;% filter(id==&quot;50&quot;)
+J51=subset(Pantanal,id==&#39;51&#39;);J51$idloc &lt;- seq.int(nrow(J51)) ########## Pantanal
+J51trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;51&quot;)
+J52=subset(Pantanal,id==&#39;52&#39;);J52$idloc &lt;- seq.int(nrow(J52)) ########## Pantanal
+J52trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;52&quot;)
+J53=subset(Pantanal,id==&#39;53&#39;);J53$idloc &lt;- seq.int(nrow(J53)) ########## Pantanal
+J53trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;53&quot;)
+J54=subset(Pantanal,id==&#39;54&#39;);J54$idloc &lt;- seq.int(nrow(J54)) ########## Pantanal
+J54trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;54&quot;)
+J55=subset(Pantanal,id==&#39;55&#39;);J55$idloc &lt;- seq.int(nrow(J55)) ########## Pantanal
+J55trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;55&quot;)
+J56=subset(Pantanal,id==&#39;56&#39;);J56$idloc &lt;- seq.int(nrow(J56)) ########## Pantanal
+J56trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;56&quot;)
+J57=subset(Pantanal,id==&#39;57&#39;);J57$idloc &lt;- seq.int(nrow(J57)) ########## Pantanal
+J57trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;57&quot;)
+J58=subset(AFW1,id==&#39;58&#39;);J58$idloc &lt;- seq.int(nrow(J58))   ###############  AFW1
+J58trk&lt;-AFW1trk %&gt;% filter(id==&quot;58&quot;)
+J59=subset(Pantanal,id==&#39;59&#39;);J59$idloc &lt;- seq.int(nrow(J59)) ########## Pantanal
+J59trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;59&quot;)
+J60=subset(Pantanal,id==&#39;60&#39;);J60$idloc &lt;- seq.int(nrow(J60)) ########## Pantanal
+J60trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;60&quot;)
+J61=subset(Pantanal,id==&#39;61&#39;);J61$idloc &lt;- seq.int(nrow(J61)) ########## Pantanal
+J61trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;61&quot;)
+J62=subset(AFW1,id==&#39;62&#39;);J62$idloc &lt;- seq.int(nrow(J62))   ###############  AFW1
+J62trk&lt;-AFW1trk %&gt;% filter(id==&quot;62&quot;)
+J63=subset(AFW2,id==&#39;63&#39;);J63$idloc &lt;- seq.int(nrow(J63))   ###############  AFW2
+J63trk&lt;-AFW2trk %&gt;% filter(id==&quot;63&quot;)
+J64=subset(Sonora,id==&#39;64&#39;);J64$idloc &lt;- seq.int(nrow(J64)) ######## Sonora
+J64trk&lt;-Sonoratrk %&gt;% filter(id==&quot;64&quot;)
+J65=subset(Cerrado1,id==&#39;65&#39;);J65$idloc &lt;- seq.int(nrow(J65))  ########## Cerrado1
+J65trk&lt;-Cerrado1trk %&gt;% filter(id==&quot;65&quot;)
+J66=subset(Iguazu1,id==&#39;66&#39;);J66$idloc &lt;- seq.int(nrow(J66))  ########## Iguazu1
+J66trk&lt;-Iguazu1trk %&gt;% filter(id==&quot;66&quot;)
+J67=subset(Cerrado1,id==&#39;67&#39;);J67$idloc &lt;- seq.int(nrow(J67))  ########## Cerrado1
+J67trk&lt;-Cerrado1trk %&gt;% filter(id==&quot;67&quot;)
+J68=subset(Pantanal,id==&#39;68&#39;);J68$idloc &lt;- seq.int(nrow(J68)) ########## Pantanal
+J68trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;68&quot;)
+J69=subset(Pantanal,id==&#39;69&#39;);J69$idloc &lt;- seq.int(nrow(J69)) ########## Pantanal
+J69trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;69&quot;)
+J70=subset(Drych1,id==&#39;70&#39;);J70$idloc &lt;- seq.int(nrow(J70))  ######## Drych1
+J70trk&lt;-Drych1trk %&gt;% filter(id==&quot;70&quot;)
+J71=subset(Drych2,id==&#39;71&#39;);J71$idloc &lt;- seq.int(nrow(J71))  ####### Drych2
+J71trk&lt;-Drych2trk %&gt;% filter(id==&quot;71&quot;)
+J72=subset(Drych2,id==&#39;72&#39;);J72$idloc &lt;- seq.int(nrow(J72))  ####### Drych2
+J72trk&lt;-Drych2trk %&gt;% filter(id==&quot;72&quot;)
+J73=subset(Drych2,id==&#39;73&#39;);J73$idloc &lt;- seq.int(nrow(J73))  ####### Drych2
+J73trk&lt;-Drych2trk %&gt;% filter(id==&quot;73&quot;)
+J74=subset(Pantanal,id==&#39;74&#39;);J74$idloc &lt;- seq.int(nrow(J74))   ########## Pantanal
+J74trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;74&quot;)
+J75=subset(Pantanal,id==&#39;75&#39;);J75$idloc &lt;- seq.int(nrow(J75))   ########## Pantanal
+J75trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;75&quot;)
+J76=subset(Drych1,id==&#39;76&#39;);J76$idloc &lt;- seq.int(nrow(J76))  ####### Drych1
+J76trk&lt;-Drych1trk %&gt;% filter(id==&quot;76&quot;)
+J77=subset(Drych1,id==&#39;77&#39;);J77$idloc &lt;- seq.int(nrow(J77))  ####### Drych1
+J77trk&lt;-Drych1trk %&gt;% filter(id==&quot;77&quot;)
+J78=subset(FPy,id==&#39;78&#39;);J78$idloc &lt;- seq.int(nrow(J78))   ####### FPy
+J78trk&lt;-FPytrk %&gt;% filter(id==&quot;78&quot;)
+J79=subset(Pantanal,id==&#39;79&#39;);J79$idloc &lt;- seq.int(nrow(J79)) ########## Pantanal
+J79trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;79&quot;)
+J80=subset(Iguazu1,id==&#39;80&#39;);J80$idloc &lt;- seq.int(nrow(J80)) ######## Iguazu1
+J80trk&lt;-Iguazu1trk %&gt;% filter(id==&quot;80&quot;)
+J81=subset(Pantanal,id==&#39;81&#39;);J81$idloc &lt;- seq.int(nrow(J81)) ########## Pantanal
+J81trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;81&quot;)
+J82=subset(Cerrado1,id==&#39;82&#39;);J82$idloc &lt;- seq.int(nrow(J82))  ########## Cerrado1
+J82trk&lt;-Cerrado1trk %&gt;% filter(id==&quot;82&quot;)
+J83=subset(Iguazu2,id==&#39;83&#39;);J83$idloc &lt;- seq.int(nrow(J83))  ########## Iguazu2
+J83trk&lt;-Iguazu2trk %&gt;% filter(id==&quot;83&quot;)
+J84=subset(Pantanal,id==&#39;84&#39;);J84$idloc &lt;- seq.int(nrow(J84))  ########## Pantanal
+J84trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;84&quot;)
+J85=subset(Cerrado1,id==&#39;85&#39;);J85$idloc &lt;- seq.int(nrow(J85))  ########## Cerrado1
+J85trk&lt;-Cerrado1trk %&gt;% filter(id==&quot;85&quot;)
+J86=subset(Pantanal,id==&#39;86&#39;);J86$idloc &lt;- seq.int(nrow(J86)) ########## Pantanal
+J86trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;86&quot;)
+J87=subset(Pantanal,id==&#39;87&#39;);J87$idloc &lt;- seq.int(nrow(J87)) ########## Pantanal
+J87trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;87&quot;)
+J88=subset(Pantanal,id==&#39;88&#39;);J88$idloc &lt;- seq.int(nrow(J88)) ########## Pantanal
+J88trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;88&quot;)
+J89=subset(Cerrado2,id==&#39;89&#39;);J89$idloc &lt;- seq.int(nrow(J89)) ######### Cerrado2
+J89trk&lt;-Cerrado2trk %&gt;% filter(id==&quot;89&quot;)
+J90=subset(Iguazu1,id==&#39;90&#39;);J90$idloc &lt;- seq.int(nrow(J90)) ######### Iguazu1
+J90trk&lt;-Iguazu1trk %&gt;% filter(id==&quot;90&quot;)
+J91=subset(Pantanal,id==&#39;91&#39;);J91$idloc &lt;- seq.int(nrow(J91)) ########## Pantanal
+J91trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;91&quot;)
+J92=subset(Pantanal,id==&#39;92&#39;);J92$idloc &lt;- seq.int(nrow(J92)) ########## Pantanal
+J92trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;92&quot;)
+J93=subset(Mamiraua,id==&#39;93&#39;);J93$idloc &lt;- seq.int(nrow(J93)) ######### Mamiraua
+J93trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;93&quot;)
+J94=subset(Mamiraua,id==&#39;94&#39;);J94$idloc &lt;- seq.int(nrow(J94)) ######### Mamiraua
+J94trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;94&quot;)
+J95=subset(Mamiraua,id==&#39;95&#39;);J95$idloc &lt;- seq.int(nrow(J95)) ######### Mamiraua
+J95trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;95&quot;)
+J96=subset(Mamiraua,id==&#39;96&#39;);J96$idloc &lt;- seq.int(nrow(J96)) ######### Mamiraua
+J96trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;96&quot;)
+J97=subset(Mamiraua,id==&#39;97&#39;);J97$idloc &lt;- seq.int(nrow(J97)) ######### Mamiraua
+J97trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;97&quot;)
+J98=subset(Mamiraua,id==&#39;98&#39;);J98$idloc &lt;- seq.int(nrow(J98)) ######### Mamiraua
+J98trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;98&quot;)
+J99=subset(Mamiraua,id==&#39;99&#39;);J99$idloc &lt;- seq.int(nrow(J99)) ######### Mamiraua
+J99trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;99&quot;)
+J100=subset(Mamiraua,id==&#39;100&#39;);J100$idloc &lt;- seq.int(nrow(J100))######### Mamiraua
+J100trk&lt;-Mamirauatrk %&gt;% filter(id==&quot;100&quot;)
+J101=subset(Pantanal,id==&#39;101&#39;);J101$idloc &lt;- seq.int(nrow(J101)) ########## Pantanal
+J101trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;101&quot;)
+J102=subset(Pantanal,id==&#39;102&#39;);J102$idloc &lt;- seq.int(nrow(J102)) ########## Pantanal
+J102trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;102&quot;)
+J103=subset(Pantanal,id==&#39;103&#39;);J103$idloc &lt;- seq.int(nrow(J103)) ########## Pantanal
+J103trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;103&quot;)
+J104=subset(Pantanal,id==&#39;104&#39;);J104$idloc &lt;- seq.int(nrow(J104)) ########## Pantanal
+J104trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;104&quot;)
+J105=subset(Pantanal,id==&#39;105&#39;);J105$idloc &lt;- seq.int(nrow(J105)) ########## Pantanal
+J105trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;105&quot;)
+J106=subset(Pantanal,id==&#39;106&#39;);J106$idloc &lt;- seq.int(nrow(J106)) ########## Pantanal
+J106trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;106&quot;)
+J107=subset(Pantanal,id==&#39;107&#39;);J107$idloc &lt;- seq.int(nrow(J107))########## Pantanal
+J107trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;107&quot;)
+J108=subset(Pantanal,id==&#39;108&#39;);J108$idloc &lt;- seq.int(nrow(J108))########## Pantanal
+J108trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;108&quot;)
+J109=subset(Pantanal,id==&#39;109&#39;);J109$idloc &lt;- seq.int(nrow(J109))########## Pantanal
+J109trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;109&quot;)
+J110=subset(Pantanal,id==&#39;110&#39;);J110$idloc &lt;- seq.int(nrow(J110))########## Pantanal
+J110trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;110&quot;)
+J111=subset(Pantanal,id==&#39;111&#39;);J111$idloc &lt;- seq.int(nrow(J111))########## Pantanal
+J111trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;111&quot;)
+J112=subset(Pantanal,id==&#39;112&#39;);J112$idloc &lt;- seq.int(nrow(J112))########## Pantanal
+J112trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;112&quot;)
+J113=subset(Pantanal,id==&#39;113&#39;);J113$idloc &lt;- seq.int(nrow(J113))########## Pantanal
+J113trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;113&quot;)
+J114=subset(Pantanal,id==&#39;114&#39;);J114$idloc &lt;- seq.int(nrow(J114))########## Pantanal
+J114trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;114&quot;)
+J115=subset(Pantanal,id==&#39;115&#39;);J115$idloc &lt;- seq.int(nrow(J115))########## Pantanal
+J115trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;115&quot;)
+J116=subset(Pantanal,id==&#39;116&#39;);J116$idloc &lt;- seq.int(nrow(J116))########## Pantanal
+J116trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;116&quot;)
+J117=subset(Pantanal,id==&#39;117&#39;);J117$idloc &lt;- seq.int(nrow(J117))########## Pantanal
+J117trk&lt;-Pantanaltrk %&gt;% filter(id==&quot;117&quot;)
+</code></pre>
+
+<pre><code class="r">#    ALL  JAGUARS  =&gt;  jaguartrk  #This apparently would assign only the first timezone appearing for all
+# All Project regions trk
+# jaguartrk=bind_rows(AFW1trk,AFW2trk,Caatingatrk,Cerrado1trk,Cerrado2trk,CRicatrk,Drychtrk, Hchtrk,FPytrk,
+# Iguazutrk,Mamirauatrk,iopPAtrk,Lacandonatrk, MexEasttrk, Sonoratrk,Oncafaritrk,Paraguaytrk,Panthera1trk,
+# Panthera2trk,RioNegrotrk,SaoBentotrk,Taiamatrk) 
+# to get it ordered
+# jaguartrk&lt;-arrange(jaguartrk,id,t_)
+</code></pre>
+
+<p>ALL  JAGUARS  =&gt; jaguarlist </p>
+
+<pre><code class="r"># To put individuals together while keeping respective UTMs and Timezones, just in case we need it
+jaguarlist = list(J1trk,J2trk,J3trk,J4trk,J5trk,J6trk,J7trk,J8trk,J9trk,J10trk,
+                  J11trk,J12trk,J13trk,J14trk,J15trk,J16trk,J17trk,J18trk,J19trk,J20trk,
+                  J21trk,J22trk,J23trk,J24trk,J25trk,J26trk,J27trk,J28trk,J29trk,J30trk,
+                  J31trk,J32trk,J33trk,J34trk,J35trk,J36trk,J37trk,J38trk,J39trk,J40trk,
+                  J41trk,J42trk,J43trk,J44trk,J45trk,J46trk,J47trk,J48trk,J49trk,J50trk,
+                  J51trk,J52trk,J53trk,J54trk,J55trk,J56trk,J57trk,J58trk,J59trk,J60trk,
+                  J61trk,J62trk,J63trk,J64trk,J65trk,J66trk,J67trk,J68trk,J69trk,J70trk,
+                  J71trk,J72trk,J73trk,J74trk,J75trk,J76trk,J77trk,J78trk,J79trk,J80trk,
+                  J81trk,J82trk,J83trk,J84trk,J85trk,J86trk,J87trk,J88trk,J89trk,J90trk,
+                  J91trk,J92trk,J93trk,J94trk,J95trk,J96trk,J97trk,J98trk,J99trk,J100trk,
+              J101trk,J102trk,J103trk,J104trk,J105trk,J106trk,J107trk,J108trk,J109trk,J110trk,
+              J111trk,J112trk,J113trk,J114trk,J115trk,J116trk,J117trk)
+</code></pre>
+
+<p>Other info</p>
+
+<pre><code class="r">sessionInfo()     
+</code></pre>
+
+<pre><code>## R version 3.5.3 (2019-03-11)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows &gt;= 8 x64 (build 9200)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=English_United States.1252 
+## [2] LC_CTYPE=English_United States.1252   
+## [3] LC_MONETARY=English_United States.1252
+## [4] LC_NUMERIC=C                          
+## [5] LC_TIME=English_United States.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] bindrcpp_0.2.2      ezknitr_0.6         knitr_1.21         
+##  [4] caTools_1.17.1.1    circular_0.4-93     tibble_1.4.2       
+##  [7] lubridate_1.7.4     readr_1.2.1         dplyr_0.7.8        
+## [10] RCurl_1.95-4.12     bitops_1.0-6        ggplot2_3.1.0      
+## [13] leaflet_2.0.2       lattice_0.20-38     rgl_0.100.19       
+## [16] colorspace_1.4-0    maptools_0.9-5      amt_0.0.5.0        
+## [19] adehabitatLT_0.3.23 CircStats_0.2-6     boot_1.3-20        
+## [22] MASS_7.3-51.1       adehabitatMA_0.3.12 ade4_1.7-13        
+## [25] move_3.1.0          rgdal_1.4-3         raster_2.8-19      
+## [28] sp_1.3-1            geosphere_1.5-7     install.load_1.2.1 
+## 
+## loaded via a namespace (and not attached):
+##  [1] nlme_3.1-137            webshot_0.5.1          
+##  [3] RColorBrewer_1.1-2      httr_1.4.0             
+##  [5] tools_3.5.3             utf8_1.1.4             
+##  [7] R6_2.3.0                rgeos_0.4-2            
+##  [9] lazyeval_0.2.1          mgcv_1.8-27            
+## [11] manipulateWidget_0.10.0 npsurv_0.4-0           
+## [13] withr_2.1.2             tidyselect_0.2.5       
+## [15] compiler_3.5.3          cli_1.0.1              
+## [17] xml2_1.2.0              labeling_0.3           
+## [19] scales_1.0.0            mvtnorm_1.0-8          
+## [21] stringr_1.4.0           digest_0.6.18          
+## [23] foreign_0.8-71          R.utils_2.7.0          
+## [25] pkgconfig_2.0.2         htmltools_0.3.6        
+## [27] highr_0.7               htmlwidgets_1.3        
+## [29] rlang_0.3.0.1           rstudioapi_0.8         
+## [31] shiny_1.2.0             bindr_0.1.1            
+## [33] jsonlite_1.5            crosstalk_1.0.0        
+## [35] R.oo_1.22.0             magrittr_1.5           
+## [37] Matrix_1.2-15           Rcpp_1.0.0             
+## [39] munsell_0.5.0           fansi_0.4.0            
+## [41] R.methodsS3_1.7.1       stringi_1.2.4          
+## [43] yaml_2.2.0              plyr_1.8.4             
+## [45] grid_3.5.3              parallel_3.5.3         
+## [47] promises_1.0.1          crayon_1.3.4           
+## [49] miniUI_0.1.1.1          splines_3.5.3          
+## [51] hms_0.4.2               pillar_1.3.0           
+## [53] codetools_0.2-16        glue_1.3.0             
+## [55] evaluate_0.12           lsei_1.2-0             
+## [57] httpuv_1.4.5            gtable_0.2.0           
+## [59] purrr_0.2.5             tidyr_0.8.2            
+## [61] assertthat_0.2.0        xfun_0.4               
+## [63] mime_0.6                xtable_1.8-3           
+## [65] later_0.7.5             survival_2.43-3        
+## [67] memoise_1.1.0           fitdistrplus_1.0-11
+</code></pre>
+
+<pre><code class="r">proc.time()
+</code></pre>
+
+<pre><code>##    user  system elapsed 
+##  175.18  132.51 8191.76
+</code></pre>
+
+</body>
+
+</html>
