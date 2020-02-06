@@ -243,7 +243,7 @@ os.chdir(folder_path) # Change to this folder
 grass.run_command('v.import', input = 'Ecoregions2017.shp', output = 'Ecoregions2017_shp', overwrite = True)
 
 # Region of study
-grass.run_command('g.region', rast = map_for_define_region, res = 30, flags = 'ap')
+grass.run_command('g.region', rast = map_for_define_region, res = '0:00:00.9', flags = 'ap')
 
 # Rasterize using biome number, that indicates biome type (column BIOME_NUM) - 30m
 grass.run_command('v.to.rast', input = 'Ecoregions2017_shp',
@@ -351,3 +351,11 @@ grass.run_command('v.to.rast', input = 'drainage_15s_shp',
 
 # Transform in binary (drainage = 1, non drainage = 0) - 30m 
 grass.run_command('r.null', map = 'drainage_15s_binary_tif_exp', null = 0)
+
+
+# 19. Net Primary Productivity
+folder_path = r'E:\_neojaguardatabase\Envdatabase\1km\World\NPP'
+os.chdir(folder_path) # Change to this folder
+grass.run_command('r.import', input = 'MOD17A3_Science_NPP_mean_00_15.tif', output = 'MOD17A3_Science_NPP_mean_00_15', overwrite = True)
+
+
