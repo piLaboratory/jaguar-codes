@@ -51,13 +51,16 @@ crs.convert <- function(data, crs.input="+proj=longlat +datum=WGS84", crs.output
 trk.convert <- function(data, ...){
     trk <- mk_track(data, ...)
     trk <- trk %>% arrange(id)
+    trk <- trk %>% time_of_day(solar.dep = 18,
+                               include.crepuscule = TRUE)  # this considers the Astronomical Twilight
     nesttrk<-trk%>%nest(-id)
     ## We can add a columns to each nested column of data using purrr::map
     trk<-trk %>% nest(-id) %>% 
-        mutate(dir_abs = map(data, direction_abs,full_circle=TRUE, zero="N"), 
-               dir_rel = map(data, direction_rel), 
-               sl = map(data, step_lengths),
-               nsd_=map(data, nsd))%>%unnest()
+        mutate(sl = map(data, step_lengths),
+               speed=map(data, speed),
+               nsd_=map(data, nsd),
+               dir_abs = map(data, direction_abs,full_circle=TRUE, zero="N"), 
+               dir_rel = map(data, direction_rel))%>%unnest()
     trk.class<-class(trk)
     #' Calculate month, year, hour, week of each observation and append these to the dataset
     #' Unlike the movement charactersitics, these calculations can be done all at once, 
@@ -69,7 +72,11 @@ trk.convert <- function(data, ...){
             year=year(t_),
             hour = hour(t_)
         )
+    trk <- trk %>%dplyr::select(x_,y_,t_,id,tod_, everything())
+    trk <- trk%>%dplyr::select(-sl,-speed,-project_region,-nsd_, -dir_abs,-dir_rel,
+                               -week, -month, -year,-hour,-long_x,-lat_y, everything())
     ## Now, we need to again tell R that this is a track (rather than just a data frame)
     class(trk)<-trk.class
     return(trk)
 }
+
