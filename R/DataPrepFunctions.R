@@ -3,14 +3,19 @@ if(!require(install.load)) install.packages('install.load'); library(install.loa
 install.load::install_load("maptools",'move',"circular","RCurl","dplyr","readr","caTools","adehabitatLT","rgl",
                            "lubridate","raster","amt","tibble","ezknitr","lattice","rgdal","sp")
 
-## Add 2000 to years
+## WE SHOULD CHECK AND KEEP ONLY THE PACKAGES REALLY USED HERE!!
+
+#' Get year from the original dates
+#' @param time.stamp string with the timestamp (date and time) of each location
 get.year <- function(time.stamp) {
   init <- gregexpr('/', time.stamp, fixed = T)[[1]][2] + 1
   end <- gregexpr(' ', time.stamp, fixed = T)[[1]][1] - 1
   substr(time.stamp, init, end)
 }
 
-## New dates
+#' Function to add 2000 to years and define new dates
+#' @param time.stamp string with the timestamp (date and time) of each location
+#' @param year string with new to be replaced to the original year (e.g. 2014 to replace 14)
 set.year <- function(time.stamp, year) {
   init <- gregexpr('/', time.stamp, fixed = T)[[1]][2]
   end <- gregexpr(' ', time.stamp, fixed = T)[[1]][1]
