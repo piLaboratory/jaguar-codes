@@ -17,18 +17,18 @@ from grass.pygrass.modules.shortcuts import vector as v
 from grass.pygrass.modules.shortcuts import raster as r
 
 #------------------------------------------
-# Location utm 12N
+# Location utm 23N
 
 # list maps in cgs-location
 all_maps = grass.read_command('r.proj', location = 'newLocation_wgs84', mapset = 'variables_cut', flags = 'l').replace('\r', '').split('\n')
 all_regions = grass.read_command('v.proj', location = 'newLocation_wgs84', mapset = 'variables_cut', flags = 'l').replace('\r', '').split('\n')
 
 # change location
-g.mapset(mapset = "PERMANENT", location = "location_N_zone_12")
+g.mapset(mapset = "PERMANENT", location = "location_S_zone_23")
 
-# get only those for zone 12
-maps = [i for i in all_maps if 'zone_21' in i]
-regions = [i for i in all_regions if i.endswith('zone_21') and i.startswith('region')]
+# get only those for zone 23
+maps = [i for i in all_maps if 'zone_23' in i]
+regions = [i for i in all_regions if i.endswith('zone_23') and i.startswith('region')]
 
 # loop to reproject regions
 for i in regions:
@@ -42,7 +42,7 @@ categorical = ['Drainage', 'Ecoregions', 'Landcover', 'Protected_areas',
 #len(grass.list_grouped(type = "raster", pattern = "*"+"101"+"*")["PERMANENT"])
 
 # loop to reproject
-for reg in regions[70:]:
+for reg in regions:
     
     # define region
     g.region(vector = reg, res = 30, flags = 'ap')
@@ -62,7 +62,10 @@ for reg in regions[70:]:
             method = 'bilinear'
         
         r.proj(location = 'newLocation_wgs84', mapset = 'variables_cut', input = i, output = i, method = method, resolution = 30, overwrite = True)
-        
+
+g.region(vector = 'region_buffer_20_zone_23', res = 30, flags = 'ap')
+r.proj(location = 'newLocation_wgs84', mapset = 'variables_cut', input = 'buffer_20_zone_23_Hansen_2000_30m', output = 'buffer_20_zone_23_Hansen_2000_30m', method = method, resolution = 30, overwrite = True)
+
 #-------
 # distance to edges, patch size, distance to roads, distance to water bodies
 
@@ -81,15 +84,15 @@ from LSMetrics_v1_0_0 import dist_edge, rulesreclass, patch_size
 
 # distance to forest edges
 name_forest = ''
-dist_edge(input_maps = maps_forest[73:],
+dist_edge(input_maps = maps_forest,
     classify_edge_as_zero = False,
     prepare_biodim = False, remove_trash = True,
     prefix = name_forest, add_counter_name = False, export = False, dirout = '')
     
-maps_forest[47]
+maps_forest[56]
 
 # patch size
-patch_size(input_maps = maps_forest[47:], remove_trash = True, export = False)
+patch_size(input_maps = maps_forest, remove_trash = True, export = False)
 
 # distance to roads
 road_maps = grass.list_grouped(type = 'raster', pattern = '*roads*')['PERMANENT']
@@ -105,6 +108,7 @@ water_maps1 = grass.list_grouped(type = 'raster', pattern = '*Drainage*')['PERMA
 water_maps2 = grass.list_grouped(type = 'raster', pattern = '*Water_presence*')['PERMANENT']
 
 water_maps = water_maps1 + water_maps2
+water_maps = [i for i in water_maps if 'dist' not in i]
 
 for i in water_maps:
     
@@ -145,6 +149,8 @@ for i in regions:
     
     # List of raster to be exported
     list_rast_export = grass.list_grouped(type = 'rast', pattern = '*'+ind+'*')['PERMANENT']
+    
+    g.region(raster = list_rast_export, flags = "ap")
     
     # Loop to export all raster
     for j in list_rast_export:
@@ -292,3 +298,28 @@ for zz in range(len(zones)):
             r.out_gdal(input = j, output = j+'.tif', createopt = "TFW=YES,COMPRESS=DEFLATE",
                 overwrite = True)
 
+
+
+# check
+reg_pref = regions[0].split("buffer")[1]
+allmaps = grass.list_grouped(type = "raster", pattern = "*"+reg_pref+"*")["PERMANENT"]
+allmaps = [i.split(reg_pref+"_")[1] for i in allmaps]
+
+for reg in regions:
+    
+    # get prefix for maps
+    reg_pref = reg.split("buffer")[1]
+    
+    # maps
+    maps = grass.list_grouped(type = "raster", pattern = "*"+reg_pref+"*")["PERMANENT"]
+    
+    # print
+    if len(maps) != 66:
+        missing = allmaps
+        # for i in missing:
+        #     for x in maps:
+        #         if i in x and i+"_" not in x:
+        #             #print i, x
+        #             missing.remove(i)
+        print reg_pref, len(maps)
+        # print missing

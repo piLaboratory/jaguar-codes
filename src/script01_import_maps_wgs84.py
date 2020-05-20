@@ -60,7 +60,7 @@ for i in files:
 # Mosaic of water frequency maps
 
 # List of maps
-maps_water = grass.list_grouped('rast', pattern = 'p*2010_rast')['PERMANENT']
+maps_water = grass.list_grouped(type = 'rast', pattern = 'p*2010_rast')['PERMANENT']
 
 # Region of study
 grass.run_command('g.region', rast = map_for_define_region, flags = 'ap')

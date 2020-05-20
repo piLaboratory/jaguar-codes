@@ -50,6 +50,8 @@ for i in files:
 # cut for buffers
 
 # variables to be exported
+
+# change to folder where metadata file is
 pa = r'E:\_neojaguardatabase'
 os.chdir(pa)
 arq_maps = np.genfromtxt('Environmental_spatial_data_UTM_2019_updated_rename.csv', delimiter = ',', dtype = None, skip_header = 1)
@@ -112,6 +114,9 @@ for i in list_buffers:
             r.mapcalc(expr, overwrite = True)
         except:
             pass
+        #expr = expr = i+'_Treecover_Hansen_2000_30m_gt'+str(tr)+'_binary_year'+str(yy)+' = if('+i+'_Treecoverloss_Hansen_2017_30m > 0 && '+ \
+        #i+'_Treecoverloss_Hansen_2017_30m < '+str(yy)+', 0, '+i+'_Treecover_Hansen_2000_30m)'
+        #r.mapcalc(expr, overwrite = True)
     
     # Remove mask
     grass.run_command('r.mask', flags = 'r')
